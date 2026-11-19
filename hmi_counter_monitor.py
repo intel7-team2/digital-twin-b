@@ -1,7 +1,7 @@
 """
 Project B v5 · 팩 후공정(4S/6S) · STEP 05 출하·배출 게이트 카운터 HMI 모니터 (MX OPC Server / Modbus) + 팩 이력 DB 집계
 
-실제 HMI(GOT 등)에 바인딩할 PLC 레지스터를 PC에서 읽어 확인하는 도구입니다.
+실제 HMI(Pro-face, D19)에 바인딩할 PLC 레지스터를 PC에서 읽어 확인 · 대조하는 도구입니다.
   D1900 GOOD OUT / D1901 NG(메인 NG + 재검사 NG, 한 라인) / D1902 M1690 격리
   D1903 합계 / D1904 수율(0.1% 단위)   ·   M1920 리셋 비트
   (v5: 발열 격리도 공유 DB에 ISO로 기록되므로 D1902와 DB 격리 수를 대조합니다.)
