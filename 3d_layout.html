@@ -1,0 +1,1086 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Project B v5 3D Layout</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <style>
+    :root {
+      --bg: #0B1120;
+      --panel: rgba(17, 24, 39, 0.92);
+      --line: #1E293B;
+      --ink: #F8FAFC;
+      --ink-2: #94A3B8;
+      --cyan: #38BDF8;
+      --good: #10B981;
+      --retest: #F59E0B;
+      --ng-dv: #EF4444;
+      --ng-ir: #C084FC;
+      --ng-temp: #FB7185;
+      --m290: #F87171;
+      --bypass: #FB923C;
+      --font: 'Pretendard', 'Malgun Gothic', -apple-system, sans-serif;
+      --mono: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--ink); font-family: var(--font); }
+    #stage { position: fixed; inset: 0; }
+    #labels { position: fixed; inset: 0; pointer-events: none; }
+
+    .panel {
+      position: fixed;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-size: 12px;
+      backdrop-filter: blur(4px);
+    }
+    #p-title { top: 12px; left: 12px; width: 330px; }
+    #p-title h1 { font-size: 15px; font-weight: 800; }
+    #p-title p { color: var(--ink-2); margin-top: 4px; line-height: 1.5; }
+
+    #p-check { top: 112px; left: 12px; width: 330px; max-height: calc(100vh - 200px); overflow: auto; }
+    #p-check h2, #p-hmi h2 { font-size: 12.5px; font-weight: 800; color: var(--cyan); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    #p-check ol { padding-left: 18px; color: #CBD5E1; line-height: 1.55; }
+    #p-check li { margin-bottom: 6px; cursor: pointer; }
+    #p-check li:hover { color: #FFFFFF; }
+    #p-check li b { color: #FFFFFF; }
+    #p-check .hint { color: #64748B; font-size: 11px; margin-top: 6px; }
+
+    #p-hmi { top: 12px; right: 12px; width: 300px; }
+    .hmi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .hmi-t { background: #0F172A; border: 1px solid var(--line); border-top: 3px solid var(--c, var(--cyan)); border-radius: 4px; padding: 6px 8px; }
+    .hmi-t .l { font-size: 10.5px; color: #CBD5E1; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hmi-t .d { font-family: var(--mono); font-size: 10px; color: #64748B; }
+    .hmi-t .v { font-family: var(--mono); font-size: 18px; font-weight: 800; color: var(--c, var(--ink)); }
+    .hmi-t .v small { font-size: 10px; color: var(--ink-2); margin-left: 2px; }
+    #p-hmi .status { margin-top: 8px; font-family: var(--mono); font-size: 11px; color: var(--ink-2); line-height: 1.6; }
+    #p-hmi .status b { color: var(--ink); }
+
+    #p-log { right: 12px; bottom: 74px; width: 300px; height: 150px; overflow: hidden; font-family: var(--mono); font-size: 10.5px; line-height: 1.5; color: #CBD5E1; }
+    #p-log div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    #p-ctrl { left: 50%; transform: translateX(-50%); bottom: 12px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center; max-width: calc(100vw - 24px); }
+    .btn {
+      border: 1px solid #334155; background: #1E293B; color: var(--ink);
+      font-family: var(--font); font-size: 12px; font-weight: 700;
+      padding: 6px 11px; border-radius: 999px; cursor: pointer;
+    }
+    .btn:hover { border-color: var(--cyan); }
+    .btn.on { background: #0C4A6E; border-color: var(--cyan); }
+    .sep { width: 1px; height: 20px; background: #334155; margin: 0 4px; }
+    .chk { display: inline-flex; align-items: center; gap: 4px; color: #CBD5E1; font-weight: 600; cursor: pointer; }
+
+    .lbl {
+      font-family: var(--font); font-size: 11px; font-weight: 800; color: #F8FAFC;
+      background: rgba(11, 17, 32, 0.82); border: 1px solid var(--c, #38BDF8); border-radius: 4px;
+      padding: 3px 7px; white-space: nowrap; text-align: center; line-height: 1.35;
+    }
+    .lbl .dv { display: block; font-family: var(--mono); font-size: 9.5px; font-weight: 600; color: var(--c, #38BDF8); }
+    .lbl .cnt { font-family: var(--mono); color: #FFFFFF; }
+    .tag {
+      font-family: var(--mono); font-size: 9px; font-weight: 700; color: #0B1120;
+      background: var(--c, #38BDF8); border-radius: 3px; padding: 0 3px; white-space: nowrap;
+    }
+    body.no-labels .lbl, body.no-tags .tag { display: none; }
+    body.no-panels #p-check, body.no-panels #p-log, body.no-panels #p-title { display: none; }
+
+    @media (max-width: 900px) {
+      #p-check { display: none; }
+      #p-title { width: calc(100vw - 24px); }
+      #p-hmi { top: auto; bottom: 74px; right: 12px; width: 220px; }
+      #p-log { display: none; }
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="stage"></div>
+  <div id="labels"></div>
+
+  <div class="panel" id="p-title">
+    <h1>Project B · v5 팩(4S·6S) 후공정 3D 레이아웃</h1>
+    <p>v5 구조(에이징 랙 1개 · 1차 분리 발열 격리 · 메인 검사기 + 재검사기 · 2차 분리)를 실제 배치로 표현했습니다. 계측·판정은 Python 엔진과 같은 값입니다. 드래그 회전 · 휠 확대 · 우클릭 이동.</p>
+  </div>
+
+  <div class="panel" id="p-check">
+    <h2>구조 확인 포인트 <span style="color:#64748B;font-weight:600;">클릭 → 해당 위치</span></h2>
+    <ol>
+      <li data-view="infeed"><b>STEP 01</b> Project C 팩 인계(4S 작은 박스 · 6S 큰 박스) → 스토퍼 → RFID①(D1510~D1517)에 PACK ID·셀 수 기록, 비전(D1519)으로 박스 크기 확인</li>
+      <li data-view="inbound"><b>STEP 02 입고면(북쪽)</b>: 크레인 A(M1600)가 종류별 구역에 입고 — 1~3열 4S · 4~6열 6S (칸 크기 동일, 자기 구역 만차 시 다른 구역 빈 칸)</li>
+      <li data-view="outbound"><b>STEP 02 출고면(남쪽)</b>: 크레인 B(M1601)가 같은 칸을 반대 면에서 꺼내 모두 동쪽 출구로 — 발열 팩 우선, 그다음 숙성 완료 팩(EDD)</li>
+      <li data-view="sort1"><b>1차 분리 · M1690 발열 격리</b>: 보관 중 가상 온도 초과 팩은 라인을 따라와 Pop-up Wheel(M1661)로 ↓ 격리 → DB ISO 기록. 칸은 LOCK(빨강) 후 20초 뒤 자동 해제</li>
+      <li data-view="inspect"><b>STEP 03 메인 검사</b>: RFID②(D1520~D1527) → OCV·IR·온도 → D1700~D1703 → 공유 DB</li>
+      <li data-view="sort"><b>STEP 04 분류</b>: GOOD 직진 · RETEST와 NG 모두 M1720 → 남쪽 정치 버퍼 (M1710 라인 없음)</li>
+      <li data-view="retest"><b>재검사 구역</b>: 정치 버퍼 8칸(D1800, 만차 M1800이면 메인 출구 대기) → RFID③ → RETEST만 재측정(D1730~D1733), 메인 NG는 통과</li>
+      <li data-view="merge"><b>2차 분리 (Pop-up Wheel)</b>: GOOD ↑ M1731 → X1903 간격 확인 후 합류 → GOOD OUT / NG ↓ M1732 → NG OUT</li>
+      <li data-view="gates"><b>STEP 05 게이트</b>: X1900 GOOD · X1901 NG · X1902 격리 → D1900~D1902, 합계 D1903 · 수율 D1904</li>
+    </ol>
+    <p class="hint">구조가 의도와 다르면 해당 번호와 함께 알려주세요.</p>
+  </div>
+
+  <div class="panel" id="p-hmi">
+    <h2>HMI 게이트 카운터 <button class="btn" id="btn-reset" style="padding:3px 9px;font-size:11px;">리셋 M1920</button></h2>
+    <div class="hmi-grid" id="hmi-grid"></div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="panel" id="p-log"></div>
+
+  <div class="panel" id="p-ctrl">
+    <button class="btn on" id="btn-play">⏸ 일시정지</button>
+    <button class="btn on" data-speed="1">1x</button>
+    <button class="btn" data-speed="2">2x</button>
+    <button class="btn" data-speed="4">4x</button>
+    <span class="sep"></span>
+    <button class="btn" data-cam="iso">전체</button>
+    <button class="btn" data-cam="top">평면</button>
+    <button class="btn" data-cam="inbound">입고면</button>
+    <button class="btn" data-cam="outbound">출고면</button>
+    <button class="btn" data-cam="sort">검사·분류</button>
+    <button class="btn" data-cam="retest">재검사 루프</button>
+    <span class="sep"></span>
+    <button class="btn" id="btn-thermal">+ 이상 발열</button>
+    <button class="btn" id="btn-unlock">랙 잠금해제</button>
+    <span class="sep"></span>
+    <label class="chk"><input type="checkbox" id="chk-panels" checked /> 안내 패널</label>
+    <label class="chk"><input type="checkbox" id="chk-labels" checked /> 설비 라벨</label>
+    <label class="chk"><input type="checkbox" id="chk-tags" checked /> 공작물 ID</label>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+    // =====================================================================
+    // Measurement mirror — identical to v7.html <MEAS> and measurement_engine.py
+    // =====================================================================
+    const MEAS = {
+      SEED_BASE: 20261118,
+      // cell basis (18650 3.7 V); pack value = cell range × cell count (4S / 6S)
+      CELL_DV: { good: [20, 80, 0.82], warn: [81, 150, 0.12], ng: [151, 250] },
+      CELL_IR: { good: [150, 250, 0.85], warn: [251, 320, 0.10], ng: [321, 450] },
+      TEMP: { good: [240, 380, 0.95], ng: [381, 450] },
+      TEMP_NG: 380
+    };
+    const packSpec = (c, n) => ({ good: [c.good[0] * n, c.good[1] * n, c.good[2]], warn: [c.good[1] * n + 1, c.warn[1] * n, c.warn[2]], ng: [c.warn[1] * n + 1, c.ng[1] * n] });
+    const packLimits = n => ({ dvWarn: MEAS.CELL_DV.good[1] * n, dvNg: MEAS.CELL_DV.warn[1] * n, irWarn: MEAS.CELL_IR.good[1] * n, irNg: MEAS.CELL_IR.warn[1] * n, tempNg: MEAS.TEMP_NG });
+    // Project C handoff mirror: only the pack type is needed here (first draw of the C seed, same as makeHandoff / c_handoff)
+    const packCellsOf = packId => (mulberry32(20261028 + packId * 7919)() < 0.30 ? 6 : 4);
+    const VERDICT = { PASS: 1, RETEST: 2, NG_DV: 3, NG_IR: 4, NG_TEMP: 5 };
+    function mulberry32(seed) {
+      let a = seed | 0;
+      return function () {
+        a = (a + 0x6D2B79F5) | 0;
+        let t = Math.imul(a ^ (a >>> 15), 1 | a);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+    function pickMetric(rnd, spec) {
+      const r = rnd();
+      let cat;
+      if (r < spec.good[2]) cat = 'good';
+      else if (spec.warn && r < spec.good[2] + spec.warn[2]) cat = 'warn';
+      else cat = 'ng';
+      const [lo, hi] = spec[cat];
+      return lo + Math.floor(rnd() * (hi - lo + 1));
+    }
+    function measureBattery(packId, retestCount, n = 4) {
+      const rnd = mulberry32(MEAS.SEED_BASE + packId * 7919 + retestCount * 104729);
+      return { dv: pickMetric(rnd, packSpec(MEAS.CELL_DV, n)), ir: pickMetric(rnd, packSpec(MEAS.CELL_IR, n)), temp: pickMetric(rnd, MEAS.TEMP) };
+    }
+    function judgeMetrics(m, rc, n = 4) {
+      const L = packLimits(n);
+      if (m.temp > L.tempNg) return VERDICT.NG_TEMP;
+      if (m.dv > L.dvNg) return VERDICT.NG_DV;
+      if (m.ir > L.irNg) return VERDICT.NG_IR;
+      const dvW = m.dv > L.dvWarn, irW = m.ir > L.irWarn;
+      if (dvW || irW) return rc >= 1 ? (dvW ? VERDICT.NG_DV : VERDICT.NG_IR) : VERDICT.RETEST;
+      return VERDICT.PASS;
+    }
+    const fmt = m => `ΔV ${(m.dv / 1000).toFixed(3)}V · IR ${(m.ir / 100).toFixed(2)}mΩ · ${(m.temp / 10).toFixed(1)}°C`;
+
+    // =====================================================================
+    // Layout constants (meters). X = flow east, Z = south (+) / north (−), Y = up
+    // v5 (structure B + pop-up wheel sorters): one aging rack (4S/6S zones, equal cells) · main tester · dedicated retest tester
+    // =====================================================================
+    const BELT_Y = 0.45;          // conveyor top
+    const ITEM = 0.34;            // item cube size
+    const ITEM_Y = BELT_Y + ITEM / 2;
+    const LEVEL_H = 0.8;
+    const RACK = { x0: -8.0, bays: 6, levels: 4, bay: 1.4 };   // all cells sized for the Large box
+    const ZONE_BAYS = { 4: [0, 1, 2], 6: [3, 4, 5] };           // bays 1~3 = 4S zone, 4~6 = 6S zone
+    const bayX = c => RACK.x0 + RACK.bay / 2 + c * RACK.bay;
+    const RACK_X1 = RACK.x0 + RACK.bays * RACK.bay;
+    const levelY = l => ITEM_Y + l * LEVEL_H;
+    const RAIL_IN_Z = -1.3, RAIL_OUT_Z = 1.3;
+    const PICK_X = RACK.x0 - 0.8;    // crane A pick-up (west end, inbound face)
+    const DROP_X = RACK_X1 + 0.4;    // crane B drop-off (east end, outbound face)
+    const SORT1_X = 3.0;             // 1차 분리 Pop-up Wheel Sorter: hot pack → south (isolation) / normal → straight (main tester)
+    const CHAMBER = { x: SORT1_X, z: 2.75 };
+    const INSP_X = 4.5;              // main tester (RFID② + OCV·IR·Temp)
+    const RETEST_X = 6.5;            // M1720 RETEST diverter (south)
+    const RET_Z = 2.0;               // RETEST loop level (south of the main line)
+    const BUF = { n: 8, frontX: 10.7, pitch: 0.5 };               // rest buffer, front = east (next to the retest tester)
+    const bufX = i => BUF.frontX - i * BUF.pitch;
+    const BUF_TAIL_X = bufX(BUF.n - 1) - 0.4;
+    const RT_X = 12.6;               // retest tester (RFID③ + OCV·IR·Temp)
+    const SORT2_X = 14.5;            // 2차 분리 Pop-up Wheel Sorter: GOOD → north (merge, X1903) / NG → south (NG OUT)
+    const NG_Z = 3.6;
+    const GATE_X = 22;
+    const T = { rfid: 1.2, aging: 16, inspect: 1.6, rest: 6, spawn: 3.2, thermalAt: 0.45, lockRelease: 20 };
+    const SPEED = { belt: 1.6, craneX: 3.2, craneY: 1.6, slide: 1.4 };
+
+    const COLORS = {
+      normal: 0x38BDF8, aged: 0x7DD3FC, thermal: 0xEF4444, pass: 0x10B981,
+      retest: 0xF59E0B, ng: 0xEF4444
+    };
+
+    // =====================================================================
+    // Three.js setup
+    // =====================================================================
+    const stage = document.getElementById('stage');
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    stage.appendChild(renderer.domElement);
+
+    const labelRenderer = new CSS2DRenderer({ element: document.getElementById('labels') });
+    labelRenderer.setSize(window.innerWidth, window.innerHeight);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0B1120);
+    scene.fog = new THREE.Fog(0x0B1120, 45, 90);
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 200);
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.maxPolarAngle = Math.PI * 0.49;
+
+    scene.add(new THREE.HemisphereLight(0xCBD5E1, 0x0F172A, 1.1));
+    const sun = new THREE.DirectionalLight(0xFFFFFF, 1.4);
+    sun.position.set(-8, 20, 12);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(2048, 2048);
+    Object.assign(sun.shadow.camera, { left: -20, right: 26, top: 14, bottom: -14, near: 1, far: 60 });
+    sun.shadow.camera.updateProjectionMatrix();
+    scene.add(sun);
+
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 30), new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.95 }));
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.set(4, 0, 0);
+    floor.receiveShadow = true;
+    scene.add(floor);
+    const grid = new THREE.GridHelper(60, 60, 0x1E293B, 0x1A2333);
+    grid.position.set(4, 0.002, 0);
+    scene.add(grid);
+
+    const mat = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.6, metalness: 0.15, ...extra });
+    function box(w, h, d, color, x, y, z, extra) {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(color, extra));
+      m.position.set(x, y, z);
+      m.castShadow = true;
+      m.receiveShadow = true;
+      scene.add(m);
+      return m;
+    }
+    function label(html, x, y, z, color = '#38BDF8') {
+      const div = document.createElement('div');
+      div.className = 'lbl';
+      div.style.setProperty('--c', color);
+      div.innerHTML = html;
+      const obj = new CSS2DObject(div);
+      obj.position.set(x, y, z);
+      scene.add(obj);
+      return div;
+    }
+
+    // Conveyor polyline drawn as belt boxes
+    function drawBelt(points, color = 0x334155, accent = 0x38BDF8) {
+      for (let i = 0; i < points.length - 1; i++) {
+        const [x1, z1] = points[i], [x2, z2] = points[i + 1];
+        const len = Math.hypot(x2 - x1, z2 - z1);
+        const cx = (x1 + x2) / 2, cz = (z1 + z2) / 2;
+        const b = box(len + 0.6, 0.1, 0.6, color, cx, BELT_Y - 0.05, cz);
+        b.rotation.y = -Math.atan2(z2 - z1, x2 - x1);
+        const s = box(len + 0.6, 0.012, 0.08, accent, cx, BELT_Y + 0.006, cz, { emissive: accent, emissiveIntensity: 0.35 });
+        s.rotation.y = b.rotation.y;
+        // legs
+        const n = Math.max(1, Math.floor(len / 1.5));
+        for (let k = 0; k <= n; k++) {
+          const t = k / n;
+          box(0.06, BELT_Y - 0.1, 0.5, 0x1E293B, x1 + (x2 - x1) * t, (BELT_Y - 0.1) / 2, z1 + (z2 - z1) * t).rotation.y = b.rotation.y;
+        }
+      }
+    }
+
+    // =====================================================================
+    // Lanes (conveyor paths that carry items with spacing)
+    // =====================================================================
+    class Lane {
+      constructor(name, pts) {
+        this.name = name;
+        this.pts = pts;
+        this.segs = [];
+        this.length = 0;
+        for (let i = 0; i < pts.length - 1; i++) {
+          const l = Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]);
+          this.segs.push(l);
+          this.length += l;
+        }
+        this.items = [];
+      }
+      at(s) {
+        let d = Math.max(0, Math.min(s, this.length));
+        for (let i = 0; i < this.segs.length; i++) {
+          if (d <= this.segs[i] || i === this.segs.length - 1) {
+            const t = this.segs[i] ? Math.min(1, d / this.segs[i]) : 0;
+            const [x1, z1] = this.pts[i], [x2, z2] = this.pts[i + 1];
+            return [x1 + (x2 - x1) * t, z1 + (z2 - z1) * t];
+          }
+          d -= this.segs[i];
+        }
+        return this.pts[this.pts.length - 1];
+      }
+      add(item, onEnd) {
+        item.lane = this; item.s = 0; item.onEnd = onEnd;
+        this.items.push(item);
+      }
+      remove(item) {
+        const i = this.items.indexOf(item);
+        if (i >= 0) this.items.splice(i, 1);
+        item.lane = null;
+      }
+      update(dt) {
+        this.items.sort((a, b) => b.s - a.s);
+        for (let i = 0; i < this.items.length; i++) {
+          const it = this.items[i];
+          let max = this.length;
+          if (i > 0) max = Math.min(max, this.items[i - 1].s - 0.55);
+          if (it.holdS !== undefined && !it.holdDone) max = Math.min(max, it.holdS);
+          it.s = Math.max(it.s, Math.min(it.s + SPEED.belt * dt, max));
+          const [x, z] = this.at(it.s);
+          it.mesh.position.set(x, ITEM_Y, z);
+          if (it.holdS !== undefined && !it.holdDone && it.s >= it.holdS - 1e-6) it.onHold?.(it, dt);
+        }
+        // end-of-lane callbacks (front-most first); callback returns true when the item left the lane
+        for (const it of [...this.items]) {
+          if (it.s >= this.length - 1e-6 && it.onEnd) it.onEnd(it);
+        }
+      }
+    }
+
+    const lanes = {
+      infeed:  new Lane('infeed',  [[-15, 0], [-10, 0], [-10, RAIL_IN_Z], [PICK_X, RAIL_IN_Z]]),
+      out:     new Lane('out',     [[DROP_X, RAIL_OUT_Z], [1.6, RAIL_OUT_Z], [1.6, 0], [SORT1_X, 0]]),
+      toMain:  new Lane('toMain',  [[SORT1_X, 0], [INSP_X, 0]]),
+      iso:     new Lane('iso',     [[SORT1_X, 0], [SORT1_X, CHAMBER.z - 0.6]]),
+      good:    new Lane('good',    [[INSP_X, 0], [GATE_X, 0]]),
+      retest:  new Lane('retest',  [[INSP_X, 0], [RETEST_X, 0], [RETEST_X, RET_Z], [BUF_TAIL_X, RET_Z]]),
+      toRt:    new Lane('toRt',    [[BUF.frontX, RET_Z], [RT_X, RET_Z]]),
+      rtGood:  new Lane('rtGood',  [[RT_X, RET_Z], [SORT2_X, RET_Z], [SORT2_X, 0], [GATE_X, 0]]),
+      rtNg:    new Lane('rtNg',    [[RT_X, RET_Z], [SORT2_X, RET_Z], [SORT2_X, NG_Z], [GATE_X, NG_Z]])
+    };
+    // merge point: retest GOOD waits just before the main line until X1903 sees a gap
+    const MERGE_RT_GOOD_S = (SORT2_X - RT_X) + RET_Z - 0.45;
+
+    // Physical belts drawn once per segment
+    drawBelt([[-15, 0], [-10, 0], [-10, RAIL_IN_Z], [PICK_X, RAIL_IN_Z]], 0x334155, 0x38BDF8);          // infeed
+    drawBelt([[DROP_X, RAIL_OUT_Z], [1.6, RAIL_OUT_Z], [1.6, 0]], 0x334155, 0x38BDF8);                  // outbound (all packs)
+    drawBelt([[1.6, 0], [GATE_X, 0]], 0x334155, 0x38BDF8);                                              // main line → GOOD
+    drawBelt([[SORT1_X, 0.35], [SORT1_X, CHAMBER.z - 0.6]], 0x334155, 0xEF4444);                        // 1차 분리 → isolation
+    drawBelt([[RETEST_X, 0.35], [RETEST_X, RET_Z], [SORT2_X, RET_Z]], 0x334155, 0xF59E0B);              // M1720 branch + rest buffer + retest
+    drawBelt([[SORT2_X, RET_Z], [SORT2_X, 0.35]], 0x334155, 0xF59E0B);                                  // 2차 분리 ↑ GOOD → merge
+    drawBelt([[SORT2_X, RET_Z + 0.35], [SORT2_X, NG_Z], [GATE_X, NG_Z]], 0x334155, 0xEF4444);           // 2차 분리 ↓ NG OUT
+
+    // =====================================================================
+    // Static equipment
+    // =====================================================================
+    // Project C hand-over
+    box(1.2, 0.9, 1.2, 0x334155, -15.8, 0.45, 0);
+    label('Project C 인계<span class="dv">4S 작은 박스 · 6S 큰 박스 (셀 → 공유 DB)</span>', -15.8, 1.3, 0, '#94A3B8');
+
+    // STEP 01 RFID station + vision sensor (box size → pack type check)
+    const RFID_X = -11;
+    box(0.06, 0.35, 0.5, 0x94A3B8, RFID_X + 0.25, BELT_Y + 0.17, 0); // stopper blade
+    box(0.3, 0.3, 0.12, 0x1E293B, RFID_X, ITEM_Y + 0.05, -0.45);      // reader body
+    const rfidLed = box(0.08, 0.08, 0.02, 0x10B981, RFID_X, ITEM_Y + 0.12, -0.38, { emissive: 0x10B981, emissiveIntensity: 1 });
+    box(0.05, ITEM_Y, 0.05, 0x475569, RFID_X, ITEM_Y / 2, -0.55);
+    box(0.25, 0.25, 0.25, 0x0EA5E9, -12.6, 1.1, 0.55, { emissive: 0x0C4A6E });
+    label('STEP 01 · RFID ① 등록<span class="dv">스토퍼 · D1510~D1517 · 비전 D1519</span>', RFID_X, 1.35, -0.4);
+
+    // STEP 02 pass-through rack (cells open on both faces), 4S zone (bays 1~3) / 6S zone (bays 4~6)
+    const rackTop = levelY(RACK.levels - 1) + 0.5;
+    for (let i = 0; i <= RACK.bays; i++) {
+      for (const z of [-0.5, 0.5]) box(0.06, rackTop, 0.06, i === 3 ? 0x10B981 : 0x3B82F6, RACK.x0 + i * RACK.bay, rackTop / 2, z);
+    }
+    for (let l = 0; l < RACK.levels; l++) {
+      box(RACK.bays * RACK.bay, 0.04, 1.0, 0x1E3A8A, RACK.x0 + RACK.bays * RACK.bay / 2, levelY(l) - ITEM / 2 - 0.02, 0);
+    }
+    const cells = [];
+    for (let l = 0; l < RACK.levels; l++) {
+      for (let c = 0; c < RACK.bays; c++) {
+        const lock = box(RACK.bay - 0.1, 0.7, 0.96, 0xEF4444, bayX(c), levelY(l) + 0.15, 0, { transparent: true, opacity: 0.28, emissive: 0x7F1D1D });
+        lock.visible = false;
+        lock.castShadow = false;
+        cells.push({ idx: l * RACK.bays + c, level: l, col: c, zone: c < 3 ? 4 : 6, item: null, reserved: false, locked: false, lockT: 0, lockMesh: lock });
+      }
+    }
+    label('STEP 02 · 관통형 랙 24칸<span class="dv">6열 × 4단 · 칸 크기 동일 · D1600</span>', RACK.x0 + RACK.bays * RACK.bay / 2, rackTop + 0.45, 0, '#60A5FA');
+    label('4S 구역<span class="dv">1~3열 (Small box)</span>', bayX(1), 0.35, 0.95, '#93C5FD');
+    label('6S 구역<span class="dv">4~6열 (Large box)</span>', bayX(4), 0.35, 0.95, '#6EE7B7');
+
+    // Crane rails & faces
+    const railLen = RACK_X1 - RACK.x0 + 2.2;
+    box(railLen, 0.06, 0.18, 0x60A5FA, (RACK.x0 + RACK_X1) / 2 - 0.4, 0.03, RAIL_IN_Z, { emissive: 0x1E3A8A });
+    box(railLen, 0.06, 0.18, 0x38BDF8, (RACK.x0 + RACK_X1) / 2 - 0.4, 0.03, RAIL_OUT_Z, { emissive: 0x0C4A6E });
+    label('입고면 (북쪽)<span class="dv">크레인 A · M1600 · 종류별 구역 입고</span>', (RACK.x0 + RACK_X1) / 2, 0.25, RAIL_IN_Z - 0.75, '#93C5FD');
+    label('출고면 (남쪽)<span class="dv">크레인 B · M1601 · 모든 팩 동쪽 출구 (발열 우선 → EDD)</span>', (RACK.x0 + RACK_X1) / 2, 0.25, RAIL_OUT_Z + 0.75, '#7DD3FC');
+
+    // M1690 isolation chamber: hot packs leave like normal packs and are diverted south at 1차 분리
+    box(1.3, 1.1, 1.3, 0x7F1D1D, CHAMBER.x, 0.55, CHAMBER.z + 0.1, { transparent: true, opacity: 0.55, emissive: 0x450A0A });
+    label('M1690 발열 격리<span class="dv">X1902 → D1902 · DB ISO · <span class="cnt" id="lbl-m290">0</span> EA</span>', CHAMBER.x, 1.5, CHAMBER.z + 0.1, '#F87171');
+
+    // Tester builder (gantry + probe + stack light + RFID reader)
+    function buildTester(x, z, title, sub, rfidText) {
+      for (const dz of [-0.55, 0.55]) box(0.08, 1.7, 0.08, 0x94A3B8, x, 0.85, z + dz);
+      box(0.14, 0.12, 1.25, 0x94A3B8, x, 1.7, z);
+      const probe = box(0.06, 0.6, 0.06, 0xF59E0B, x, 1.35, z, { emissive: 0x78350F });
+      const lamps = {
+        r: box(0.12, 0.12, 0.12, 0x450A0A, x + 0.2, 1.95, z - 0.55),
+        y: box(0.12, 0.12, 0.12, 0x451A03, x + 0.2, 1.82, z - 0.55),
+        g: box(0.12, 0.12, 0.12, 0x064E3B, x + 0.2, 1.69, z - 0.55)
+      };
+      box(0.3, 0.3, 0.12, 0x1E293B, x - 0.35, ITEM_Y + 0.05, z - 0.55);
+      const led = box(0.08, 0.08, 0.02, 0x10B981, x - 0.35, ITEM_Y + 0.12, z - 0.48, { emissive: 0x10B981, emissiveIntensity: 1 });
+      label(`${title}<span class="dv">${sub}</span>`, x, 2.25, z, '#FBBF24');
+      label(rfidText, x - 0.9, 0.55, z - 1.0, '#7DD3FC');
+      const lbl = label('READY', x, 0.15, z + 0.95, '#94A3B8');
+      return { probe, lamps, led, lbl, x, z };
+    }
+    const mainT = buildTester(INSP_X, 0, 'STEP 03 · 메인 검사', 'RFID② → OCV·IR·온도 → D1700~D1703', 'RFID ②<span class="dv">D1520~D1527</span>');
+    const rtT = buildTester(RT_X, RET_Z, '재검사', 'RFID③ → OCV·IR·온도 → D1730~D1733', 'RFID ③<span class="dv">D1530~D1537</span>');
+
+    // M1720 pivot arm: everything that is not GOOD (RETEST 2 / NG 3·4·5) goes south to the rest buffer
+    const arms = {};
+    {
+      box(0.12, 0.5, 0.12, 0x475569, RETEST_X, 0.25, -0.42);
+      const arm = box(0.75, 0.12, 0.06, 0xF59E0B, RETEST_X, BELT_Y + 0.12, -0.38, { emissive: 0xF59E0B, emissiveIntensity: 0.2 });
+      arms.retest = { mesh: arm, side: 1, t: 0 };
+    }
+    // Pop-up wheel sorters (rollers rise and turn the box 90°): 1차 분리 / 2차 분리
+    const wheelSorters = {};
+    function popUpWheel(key, x, z, title, sub) {
+      box(0.62, 0.06, 0.62, 0x334155, x, BELT_Y + 0.005, z);
+      const wheels = [];
+      for (const dx of [-0.18, 0, 0.18]) for (const dz of [-0.18, 0, 0.18]) {
+        wheels.push(box(0.08, 0.05, 0.12, 0x94A3B8, x + dx, BELT_Y + 0.03, z + dz, { emissive: 0x334155 }));
+      }
+      label(`${title}<span class="dv">${sub}</span>`, x, 1.0, z - 0.9, '#34D399');
+      wheelSorters[key] = { wheels, t: 0, dir: 0 };
+    }
+    popUpWheel('s1', SORT1_X, 0, '1차 분리 (Pop-up Wheel)', '직진 M1660 → 메인 검사 / ↓ M1661 → 발열 격리');
+    popUpWheel('s2', SORT2_X, RET_Z, '2차 분리 (Pop-up Wheel)', '↑ M1731 → GOOD 합류 / ↓ M1732 → NG OUT');
+    function fireWheel(key, dir) { const w = wheelSorters[key]; w.t = 0.8; w.dir = dir; }
+    label('STEP 04 · 분류<span class="dv">M1720: GOOD 외 모두 ↓ 정치 버퍼 (M1710 라인 없음)</span>', RETEST_X + 1.5, 0.9, -1.3, '#34D399');
+
+    // RETEST rest buffer (8 slots, front = east next to the retest tester)
+    for (let i = 0; i < BUF.n; i++) {
+      box(0.04, 0.02, 0.6, 0x64748B, bufX(i) - BUF.pitch / 2, BELT_Y + 0.01, RET_Z);
+    }
+    label('정치 버퍼 8칸<span class="dv">RETEST + 메인 NG · D1800 · 만차(M1800) 시 메인 출구 대기</span>', (bufX(0) + bufX(BUF.n - 1)) / 2, 0.9, RET_Z + 0.95, '#FBBF24');
+
+    // retest GOOD merge gap sensor
+    const mergeBeam = box(0.02, 0.02, 0.9, 0xFFFFFF, SORT2_X - 0.6, ITEM_Y, 0, { emissive: 0xF59E0B, emissiveIntensity: 0.5 });
+    label('재검사 GOOD 합류<span class="dv">X1903 간격 확인</span>', SORT2_X + 1.2, 0.9, 1.0, '#F59E0B');
+
+    // STEP 05 gates (sensor beam + counter label)
+    const GATES = [
+      { key: 'good', name: 'GOOD OUT', x: 'X1900', d: 'D1900', z: 0,    color: '#10B981', hex: 0x10B981 },
+      { key: 'ng',   name: 'NG OUT',   x: 'X1901', d: 'D1901', z: NG_Z, color: '#EF4444', hex: 0xEF4444 }
+    ];
+    const gateBeams = {};
+    for (const g of GATES) {
+      for (const dz of [-0.45, 0.45]) box(0.08, 1.2, 0.08, g.hex, GATE_X - 0.6, 0.6, g.z + dz);
+      box(0.08, 0.08, 0.98, g.hex, GATE_X - 0.6, 1.2, g.z);
+      gateBeams[g.key] = box(0.02, 0.02, 0.9, 0xFFFFFF, GATE_X - 0.6, ITEM_Y, g.z, { emissive: g.hex, emissiveIntensity: 0.6 });
+      box(1.2, 0.02, 1.0, g.hex, GATE_X + 0.4, 0.01, g.z, { transparent: true, opacity: 0.35 });
+      label(`${g.name}<span class="dv">${g.x} → ${g.d} · <span class="cnt" id="lbl-${g.key}">0</span> EA</span>`, GATE_X + 0.6, 1.55, g.z, g.color);
+    }
+    label('STEP 05 · 출하·배출 게이트', GATE_X + 0.6, 2.4, -2.4, '#6EE7B7');
+
+    // =====================================================================
+    // Cranes (A: inbound face, B: outbound face)
+    // =====================================================================
+    class Crane {
+      constructor(name, z, color) {
+        this.name = name; this.z = z; this.x = name === 'A' ? PICK_X : DROP_X; this.y = ITEM_Y;
+        this.steps = []; this.carry = null; this.carryDz = 0;
+        this.group = new THREE.Group();
+        const mast = new THREE.Mesh(new THREE.BoxGeometry(0.16, rackTop + 0.4, 0.16), mat(color));
+        mast.position.y = (rackTop + 0.4) / 2; mast.castShadow = true;
+        const base = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.14, 0.3), mat(0x1E293B));
+        base.position.y = 0.1;
+        this.group.add(mast, base);
+        this.fork = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.06, 0.5), mat(color, { emissive: color, emissiveIntensity: 0.25 }));
+        this.fork.castShadow = true;
+        this.group.add(this.fork);
+        scene.add(this.group);
+        this.sync();
+      }
+      get idle() { return this.steps.length === 0; }
+      sync() {
+        this.group.position.set(this.x, 0, this.z);
+        this.fork.position.set(0, this.y - ITEM / 2 - 0.04, 0);
+        if (this.carry) this.carry.mesh.position.set(this.x, this.y, this.z + this.carryDz);
+      }
+      update(dt) {
+        while (this.steps.length && this.steps[0].fn) this.steps.shift().fn();
+        const s = this.steps[0];
+        if (!s) return;
+        if (s.wait !== undefined) {
+          s.wait -= dt;
+          if (s.wait <= 0) this.steps.shift();
+        } else if (s.slide !== undefined) {
+          const d = s.slide - this.carryDz, step = SPEED.slide * dt;
+          this.carryDz = Math.abs(d) <= step ? s.slide : this.carryDz + Math.sign(d) * step;
+          if (this.carryDz === s.slide) this.steps.shift();
+        } else {
+          const dx = s.x - this.x, dy = s.y - this.y;
+          const sx = SPEED.craneX * dt, sy = SPEED.craneY * dt;
+          this.x = Math.abs(dx) <= sx ? s.x : this.x + Math.sign(dx) * sx;
+          this.y = Math.abs(dy) <= sy ? s.y : this.y + Math.sign(dy) * sy;
+          if (this.x === s.x && this.y === s.y) this.steps.shift();
+        }
+        this.sync();
+      }
+    }
+    const craneA = new Crane('A', RAIL_IN_Z, 0x2563EB);
+    const craneB = new Crane('B', RAIL_OUT_Z, 0x0284C7);
+
+    // =====================================================================
+    // Items & process logic
+    // =====================================================================
+    const sim = {
+      running: true, speed: 1, t: 0, seq: 0, serial: 6174, spawnT: 1,
+      items: [], buffer: Array(BUF.n).fill(null), bufHolds: 0, bufHoldT: 0,
+      main: { item: null, t: 0 }, rt: { item: null, t: 0 }, enRoute: 0, thermalJobs: []
+    };
+    const counts = { good: 0, ng: 0, m290: 0 };      // PLC gate counters D1900~D1902 (D1903 합계 / D1904 수율)
+    const db = { rows: new Map() };                   // shared DB mirror: PACK ID -> final result (GOOD / NG / ISO)
+
+    function setColor(it, hex) {
+      it.mesh.material.color.setHex(hex);
+      it.mesh.material.emissive.setHex(hex);
+      it.tag.style.setProperty('--c', '#' + hex.toString(16).padStart(6, '0'));
+    }
+    function makeItem(thermal) {
+      sim.seq++;
+      const it = {
+        packId: sim.seq, id: `PACK-${String(sim.seq).padStart(4, '0')}`, serial: sim.serial++,
+        thermal, state: 'infeed', cell: null, age: 0, rest: 0,
+        cells: packCellsOf(sim.seq),  // 4 = 4S 2×2 Small box / 6 = 6S 2×3 Large box
+        tag: new Array(10).fill(0)  // RFID tag memory idx0..9 (written at STEP 01, read at STEP 03 / retest)
+      };
+      // Large box (6S) is longer along the belt; height stays inside the rack cell
+      it.mesh = new THREE.Mesh(new THREE.BoxGeometry(it.cells === 6 ? ITEM * 1.4 : ITEM, ITEM, ITEM), mat(COLORS.normal, { emissive: COLORS.normal, emissiveIntensity: 0.15 }));
+      it.mesh.castShadow = true;
+      scene.add(it.mesh);
+      const tag = document.createElement('div');
+      tag.className = 'tag';
+      tag.textContent = `P-${String(sim.seq).padStart(2, '0')}`;
+      const obj = new CSS2DObject(tag);
+      obj.position.set(0, ITEM * 0.9, 0);
+      it.mesh.add(obj);
+      it.tag = tag;
+      sim.items.push(it);
+      return it;
+    }
+    function destroy(it) {
+      it.lane?.remove(it);
+      it.mesh.children.forEach(c => c.element?.remove());
+      scene.remove(it.mesh);
+      sim.items.splice(sim.items.indexOf(it), 1);
+    }
+    function log(msg, color = '#CBD5E1') {
+      const box = document.getElementById('p-log');
+      const d = document.createElement('div');
+      d.style.color = color;
+      const t = sim.t;
+      d.textContent = `[${String(Math.floor(t / 60)).padStart(2, '0')}:${String(Math.floor(t % 60)).padStart(2, '0')}] ${msg}`;
+      box.appendChild(d);
+      while (box.children.length > 10) box.removeChild(box.firstChild);
+    }
+    function count(key) {
+      counts[key]++;
+      if (gateBeams[key]) { gateBeams[key].material.emissiveIntensity = 3; setTimeout(() => (gateBeams[key].material.emissiveIntensity = 0.6), 250); }
+      renderHmi();
+    }
+    // hold an item at a merge point until the other lane has a gap around (x, z)
+    function holdForGap(item, s, otherLane, x, z) {
+      item.holdS = s;
+      item.holdDone = false;
+      item.onHold = it => {
+        const busy = otherLane.items.some(o => Math.hypot(o.mesh.position.x - x, o.mesh.position.z - z) < 0.9);
+        if (!busy) it.holdDone = true;
+      };
+    }
+
+    // --- STEP 01 infeed + RFID ① + vision (pack type) ---
+    function spawn(thermal = Math.random() < 0.06) {
+      const last = lanes.infeed.items.reduce((m, i) => Math.min(m, i.s), Infinity);
+      if (last < 0.8) return false;
+      const it = makeItem(thermal);
+      it.holdS = RFID_X - (-15); // stop at the RFID reader (x = -11)
+      it.holdDone = false;
+      it.holdT = 0;
+      it.onHold = (item, dt) => {
+        item.holdT += dt;
+        rfidLed.material.emissive.setHex(0xF59E0B);
+        if (item.holdT >= T.rfid) {
+          item.holdDone = true;
+          rfidLed.material.emissive.setHex(0x10B981);
+          item.tag[0] = item.packId;   // idx0 PACK ID
+          item.tag[4] = 0;            // idx4 retest count
+          item.tag[9] = item.cells;   // idx9 cell count (4S / 6S) — vision box size must match the shared DB
+          log(`[RFID①] ${item.id} ${item.cells === 6 ? '6S 큰 박스' : '4S 작은 박스'} 등록 → ${item.cells === 6 ? '6S' : '4S'} 구역`, '#7DD3FC');
+        }
+      };
+      lanes.infeed.add(it, tryStore);
+      return true;
+    }
+
+    // --- STEP 02 crane A store (inbound face) into the pack-type zone (other zone only when own zone is full) ---
+    function freeCell(zone) {
+      return cells.find(c => c.zone === zone && !c.item && !c.reserved && !c.locked)
+        || cells.find(c => !c.item && !c.reserved && !c.locked);
+    }
+    function tryStore(it) {
+      if (!craneA.idle) return;
+      const cell = freeCell(it.cells);
+      if (!cell) return;
+      cell.reserved = true;
+      lanes.infeed.remove(it);
+      it.state = 'craneA';
+      craneA.steps.push(
+        { x: PICK_X, y: ITEM_Y },
+        { fn: () => { craneA.carry = it; craneA.carryDz = 0; } },
+        { x: bayX(cell.col), y: levelY(cell.level) },
+        { slide: -RAIL_IN_Z },                       // push into the cell from the north face
+        { fn: () => {
+            craneA.carry = null;
+            it.mesh.position.set(bayX(cell.col), levelY(cell.level), 0);
+            cell.item = it; cell.reserved = false; it.cell = cell; it.state = 'aging'; it.age = 0;
+            it.storedAt = sim.t;
+            const other = cell.zone !== it.cells ? ' (자기 구역 만차 → 다른 구역 빈 칸)' : '';
+            log(`[STEP 02] ${it.id} 크레인 A → R${String(cell.idx + 1).padStart(2, '0')} ${cell.zone === 6 ? '6S' : '4S'} 구역${other}`, '#93C5FD');
+          } },
+        { x: PICK_X, y: ITEM_Y }
+      );
+    }
+
+    // --- STEP 02 crane B retrieve (outbound face): heat → west isolation, normal → east main line ---
+    function craneBRetrieve(it, target) {
+      const cell = it.cell;
+      craneB.steps.push(
+        { x: bayX(cell.col), y: levelY(cell.level) },
+        { fn: () => { craneB.carry = it; craneB.carryDz = -RAIL_OUT_Z; cell.item = null; it.cell = null; } },
+        { slide: 0 },                                  // pull out through the south face
+        { x: DROP_X, y: ITEM_Y },
+        { fn: () => {
+            craneB.carry = null;
+            it.state = target === 'chamber' ? 'toIsolation' : 'toInsp';
+            lanes.out.add(it, sorter1);
+          } }
+      );
+    }
+
+    // --- 1차 분리 (Pop-up Wheel Sorter): hot pack ↓ isolation (M1661) / normal → main tester (M1660) ---
+    function sorter1(it) {
+      lanes.out.remove(it);
+      if (it.state === 'toIsolation') {
+        fireWheel('s1', 1);
+        lanes.iso.add(it, i => {
+          count('m290');
+          recordIso(i.packId, i.isoTemp);
+          log(`[M1690] ${i.id} 1차 분리 ↓ 발열 격리 (X1902) → DB ISO ${(i.isoTemp / 10).toFixed(1)}°C`, '#FCA5A5');
+          destroy(i);
+        });
+      } else {
+        fireWheel('s1', 0);
+        lanes.toMain.add(it, arriveMain);
+      }
+    }
+
+    // --- outbound scheduler (no merge arbiter): heat first, then EDD when the main tester can take one ---
+    function scheduleOutbound() {
+      if (craneB.idle && sim.thermalJobs.length) { craneBRetrieve(sim.thermalJobs.shift(), 'chamber'); return; }
+      if (!craneB.idle || sim.enRoute + (sim.main.item ? 1 : 0) >= 2) return;
+      const ready = cells.filter(c => c.item && c.item.state === 'aging' && c.item.age >= T.aging)
+        .sort((a, b) => a.item.storedAt - b.item.storedAt);
+      if (!ready.length) return;
+      const it = ready[0].item;
+      it.state = 'retrieving';
+      sim.enRoute++;
+      craneBRetrieve(it, 'insp');
+    }
+
+    // --- tester shared logic: RFID read 0~0.35 s, probe, measure at 0.8 s, verdict at T.inspect ---
+    function runTester(st, T_, station, dt, onVerdict) {
+      const it = st.item;
+      if (!it) { T_.probe.position.y = 1.35; return; }
+      st.t += dt;
+      T_.led.material.emissive.setHex(it.read ? 0x10B981 : 0xF59E0B);
+      if (!it.read && st.t >= 0.35) {
+        it.read = { packId: it.tag[0], rc: it.tag[4], n: it.tag[9] || 4 };
+        if (station === 2 && it.tag[5] >= VERDICT.NG_DV) {
+          // already NG at the main tester (tag idx5 = 3·4·5): no re-measurement, straight to 2차 분리 ↓
+          log(`[RFID③] PACK ID ${it.read.packId} 태그 판정 ${it.tag[5]} (메인 NG) → 재측정 없이 2차 분리 ↓`, '#FCA5A5');
+          st.item = null;
+          onVerdict(it, it.tag[5], true);
+          return;
+        }
+        log(`[${station === 1 ? 'RFID②' : 'RFID③'}] PACK ID ${it.read.packId} (${it.read.n === 6 ? '6S' : '4S'}) · 재검사 ${it.read.rc}회 → Python 요청`, '#7DD3FC');
+      }
+      const p = st.t < 0.35 ? 0 : Math.min(1, (st.t - 0.35) / 0.4) * (st.t < T.inspect - 0.3 ? 1 : 0);
+      T_.probe.position.y = 1.35 - p * 0.45;
+      if (it.read && !it.meas && st.t >= 0.8) {
+        it.meas = measureBattery(it.read.packId, it.read.rc, it.read.n);
+        T_.lbl.innerHTML = `${it.id}<span class="dv">${fmt(it.meas)}</span>`;
+      }
+      if (it.meas && st.t >= T.inspect) {
+        let v = judgeMetrics(it.meas, it.read.rc, it.read.n);
+        st.item = null;
+        onVerdict(it, v);
+      }
+    }
+    function showLamp(T_, v) {
+      T_.lamps.g.material.color.setHex(v === VERDICT.PASS ? 0x10B981 : 0x064E3B);
+      T_.lamps.y.material.color.setHex(v === VERDICT.RETEST ? 0xF59E0B : 0x451A03);
+      T_.lamps.r.material.color.setHex(v >= VERDICT.NG_DV ? 0xEF4444 : 0x450A0A);
+      T_.lbl.style.setProperty('--c', { 1: '#10B981', 2: '#F59E0B' }[v] || '#EF4444');
+    }
+    const VNAME = { 1: 'PASS', 2: 'RETEST', 3: 'NG(ΔV)', 4: 'NG(AC-IR)', 5: 'NG(온도)' };
+    function swing(key) { if (arms[key]) arms[key].t = 1.2; }
+
+    // --- STEP 03 main tester (RFID② · OCV·IR·Temp) → STEP 04 sort ---
+    function arriveMain(it) {
+      if (sim.main.item) return;           // wait at station entry
+      it.lane.remove(it);
+      it.mesh.position.set(INSP_X, ITEM_Y, 0);
+      sim.enRoute--;
+      sim.main = { item: it, t: 0 }; it.meas = null; it.read = null;
+      it.state = 'inspecting';
+    }
+    function mainVerdict(it, v) {
+      // GOOD goes straight; RETEST and NG both go south through M1720 into the rest buffer (no M1710 line).
+      // Buffer full (M1800): the pack waits at the main tester exit and crane B stops releasing new packs.
+      if (v !== VERDICT.PASS) {
+        const used = sim.buffer.filter(Boolean).length + lanes.retest.items.length;
+        if (used >= BUF.n) {
+          sim.main.item = it;
+          if (!it.bufHold) { it.bufHold = true; sim.bufHolds++; log(`[M1800] 정치 버퍼 만차 → ${it.id} 메인 검사기 출구 대기`, '#FCA5A5'); }
+          return;
+        }
+      }
+      showLamp(mainT, v);
+      it.tag[5] = v;
+      log(`[메인 검사] ${it.id} ${fmt(it.meas)} → ${VNAME[v]}(${v})${v >= VERDICT.NG_DV ? ' → DB · M1720 ↓ (재검사기 통과 후 NG OUT)' : ''}`, { 1: '#34D399', 2: '#FCD34D' }[v] || '#FCA5A5');
+      if (v === VERDICT.PASS) {
+        recordDb(it.read.packId, it.read.rc, v, 1);
+        setColor(it, COLORS.pass);
+        lanes.good.add(it, i => { count('good'); destroy(i); });
+        return;
+      }
+      if (v === VERDICT.RETEST) {
+        it.tag[4] = it.read.rc + 1;
+        setColor(it, COLORS.retest);
+      } else {
+        recordDb(it.read.packId, it.read.rc, v, 1);
+        it.preNg = true;
+        setColor(it, COLORS.ng);
+      }
+      swing('retest');
+      lanes.retest.add(it, enterBuffer);
+    }
+
+    // --- RETEST rest buffer (8 slots) → retest tester ---
+    function enterBuffer(it) {
+      const slot = sim.buffer.findIndex(s => !s);
+      if (slot === -1) return;               // wait at the buffer tail (should not happen: full is caught at the main tester)
+      lanes.retest.remove(it);
+      sim.buffer[slot] = it;
+      it.state = 'buffer'; it.rest = 0;
+    }
+    function updateBuffer(dt) {
+      for (let i = 1; i < BUF.n; i++) {
+        if (sim.buffer[i] && !sim.buffer[i - 1]) { sim.buffer[i - 1] = sim.buffer[i]; sim.buffer[i] = null; }
+      }
+      sim.buffer.forEach((it, i) => {
+        if (!it) return;
+        it.rest += dt;
+        const p = it.mesh.position, tx = bufX(i);
+        const d = tx - p.x, step = 1.2 * dt;
+        p.set(Math.abs(d) <= step ? tx : p.x + Math.sign(d) * step, ITEM_Y, RET_Z);
+      });
+      const front = sim.buffer[0];
+      if (front && (front.rest >= T.rest || front.preNg) && !sim.rt.item && !lanes.toRt.items.length && Math.abs(front.mesh.position.x - bufX(0)) < 0.01) {
+        sim.buffer[0] = null;
+        front.state = 'toRetest';
+        lanes.toRt.add(front, arriveRetest);
+      }
+    }
+
+    // --- retest tester (RFID③ · OCV·IR·Temp) ---
+    function arriveRetest(it) {
+      if (sim.rt.item) return;
+      it.lane.remove(it);
+      it.mesh.position.set(RT_X, ITEM_Y, RET_Z);
+      sim.rt = { item: it, t: 0 }; it.meas = null; it.read = null;
+      it.state = 'retesting';
+    }
+    function retestVerdict(it, v, passThrough = false) {
+      showLamp(rtT, v);
+      it.tag[5] = v;
+      if (!passThrough) {
+        recordDb(it.read.packId, it.read.rc, v, 2);
+        log(`[재검사] ${it.id} ${fmt(it.meas)} → ${VNAME[v]}(${v})`, v === VERDICT.PASS ? '#34D399' : '#FCA5A5');
+      }
+      if (v === VERDICT.PASS) {
+        setColor(it, COLORS.pass);
+        fireWheel('s2', -1);
+        lanes.rtGood.add(it, i => { count('good'); destroy(i); });
+        holdForGap(it, MERGE_RT_GOOD_S, lanes.good, SORT2_X, 0);
+      } else {
+        setColor(it, COLORS.ng);
+        fireWheel('s2', 1);
+        lanes.rtNg.add(it, i => { count('ng'); destroy(i); });
+      }
+    }
+
+    // --- aging + thermal precursor (virtual temperature, Factory I/O has no temperature sensor) ---
+    function updateAging(dt) {
+      for (const c of cells) {
+        const it = c.item;
+        if (!it || it.state !== 'aging') continue;
+        it.age += dt;
+        const k = Math.min(1, it.age / T.aging);
+        if (it.thermal && k >= T.thermalAt) {
+          it.state = 'thermalPending';
+          it.isoTemp = 385 + Math.floor(Math.random() * 60);   // virtual storage temperature (0.1 °C), > 38.0 °C
+          c.locked = true;
+          c.lockT = 0;
+          c.lockMesh.visible = true;
+          setColor(it, COLORS.thermal);
+          sim.thermalJobs.push(it);
+          log(`[M1690] ${it.id} 이상 발열 → 크레인 B 긴급 인출, R${String(c.idx + 1).padStart(2, '0')} LOCK`, '#FCA5A5');
+          continue;
+        }
+        if (!it.thermal) setColor(it, k >= 1 ? COLORS.aged : COLORS.normal);
+      }
+    }
+
+    // =====================================================================
+    // HMI
+    // =====================================================================
+    const HMI = [
+      { key: 'good', l: 'GOOD OUT', d: 'D1900', c: '#10B981' },
+      { key: 'ng', l: 'NG OUT', d: 'D1901', c: '#EF4444' },
+      { key: 'm290', l: 'M1690 격리', d: 'D1902', c: '#F87171' },
+      { key: 'total', l: '합계', d: 'D1903', c: '#E2E8F0' },
+      { key: 'yield', l: '수율', d: 'D1904', c: '#38BDF8' },
+      { key: 'buf', l: '정치 버퍼', d: 'D1800', c: '#F59E0B' },
+      { key: 'dbDV', l: 'DB · ΔV 불량', d: "cause='DV'", c: '#EF4444' },
+      { key: 'dbIR', l: 'DB · AC-IR 불량', d: "cause='IR'", c: '#C084FC' },
+      { key: 'dbTEMP', l: 'DB · 온도 불량', d: "cause='TEMP'", c: '#FB7185' },
+      { key: 'dbRT', l: 'DB · 재검사 판정', d: 'station=2', c: '#FBBF24' },
+      { key: 'dbISO', l: 'DB · 발열 격리', d: "result='ISO'", c: '#F87171' }
+    ];
+    // Shared DB mirror (measurement_engine.py → results): one final row per PACK ID, station 1 = main / 2 = retest
+    function recordIso(packId, temp) {
+      db.rows.set(packId, { rc: 0, v: VERDICT.NG_TEMP, station: 0, result: 'ISO', cause: null, temp });
+      renderHmi();
+    }
+    function recordDb(packId, rc, v, station) {
+      db.rows.set(packId, { rc, v, station, result: v === VERDICT.PASS ? 'GOOD' : 'NG', cause: { 3: 'DV', 4: 'IR', 5: 'TEMP' }[v] || null });
+      renderHmi();
+    }
+    document.getElementById('hmi-grid').innerHTML = HMI.map(h =>
+      `<div class="hmi-t" style="--c:${h.c}"><div class="l">${h.l}</div><div class="d">${h.d}</div><div class="v" id="h-${h.key}">0</div></div>`).join('');
+    function renderHmi() {
+      const total = Object.values(counts).reduce((a, b) => a + b, 0);
+      const yieldX10 = total ? Math.floor(counts.good * 1000 / total) : 0;
+      for (const k of Object.keys(counts)) {
+        document.getElementById(`h-${k}`).innerHTML = `${counts[k]}<small>EA</small>`;
+        const l = document.getElementById(`lbl-${k}`);
+        if (l) l.textContent = counts[k];
+      }
+      document.getElementById('h-total').innerHTML = `${total}<small>EA</small>`;
+      document.getElementById('h-yield').innerHTML = `${(yieldX10 / 10).toFixed(1)}<small>%</small>`;
+      document.getElementById('h-buf').innerHTML = `${sim.buffer.filter(Boolean).length}<small>/${BUF.n}</small>`;
+      const dbc = { DV: 0, IR: 0, TEMP: 0, RT: 0, ISO: 0 };
+      db.rows.forEach(r => { if (r.cause) dbc[r.cause]++; if (r.station === 2) dbc.RT++; if (r.result === 'ISO') dbc.ISO++; });
+      for (const k of Object.keys(dbc)) document.getElementById(`h-db${k}`).innerHTML = `${dbc[k]}<small>EA</small>`;
+    }
+    function renderStatus() {
+      const occ = cells.filter(c => c.item).length;
+      const occ4 = cells.filter(c => c.item && c.zone === 4).length;
+      const locked = cells.filter(c => c.locked).length;
+      const ready = cells.filter(c => c.item && c.item.state === 'aging' && c.item.age >= T.aging).length;
+      document.getElementById('h-buf').innerHTML = `${sim.buffer.filter(Boolean).length}<small>/${BUF.n}</small>`;
+      document.getElementById('status').innerHTML =
+        `랙 점유 <b>${occ}/24</b> (4S구역 ${occ4}/12 · 6S구역 ${occ - occ4}/12) · 숙성완료 대기 <b>${ready}</b> · LOCK <b>${locked}</b><br>` +
+        `정치 버퍼 <b>${sim.buffer.filter(Boolean).length}/${BUF.n}</b> · 만차 대기 <b>${sim.bufHolds}</b>회 · 투입 <b>${sim.seq}</b> · 크레인 A <b>${craneA.idle ? '대기' : '동작'}</b> / B <b>${craneB.idle ? '대기' : '동작'}</b>`;
+    }
+    renderHmi();
+
+    // =====================================================================
+    // Main loop
+    // =====================================================================
+    function step(dt) {
+      sim.t += dt;
+      sim.spawnT += dt;
+      if (sim.spawnT >= T.spawn && sim.items.length < 40) { if (spawn()) sim.spawnT = 0; }
+      Object.values(lanes).forEach(l => l.update(dt));
+      craneA.update(dt);
+      craneB.update(dt);
+      updateAging(dt);
+      // LOCK auto release: count from the moment the hot pack has left the cell
+      for (const c of cells) {
+        if (!c.locked || c.item) continue;
+        c.lockT += dt;
+        c.lockMesh.material.opacity = 0.28 * (1 - c.lockT / T.lockRelease) + 0.06;
+        if (c.lockT >= T.lockRelease) {
+          c.locked = false; c.lockT = 0; c.lockMesh.visible = false; c.lockMesh.material.opacity = 0.28;
+          log(`[LOCK 자동 해제] R${String(c.idx + 1).padStart(2, '0')} 점검 시간 ${T.lockRelease}s 경과 → 입고 가능`, '#34D399');
+        }
+      }
+      updateBuffer(dt);
+      scheduleOutbound();
+      runTester(sim.main, mainT, 1, dt, mainVerdict);
+      runTester(sim.rt, rtT, 2, dt, retestVerdict);
+      mergeBeam.material.emissiveIntensity = lanes.rtGood.items.some(i => !i.holdDone && i.s >= MERGE_RT_GOOD_S - 1e-6) ? 2.5 : 0.5;
+      for (const a of Object.values(arms)) {
+        a.t = Math.max(0, a.t - dt);
+        a.mesh.rotation.y = a.t > 0 ? a.side * 0.6 : 0;
+      }
+      for (const w of Object.values(wheelSorters)) {
+        w.t = Math.max(0, w.t - dt);
+        const up = w.t > 0;
+        w.wheels.forEach(m => {
+          m.position.y = BELT_Y + (up ? 0.07 : 0.03);
+          m.rotation.y = up && w.dir !== 0 ? Math.PI / 2 : 0;
+          m.material.emissive.setHex(up ? (w.dir > 0 ? 0xEF4444 : w.dir < 0 ? 0x10B981 : 0x38BDF8) : 0x334155);
+        });
+      }
+      if (sim.main.item && sim.main.item.bufHold) sim.bufHoldT += dt;
+    }
+
+    let last = performance.now(), statusT = 0;
+    function frame(now) {
+      const raw = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      if (sim.running) {
+        const total = raw * sim.speed;
+        const n = Math.ceil(total / 0.02);
+        for (let i = 0; i < n; i++) step(total / n);
+      }
+      statusT += raw;
+      if (statusT > 0.25) { renderStatus(); statusT = 0; }
+      controls.update();
+      renderer.render(scene, camera);
+      labelRenderer.render(scene, camera);
+      requestAnimationFrame(frame);
+    }
+
+    // =====================================================================
+    // Camera presets & UI
+    // =====================================================================
+    const VIEWS = {
+      iso:      { p: [3, 24, 27],   t: [5, 0, 0.5] },
+      top:      { p: [4, 34, 0.01], t: [4, 0, 0.5] },
+      infeed:   { p: [-13, 5, 6],   t: [-11, 0.5, -0.5] },
+      inbound:  { p: [-4, 4.5, -9], t: [-3.8, 1.4, 0] },
+      outbound: { p: [-4, 4.5, 9],  t: [-3.8, 1.4, 0] },
+      inspect:  { p: [4.5, 4, 5],   t: [4.5, 1, 0] },
+      sort:     { p: [9, 9, 9],     t: [11, 0, 1.5] },
+      retest:   { p: [10, 6, 8],    t: [11, 0.5, 2] },
+      merge:    { p: [15, 5, 6],    t: [14.5, 0.5, 1.5] },
+      sort1:    { p: [3, 5, 6],     t: [3, 0.5, 1.2] },
+      gates:    { p: [17, 8, 10],   t: [22, 0.5, 1.5] }
+    };
+    let camAnim = null;
+    function goView(key) {
+      const v = VIEWS[key];
+      camAnim = { fromP: camera.position.clone(), fromT: controls.target.clone(), toP: new THREE.Vector3(...v.p), toT: new THREE.Vector3(...v.t), k: 0 };
+    }
+    camera.position.set(...VIEWS.iso.p);
+    controls.target.set(...VIEWS.iso.t);
+    controls.addEventListener('start', () => { camAnim = null; });
+    const origUpdate = controls.update.bind(controls);
+    controls.update = () => {
+      if (camAnim) {
+        camAnim.k = Math.min(1, camAnim.k + 0.04);
+        const e = 1 - Math.pow(1 - camAnim.k, 3);
+        camera.position.lerpVectors(camAnim.fromP, camAnim.toP, e);
+        controls.target.lerpVectors(camAnim.fromT, camAnim.toT, e);
+        if (camAnim.k >= 1) camAnim = null;
+      }
+      return origUpdate();
+    };
+
+    document.querySelectorAll('[data-cam]').forEach(b => b.addEventListener('click', () => goView(b.dataset.cam)));
+    document.querySelectorAll('#p-check li').forEach(li => li.addEventListener('click', () => goView(li.dataset.view)));
+    document.querySelectorAll('[data-speed]').forEach(b => b.addEventListener('click', () => {
+      sim.speed = Number(b.dataset.speed);
+      document.querySelectorAll('[data-speed]').forEach(x => x.classList.toggle('on', x === b));
+    }));
+    document.getElementById('btn-play').addEventListener('click', e => {
+      sim.running = !sim.running;
+      e.currentTarget.textContent = sim.running ? '⏸ 일시정지' : '▶ 재생';
+      e.currentTarget.classList.toggle('on', sim.running);
+    });
+    document.getElementById('btn-thermal').addEventListener('click', () => {
+      if (spawn(true)) log('[TEST] 이상 발열 팩 투입 (숙성 45%에서 M1690)', '#FCA5A5');
+    });
+    document.getElementById('btn-unlock').addEventListener('click', () => {
+      let n = 0;
+      cells.forEach(c => { if (c.locked && !c.item) { c.locked = false; c.lockT = 0; c.lockMesh.visible = false; c.lockMesh.material.opacity = 0.28; n++; } });
+      log(`[보전] LOCK 랙 ${n}개 해제`, '#34D399');
+    });
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      Object.keys(counts).forEach(k => (counts[k] = 0));
+      renderHmi();
+      log('[HMI] M1920 → D1900~D1904 = 0 (DB 유지)', '#38BDF8');
+    });
+    document.getElementById('chk-panels').addEventListener('change', e => document.body.classList.toggle('no-panels', !e.target.checked));
+    document.getElementById('chk-labels').addEventListener('change', e => document.body.classList.toggle('no-labels', !e.target.checked));
+    document.getElementById('chk-tags').addEventListener('change', e => document.body.classList.toggle('no-tags', !e.target.checked));
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      labelRenderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // test hook (headless verification)
+    window.__sim = { sim, counts, db, cells, step, craneA, craneB, lanes };
+
+    log('3D 레이아웃 시뮬레이션 시작', '#38BDF8');
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>
