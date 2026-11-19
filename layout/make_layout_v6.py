@@ -1,8 +1,8 @@
 """
-Project B 상면(Top view) 레이아웃 생성기 — v5 (구조 B + Pop-up Wheel 1차/2차 분리)
+Project B 상면(Top view) 레이아웃 생성기 — v6 (v5 + 정치 버퍼 삭제, 연속 재검사 라인)
 - 좌표는 3d_layout.html 과 같은 미터 단위 (X = 동쪽/흐름 방향, Z = 남쪽 +, 북쪽 −)
-- 출력: layout_v5.drawio (draw.io 에서 수정), layout_v5.svg (미리보기)
-실행: python make_layout_v5.py
+- 출력: layout_v6.drawio (draw.io 에서 수정), layout_v6.svg (미리보기)
+실행: python make_layout_v6.py
 """
 import html
 import os
@@ -109,10 +109,9 @@ text(INSP_X, -1.7, '1차 측정 → D1700~03', '#92400E', 9, w=4)
 rect(RETEST_X - 0.35, 0.35, RETEST_X + 0.35, 0.75, 'M1720', '#FEF3C7', ORANGE, 8, True)
 
 # ---------------------------------------------------------------- retest loop (south)
-for i in range(BUF_N):
-    bx = BUF_X0 + i * BUF_PITCH
-    rect(bx - 0.22, RET_Z - 0.3, bx + 0.22, RET_Z + 0.3, f'{i + 1}', '#FEF3C7', ORANGE, 8)
-text(BUF_X0 - 1.6, RET_Z + 0.8, f'정치 버퍼 {BUF_N}칸 (RETEST+메인 NG · D1800) · 만차 M1800 → 메인 출구 대기', '#B45309', 9, True, w=9, anchor='start')
+# v6: no rest buffer — continuous retest line, packs queue in front of the retest tester only while it is busy
+text(RETEST_X + 0.5, RET_Z + 0.8, '재검사 라인 (RETEST + 메인 NG) · 정치 없이 연속 · D1800', '#B45309', 9, True, w=9, anchor='start')
+text(RETEST_X + 0.5, RET_Z - 0.55, '→ 재검사기 앞 줄 서기 · 분기점까지 차면 M1800', '#B45309', 8, w=9, anchor='start')
 rect(RT_X - 0.6, RET_Z - 0.6, RT_X + 0.6, RET_Z + 0.6, '재검사\nOCV·IR·온도\nM1730\nD1730~33', '#FEF3C7', ORANGE, 8, True)
 rect(RT_X - 0.35, RET_Z - 1.15, RT_X + 0.35, RET_Z - 0.7, 'RFID ③\nD1530~37', '#E0F2FE', BLUE, 7, True)
 rect(SORT2_X - 0.35, RET_Z - 0.35, SORT2_X + 0.35, RET_Z + 0.35, 'PW', '#D1FAE5', GREEN, 8, True)
@@ -126,19 +125,19 @@ rect(GATE_X, NG_Z - 0.5, GATE_X + 2.6, NG_Z + 0.5, 'NG OUT\nX1901 → D1901', '#
 text(GATE_X + 1.3, -1.2, 'STEP 05 게이트 · HMI (M1920 리셋)', '#047857', 10, True, w=6)
 
 rect(15.6, -7.0, 25.2, -3.3,
-     'v5 (구조 B + Pop-up Wheel 분리)\n'
+     'v6 (v5 + 정치 버퍼 삭제)\n'
      '· 랙 1개 · 크레인 2대 (A 입고 / B 출고)\n'
      '· 검사기 2대: 메인(RFID②) · 재검사(RFID③), 둘 다 OCV·IR·온도\n'
      '· 1차 분리: 발열 팩 ↓ 격리 (DB ISO) / 정상 → 메인 검사\n'
      '· 2차 분리: 재검사 후 GOOD ↑ 합류 / NG ↓ NG OUT\n'
-     '· 메인 NG도 정치 버퍼 → 재검사기 통과 (계측 생략) → NG OUT\n'
-     '· 삭제: M1710 라인 · M1650 · 루프백 · BYPASS\n'
+     '· 메인 NG도 재검사 라인 → 재검사기 통과 (계측 생략) → NG OUT\n'
+     '· 삭제: 정치 버퍼 8칸(v6) · M1710 라인 · M1650 · 루프백 · BYPASS\n'
      '· 랙 6열 × 4단 = 24칸, 칸 크기 동일 (4S 1~3열 · 6S 4~6열)\n'
      '· 카운터 D1900 GOOD · D1901 NG · D1902 격리 · D1903 합계 · D1904 수율',
      '#F8FAFC', '#64748B', 10, False, True)
 
-text(XMIN + 0.3, ZMIN - 1.2, 'Project B 상면 레이아웃 — v5 (1차 분리 발열 격리 · 2차 분리 GOOD/NG) · 1칸 = 1 m', '#0F172A', 15, True, w=24, anchor='start')
-text(XMIN + 0.3, ZMIN - 0.55, '흐름: 투입 → RFID①·비전 → 랙 4S/6S 숙성(온도 감시) → 크레인 B 동쪽 출구 → 1차 분리(발열 ↓ 격리) → RFID② 메인 검사 → GOOD / RETEST·NG → 정치 버퍼 → RFID③ 재검사기 → 2차 분리(GOOD ↑ 합류 / NG ↓)', '#475569', 10, w=34, anchor='start')
+text(XMIN + 0.3, ZMIN - 1.2, 'Project B 상면 레이아웃 — v6 (정치 버퍼 없는 연속 재검사 라인 · 1차/2차 분리) · 1칸 = 1 m', '#0F172A', 15, True, w=24, anchor='start')
+text(XMIN + 0.3, ZMIN - 0.55, '흐름: 투입 → RFID①·비전 → 랙 4S/6S 숙성(온도 감시) → 크레인 B 동쪽 출구 → 1차 분리(발열 ↓ 격리) → RFID② 메인 검사 → GOOD / RETEST·NG → 재검사 라인(연속) → RFID③ 재검사기 → 2차 분리(GOOD ↑ 합류 / NG ↓)', '#475569', 10, w=34, anchor='start')
 
 
 # ---------------------------------------------------------------- SVG
@@ -228,8 +227,8 @@ def drawio():
 
 
 here = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(here, 'layout_v5.svg'), 'w', encoding='utf-8') as f:
+with open(os.path.join(here, 'layout_v6.svg'), 'w', encoding='utf-8') as f:
     f.write(svg())
-with open(os.path.join(here, 'layout_v5.drawio'), 'w', encoding='utf-8') as f:
+with open(os.path.join(here, 'layout_v6.drawio'), 'w', encoding='utf-8') as f:
     f.write(drawio())
 print('written', W, H)

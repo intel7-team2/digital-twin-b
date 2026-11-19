@@ -1,5 +1,5 @@
 """
-Project B v4 · 팩 후공정(4S/6S) · STEP 05 출하·배출 게이트 카운터 HMI 모니터 (Modbus TCP) + 팩 이력 DB 집계
+Project B v5 · 팩 후공정(4S/6S) · STEP 05 출하·배출 게이트 카운터 HMI 모니터 (MX OPC Server / Modbus) + 팩 이력 DB 집계
 
 실제 HMI(GOT 등)에 바인딩할 PLC 레지스터를 PC에서 읽어 확인하는 도구입니다.
   D1900 GOOD OUT / D1901 NG(메인 NG + 재검사 NG, 한 라인) / D1902 M1690 격리
@@ -11,14 +11,15 @@ NG는 한 라인으로 배출하므로 PLC에는 원인별 카운터가 없습�
 원인별 불량 수량(ΔV · AC-IR · 온도)은 measurement_engine.py 가 저장한 DB(inspection.db)에서 읽어 함께 표시합니다.
 카운터 1 EA = 팩 1개(4S 셀 4개 / 6S 셀 6개). 팩별 셀 ID는 `python measurement_engine.py lookup --pack N` 으로 조회합니다.
 
-사용법
-  python hmi_counter_monitor.py --host 127.0.0.1 --port 502          # 1초마다 표시
-  python hmi_counter_monitor.py --once                                # 한 번만 읽기
-  python hmi_counter_monitor.py --reset                               # M1920 펄스(리셋, DB는 유지)
+사용법 (PLC 통신은 plc_link.py: 기본 MX OPC Server → 32비트 Python + pywin32)
+  python3.12-32 hmi_counter_monitor.py                                # 1초마다 표시 (OPC, 장치 QSIM)
+  python3.12-32 hmi_counter_monitor.py --once                         # 한 번만 읽기
+  python3.12-32 hmi_counter_monitor.py --reset                        # M1920 펄스(리셋, DB는 유지)
+  python hmi_counter_monitor.py --link modbus --host 192.168.0.XXX    # Modbus TCP 직접 (시연 PC 주소 미정)
   python hmi_counter_monitor.py --demo                                # PLC 없이 표시 형식 확인
   python hmi_counter_monitor.py --db inspection.db                    # 공유 DB 경로 (기본: 환경변수 PROJECT_DB 또는 inspection.db)
 
-레지스터/코일 번호는 PLC 기종의 Modbus 매핑에 맞게 아래 값을 수정하세요.
+디바이스 번호는 아래 값입니다. OPC 는 같은 이름의 태그(QSIM.D1900 …)가 MX OPC Configurator 에 등록돼 있어야 합니다.
 """
 
 import argparse
@@ -26,11 +27,12 @@ import os
 import sys
 import time
 
-from measurement_engine import CAUSE_LABEL, DEFAULT_DB, _client_call, open_db, summary
+from measurement_engine import CAUSE_LABEL, DEFAULT_DB, open_db, summary
+from plc_link import LinkError, add_link_args, open_link
 
-COUNTER_BASE = 1900  # D1900 → holding register 1900 (0-based)
+COUNTER_BASE = 1900  # D1900 (OPC 태그 QSIM.D1900 / Modbus holding register 1900)
 COUNTER_COUNT = 5    # D1900~D1904
-RESET_COIL = 1920    # M1920 → coil 1920
+RESET_COIL = 1920    # M1920 (OPC 태그 QSIM.M1920 / Modbus coil 1920)
 LABELS = ["GOOD OUT", "NG OUT", "M1690 격리", "합계", "수율"]
 
 
@@ -82,9 +84,7 @@ def read_db(path):
 
 def main():
     p = argparse.ArgumentParser(description="출하·배출 게이트 카운터 HMI 모니터")
-    p.add_argument("--host", default="127.0.0.1")
-    p.add_argument("--port", type=int, default=502)
-    p.add_argument("--unit", type=int, default=1)
+    add_link_args(p)
     p.add_argument("--interval", type=float, default=1.0)
     p.add_argument("--once", action="store_true")
     p.add_argument("--reset", action="store_true", help="M1920 리셋 펄스 전송")
@@ -99,40 +99,29 @@ def main():
         print(render(sample + [total, sample[0] * 1000 // total], demo_db))
         return
 
-    try:
-        from pymodbus.client import ModbusTcpClient
-    except ImportError:
-        sys.exit("pymodbus 가 필요합니다: pip install pymodbus")
-
-    client = ModbusTcpClient(args.host, port=args.port)
-    if not client.connect():
-        sys.exit(f"Modbus 연결 실패: {args.host}:{args.port}")
-
+    link = open_link(args)
     try:
         if args.reset:
             for state in (True, False):
-                rr = _client_call(client.write_coil, RESET_COIL, state, unit=args.unit)
-                if rr.isError():
-                    sys.exit(f"리셋 실패: {rr}")
+                link.write_bit(f"M{RESET_COIL}", state)
                 time.sleep(0.2)
             print("[HMI] M1920 리셋 펄스 전송 완료 (DB 이력은 유지)")
             return
 
         while True:
-            rr = _client_call(client.read_holding_registers, COUNTER_BASE, count=COUNTER_COUNT, unit=args.unit)
-            if rr.isError():
-                sys.exit(f"읽기 실패: {rr}")
+            values = link.read_words(f"D{COUNTER_BASE}", COUNTER_COUNT)
             print("\033[2J\033[H" if not args.once else "", end="")
-            print(time.strftime("%H:%M:%S"), f"{args.host}:{args.port}")
-            print(render(rr.registers, read_db(args.db)))
+            print(time.strftime("%H:%M:%S"), link.label)
+            print(render(values, read_db(args.db)))
             if args.once:
                 break
             time.sleep(args.interval)
     except KeyboardInterrupt:
         pass
+    except LinkError as e:
+        sys.exit(f"통신 오류: {e}")
     finally:
-        client.close()
-
+        link.close()
 
 if __name__ == "__main__":
     main()
