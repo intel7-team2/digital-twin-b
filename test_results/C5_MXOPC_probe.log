@@ -1,0 +1,19 @@
+[연결] Mitsubishi.MXOPC.6  ServerState=1 (1=RUNNING)  MITSUBISHI MXOPCServer 6.0.10
+[장치] 2개
+   QSIM
+   ychoi
+[QSIM 태그] 196개 (앞 10개)
+   QSIM.AC_IR
+   QSIM.CLAMP
+   QSIM.CLAMP_FWD
+   QSIM.CNT_BYP
+   QSIM.CNT_DV
+   QSIM.CNT_GOOD
+   QSIM.CNT_IR
+   QSIM.CNT_M3290
+   QSIM.CNT_TEMP
+   QSIM.CNT_TOTAL
+[읽기]
+   QSIM.CNT_GOOD = 3  quality=192  2026-11-19 오전 6:20:51
+   QSIM.CLAMP = False  quality=192  2026-11-19 오전 6:20:51
+   QSIM.D1700  등록 실패 0xC0040007 (0xC0040007 = 없는 태그 ID)
