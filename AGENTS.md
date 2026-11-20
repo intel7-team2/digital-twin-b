@@ -21,7 +21,7 @@
 - **번지:** 1500~19FF 블록만(M·D 10진, X·Y 16진)(D9). PACK ID 1~32767(D6).
 - **구조 v6:** 랙 1개(6열 × 4단, 4S 1~3열 · 6S 4~6열) · 크레인 A/B · 1차 분리(발열 격리) · 메인 검사기 · `M1720` → 정치 버퍼 없는 연속 재검사 라인 → 재검사기 · 2차 분리. `M1710` 라인 없음(D10~D18).
 - **통신:** Python ↔ PLC는 MX OPC Server(OPC DA) 기본, 태그 이름 = 디바이스 이름(D17). OPC는 래퍼 없이 직접 연결(64/32비트, D21). Modbus(`--link modbus`)와 MC 프로토콜(`--link mc`, D21)은 선택지로만 둡니다.
-- **HMI:** Pro-face(WinGP)(D19). 연결은 1안 WinGP ↔ `hmi_mc_relay.py`(MC 프로토콜 3E) ↔ MX OPC ↔ GX Simulator2(D20). MX Component(유료)를 전제로 한 구성을 기본으로 바꾸지 않습니다. `확인필요_및_논의사항.md` 13장 "HMI 확장 기능"(E1 랙 칸별 보관 현황 등)은 **기록만 해 둔 것**이며, 사용자가 착수를 정하기 전에는 구현하지 않습니다. 13장의 번지도 제안일 뿐이라 디바이스 표 · 태그 목록에 넣지 않습니다.
+- **HMI:** Pro-face(WinGP)(D19). 연결은 1안 WinGP ↔ `hmi_mc_relay.py`(MC 프로토콜 3E) ↔ MX OPC ↔ GX Simulator2(D20). MX Component(유료)를 전제로 한 구성을 기본으로 바꾸지 않습니다. HMI 화면은 **WinGP(GP-Pro EX 4.08)로 그릴 수 있는 것만** 넣습니다 — 화면을 고칠 때마다 `확인필요_및_논의사항.md` 14-3 순서로 확인하고 결과를 남깁니다. `확인필요_및_논의사항.md` 13장 "HMI 확장 기능"(E1 랙 칸별 보관 현황 등)은 **기록만 해 둔 것**이며, 사용자가 착수를 정하기 전에는 구현하지 않습니다. 13장의 번지도 제안일 뿐이라 디바이스 표 · 태그 목록에 넣지 않습니다.
 - **보류 안건**(A1 · A2 · A5 · A9 · A12 · A16, 계측·판정)은 사용자가 다시 안내받아 정하기로 했습니다. 임의로 결정해 반영하지 않습니다.
 - **환경:** 이 환경에는 실물 PLC가 없습니다. 실물 PLC · B ↔ C 연결 확인은 Project C 환경에서 다른 날 합니다(12장). 이 환경의 테스트 계획에 실물 PLC 작업을 넣지 않습니다.
 
@@ -35,6 +35,7 @@
 | 공유 DB 스키마 | `measurement_engine.py` `SCHEMA_VERSION` 올림 · `확인필요_및_논의사항.md` 0-5 · `v7.html` DB 패널(필요 시) |
 | PLC 통신 | `plc_link.py` 한 곳. `serve` · HMI 모니터 · `modbus_probe.py` · `hmi_mc_relay.py`(OPC 백엔드)는 이 모듈을 씀 |
 | HMI 화면이 쓰는 번지 | MX OPC 태그 목록(`tools/mxopc_tags.py`)에 있어야 중계 서버가 읽고 씀. 없는 번지는 C05C 오류 응답 |
+| HMI 화면 구성(배치 · 부품 · 표시 방식) | **먼저 `확인필요_및_논의사항.md` 14-3 기준으로 WinGP 가능 여부 확인** → `hmi/hmi_mockup.html` · `hmi/screen_0#` · `hmi/bg/` · `hmi/guide/` PNG · `hmi/hmi_parts_v2.csv` · 14장 표 · 8장 이력. 불가 · 미확인은 안건(A#)으로 |
 | Factory I/O 센서 · 액추에이터 번지(4-16) | `computer_use/fio_io_map_v6.csv` → `python computer_use/make_guides.py`(그림) · 확정하면 PLC 디바이스 번지 행처럼 0-4 · `v7.html` · `tools/mxopc_tags.py`도 |
 | 결정 · 안건 | `확인필요_및_논의사항.md` 2장(D#) · 5장(A#) · 8장 변경 이력 · 맨 위 "진행 현황" 표 |
 
