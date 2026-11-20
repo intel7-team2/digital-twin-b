@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="900" viewBox="0 0 1920 900" font-family="Malgun Gothic, Pretendard, sans-serif">
+<defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#2A3038"/><rect width="2" height="8" fill="#4B5563"/></pattern><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#CBD5E1"/></marker></defs>
+<rect x="0.0" y="0.0" width="1920.0" height="900.0" rx="0" fill="#1B2027" stroke="none" stroke-width="1"/>
+<text x="24.0" y="38.0" font-size="22" font-weight="700" fill="#F8FAFC" text-anchor="start">C7 — WinGP ↔ 중계 서버(hmi_mc_relay.py) 접속 시험 화면 작화 지시 (GP-Pro EX 4.08)</text>
+<text x="24.0" y="62.0" font-size="12.5" font-weight="400" fill="#94A3B8" text-anchor="start">10장 C7. 화면 크기 1024 × 768 기준 좌표(px). 번지는 실물 PLC용 화면과 같음 — Project C 환경에서는 IP만 실물 PLC로 바꿈 (D20)</text>
+<rect x="34.0" y="90.0" width="954.1" height="718.6" rx="8" fill="#0B0F14" stroke="#6B7280" stroke-width="2"/>
+<rect x="40.0" y="96.0" width="942.1" height="706.6" rx="0" fill="#10151C" stroke="none" stroke-width="1"/>
+<text x="58.4" y="132.4" font-size="18.400000000000002" font-weight="700" fill="#F8FAFC" text-anchor="start">C7 접속 시험 · 중계 서버 127.0.0.1:5000</text>
+<text x="80.8" y="189.2" font-size="13.8" font-weight="700" fill="#CBD5E1" text-anchor="start">GOOD</text>
+<rect x="76.8" y="206.4" width="156.4" height="82.8" rx="4" fill="#000000" stroke="#9CA3AF" stroke-width="1.5"/>
+<text x="224.0" y="261.6" font-size="31.28" font-weight="700" fill="#EF4444" text-anchor="end" font-family="Consolas, monospace">00000</text>
+<text x="78.8" y="305.2" font-size="11" font-weight="700" fill="#F59E0B" text-anchor="start">D1900 숫자 표시</text>
+<text x="78.8" y="320.2" font-size="10.5" font-weight="400" fill="#F59E0B" text-anchor="start">(40, 120) 170 × 90</text>
+<text x="255.6" y="189.2" font-size="13.8" font-weight="700" fill="#CBD5E1" text-anchor="start">NG</text>
+<rect x="251.6" y="206.4" width="156.4" height="82.8" rx="4" fill="#000000" stroke="#9CA3AF" stroke-width="1.5"/>
+<text x="398.8" y="261.6" font-size="31.28" font-weight="700" fill="#EF4444" text-anchor="end" font-family="Consolas, monospace">00000</text>
+<text x="253.6" y="305.2" font-size="11" font-weight="700" fill="#F59E0B" text-anchor="start">D1901 숫자 표시</text>
+<text x="253.6" y="320.2" font-size="10.5" font-weight="400" fill="#F59E0B" text-anchor="start">(230, 120) 170 × 90</text>
+<text x="430.4" y="189.2" font-size="13.8" font-weight="700" fill="#CBD5E1" text-anchor="start">발열 격리</text>
+<rect x="426.4" y="206.4" width="156.4" height="82.8" rx="4" fill="#000000" stroke="#9CA3AF" stroke-width="1.5"/>
+<text x="573.6" y="261.6" font-size="31.28" font-weight="700" fill="#EF4444" text-anchor="end" font-family="Consolas, monospace">00000</text>
+<text x="428.4" y="305.2" font-size="11" font-weight="700" fill="#F59E0B" text-anchor="start">D1902 숫자 표시</text>
+<text x="428.4" y="320.2" font-size="10.5" font-weight="400" fill="#F59E0B" text-anchor="start">(420, 120) 170 × 90</text>
+<text x="605.2" y="189.2" font-size="13.8" font-weight="700" fill="#CBD5E1" text-anchor="start">합계</text>
+<rect x="601.2" y="206.4" width="156.4" height="82.8" rx="4" fill="#000000" stroke="#9CA3AF" stroke-width="1.5"/>
+<text x="748.4" y="261.6" font-size="31.28" font-weight="700" fill="#EF4444" text-anchor="end" font-family="Consolas, monospace">00000</text>
+<text x="603.2" y="305.2" font-size="11" font-weight="700" fill="#F59E0B" text-anchor="start">D1903 숫자 표시</text>
+<text x="603.2" y="320.2" font-size="10.5" font-weight="400" fill="#F59E0B" text-anchor="start">(610, 120) 170 × 90</text>
+<text x="780.0" y="189.2" font-size="13.8" font-weight="700" fill="#CBD5E1" text-anchor="start">수율 0.1%</text>
+<rect x="776.0" y="206.4" width="156.4" height="82.8" rx="4" fill="#000000" stroke="#9CA3AF" stroke-width="1.5"/>
+<text x="923.2" y="261.6" font-size="31.28" font-weight="700" fill="#EF4444" text-anchor="end" font-family="Consolas, monospace">00000</text>
+<text x="778.0" y="305.2" font-size="11" font-weight="700" fill="#F59E0B" text-anchor="start">D1904 숫자 표시</text>
+<text x="778.0" y="320.2" font-size="10.5" font-weight="400" fill="#F59E0B" text-anchor="start">(800, 120) 170 × 90</text>
+<circle cx="122.8" cy="418.0" r="44.2" fill="#14532D" stroke="#9CA3AF" stroke-width="2"/>
+<text x="122.8" y="423.5" font-size="12.88" font-weight="700" fill="#F8FAFC" text-anchor="middle">X1900</text>
+<text x="76.8" y="480.0" font-size="11" font-weight="700" fill="#F59E0B" text-anchor="start">X1900 비트 램프</text>
+<text x="76.8" y="495.0" font-size="10.5" font-weight="400" fill="#F59E0B" text-anchor="start">(40, 300) 100 × 100</text>
+<rect x="224.0" y="372.0" width="202.4" height="92.0" rx="8" fill="#1D4ED8" stroke="#93C5FD" stroke-width="2"/>
+<text x="325.2" y="425.4" font-size="15.64" font-weight="700" fill="#F8FAFC" text-anchor="middle">카운터 리셋 M1920</text>
+<text x="224.0" y="480.0" font-size="11" font-weight="700" fill="#F59E0B" text-anchor="start">M1920 비트 스위치 (모멘터리)</text>
+<text x="224.0" y="495.0" font-size="10.5" font-weight="400" fill="#F59E0B" text-anchor="start">(200, 300) 220 × 100</text>
+<text x="76.8" y="548.4" font-size="12.88" font-weight="400" fill="#CBD5E1" text-anchor="start">확인 1: D1900이 1초마다 1씩 늘고 D1903(합계)도 같이 바뀜 (--demo)</text>
+<text x="76.8" y="572.3" font-size="12.88" font-weight="400" fill="#CBD5E1" text-anchor="start">확인 2: X1900 램프가 깜박임</text>
+<text x="76.8" y="596.2" font-size="12.88" font-weight="400" fill="#CBD5E1" text-anchor="start">확인 3: 리셋 버튼을 누르면 중계 콘솔에 &#x27;쓰기 M1920 … = [1]&#x27;, 카운터 0</text>
+<text x="76.8" y="620.2" font-size="12.88" font-weight="400" fill="#94A3B8" text-anchor="start">글자 · 좌표는 대략이어도 됨. 번지만 정확히 넣을 것</text>
+<rect x="1020.0" y="90.0" width="876.0" height="720.0" rx="6" fill="#252B32" stroke="#3A424B" stroke-width="1"/>
+<text x="1038.0" y="118.0" font-size="16" font-weight="700" fill="#F8FAFC" text-anchor="start">GP-Pro EX 새 프로젝트 설정</text>
+<line x1="1034.0" y1="170.0" x2="1880.0" y2="170.0" stroke="#2E353E" stroke-width="1"/>
+<text x="1038.0" y="156.0" font-size="13" font-weight="700" fill="#F59E0B" text-anchor="start">프로젝트 파일</text>
+<text x="1250.0" y="156.0" font-size="13" font-weight="400" fill="#F8FAFC" text-anchor="">test_results/C7_hmi.prx (새 이름, 원본 아님)</text>
+<line x1="1034.0" y1="211.0" x2="1880.0" y2="211.0" stroke="#2E353E" stroke-width="1"/>
+<text x="1038.0" y="197.0" font-size="13" font-weight="700" fill="#F59E0B" text-anchor="start">표시기 종류</text>
+<text x="1250.0" y="197.0" font-size="13" font-weight="400" fill="#F8FAFC" text-anchor="">WinGP (PC 런타임) — 해상도 1024 × 768</text>
+<line x1="1034.0" y1="252.0" x2="1880.0" y2="252.0" stroke="#2E353E" stroke-width="1"/>
+<text x="1038.0" y="238.0" font-size="13" font-weight="700" fill="#F59E0B" text-anchor="start">장치/PLC 제조사</text>
+<text x="1250.0" y="238.0" font-size="13" font-weight="400" fill="#F8FAFC" text-anchor="">Mitsubishi Electric Corporation</text>
+<line x1="1034.0" y1="293.0" x2="1880.0" y2="293.0" stroke="#2E353E" stroke-width="1"/>
+<text x="1038.0" y="279.0" font-size="13" font-weight="700" fill="#F59E0B" text-anchor="start">장치/PLC 시리즈</text>
+<text x="1250.0" y="279.0" font-size="13" font-weight="400" fill="#F8FAFC" text-anchor="">Q Series QnU CPU Ethernet  (드라이버 MIT_QNUE)</text>
+<line x1="1034.0" y1="334.0" x2="1880.0" y2="334.0" stroke="#2E353E" stroke-width="1"/>
+<text x="1038.0" y="320.0" font-size="13" font-weight="700" fill="#F59E0B" text-anchor="start">CPU</text>
+<text x="1250.0" y="320.0" font-size="13" font-weight="400" fill="#F8FAFC" text-anchor="">Q03UDE (시뮬레이션 기종, 실물은 Q03UDV → 12장 P4)</text>
+<line x1="1034.0" y1="375.0" x2="1880.0" y2="375.0" stroke="#2E353E" stroke-width="1"/>
+<text x="1038.0" y="361.0" font-size="13" font-weight="700" fill="#F59E0B" text-anchor="start">IP 주소</text>
+<text x="1250.0" y="361.0" font-size="13" font-weight="400" fill="#F8FAFC" text-anchor="">127.0.0.1 (중계 서버가 같은 PC) · 2단계도 같음</text>
+<line x1="1034.0" y1="416.0" x2="1880.0" y2="416.0" stroke="#2E353E" stroke-width="1"/>
+<text x="1038.0" y="402.0" font-size="13" font-weight="700" fill="#F59E0B" text-anchor="start">포트</text>
+<text x="1250.0" y="402.0" font-size="13" font-weight="400" fill="#F8FAFC" text-anchor="">5000</text>
+<line x1="1034.0" y1="457.0" x2="1880.0" y2="457.0" stroke="#2E353E" stroke-width="1"/>
+<text x="1038.0" y="443.0" font-size="13" font-weight="700" fill="#F59E0B" text-anchor="start">프로토콜</text>
+<text x="1250.0" y="443.0" font-size="13" font-weight="400" fill="#F8FAFC" text-anchor="">TCP (UDP는 선택 시험)</text>
+<line x1="1034.0" y1="498.0" x2="1880.0" y2="498.0" stroke="#2E353E" stroke-width="1"/>
+<text x="1038.0" y="484.0" font-size="13" font-weight="700" fill="#F59E0B" text-anchor="start">데이터 코드</text>
+<text x="1250.0" y="484.0" font-size="13" font-weight="400" fill="#F8FAFC" text-anchor="">Binary (바이너리)</text>
+<line x1="1034.0" y1="539.0" x2="1880.0" y2="539.0" stroke="#2E353E" stroke-width="1"/>
+<text x="1038.0" y="525.0" font-size="13" font-weight="700" fill="#F59E0B" text-anchor="start">화면 1</text>
+<text x="1250.0" y="525.0" font-size="13" font-weight="400" fill="#F8FAFC" text-anchor="">위 그림: 숫자 표시 5 · 램프 1 · 스위치 1</text>
+<line x1="1034.0" y1="580.0" x2="1880.0" y2="580.0" stroke="#2E353E" stroke-width="1"/>
+<text x="1038.0" y="566.0" font-size="13" font-weight="700" fill="#F59E0B" text-anchor="start">전송 · 실행</text>
+<text x="1250.0" y="566.0" font-size="13" font-weight="400" fill="#F8FAFC" text-anchor="">프로젝트 → WinGP로 전송 → PCRuntime.exe 실행. 키 없으면 체험판, 시작 시각 기록</text>
+<line x1="1034.0" y1="621.0" x2="1880.0" y2="621.0" stroke="#2E353E" stroke-width="1"/>
+<text x="1038.0" y="607.0" font-size="13" font-weight="700" fill="#F59E0B" text-anchor="start">중계 서버 (먼저 실행)</text>
+<text x="1250.0" y="607.0" font-size="13" font-weight="400" fill="#F8FAFC" text-anchor="">1단계: python hmi_mc_relay.py --backend memory --demo --verbose</text>
+<line x1="1034.0" y1="662.0" x2="1880.0" y2="662.0" stroke="#2E353E" stroke-width="1"/>
+<text x="1038.0" y="648.0" font-size="13" font-weight="700" fill="#94A3B8" text-anchor="start"></text>
+<text x="1250.0" y="648.0" font-size="13" font-weight="400" fill="#CBD5E1" text-anchor="">2단계: python hmi_mc_relay.py --backend opc --opc-device CSIM --verbose</text>
+<line x1="1034.0" y1="703.0" x2="1880.0" y2="703.0" stroke="#2E353E" stroke-width="1"/>
+<text x="1038.0" y="689.0" font-size="13" font-weight="700" fill="#F59E0B" text-anchor="start">방화벽 창</text>
+<text x="1250.0" y="689.0" font-size="13" font-weight="400" fill="#F8FAFC" text-anchor="">개인 네트워크 허용 (사람이 누름)</text>
+<line x1="1034.0" y1="744.0" x2="1880.0" y2="744.0" stroke="#2E353E" stroke-width="1"/>
+<text x="1038.0" y="730.0" font-size="13" font-weight="700" fill="#F59E0B" text-anchor="start">스크린샷</text>
+<text x="1250.0" y="730.0" font-size="13" font-weight="400" fill="#F8FAFC" text-anchor="">C7_장치설정.png · C7_WinGP.png · C7_중계콘솔.png → test_results/</text>
+<text x="40.0" y="860.0" font-size="12" font-weight="400" fill="#94A3B8" text-anchor="start">2단계(MX OPC · GX Simulator2까지)는 MX OPC 장치 CSIM 의 Transfer Setup을 GX Simulator2로 바꾸고 Simulate를 끈 뒤 진행 (월요일 작업 3). 중계 서버는 C059(미지원 명령) 번호를 콘솔에 남김.</text>
+</svg>

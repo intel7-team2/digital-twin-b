@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Project B v6 Factory I/O 3D</title>
+  <title>Project B v6 Factory I/O 3D (1판)</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <style>
     :root {
@@ -105,8 +105,8 @@
   <div id="labels"></div>
 
   <div class="panel" id="p-title">
-    <h1>Project B · Factory I/O 기준 v6 3D 배치 (상면도 2판 · M1720 Pusher)</h1>
-    <p><code>layout/factoryio_topview_v6_v2.svg</code>와 같은 좌표(1칸 = 1 m)로 세운 3D 모델입니다. 드래그 회전 · 휠 확대 · 우클릭 이동, 탑뷰에서는 드래그 이동 · 휠 확대.</p>
+    <h1>Project B · Factory I/O 기준 v6 3D 배치 (상면도 1판 · M1720 Pop-up Wheel)</h1>
+    <p><code>layout/factoryio_topview_v6.svg</code>와 같은 좌표(1칸 = 1 m)로 세운 3D 모델입니다. 드래그 회전 · 휠 확대 · 우클릭 이동, 탑뷰에서는 드래그 이동 · 휠 확대.</p>
     <p class="note">배치 개념도(Factory I/O 화면 아님) · 부품 실제 치수 · 높이 · Vision 출력값 · 랙 칸 수는 씬에서 확인 필요. 흐름 시연의 판정은 경로를 보여 주는 순서값이며 계측 엔진 값이 아닙니다.</p>
   </div>
 
@@ -153,7 +153,7 @@
     import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
     // =====================================================================
-    // 배치 상수 (m) — layout/make_factoryio_topview.py --pusher (v2) 와 같은 숫자
+    // 배치 상수 (m) — layout/make_factoryio_topview.py (1판, --pusher 없음) 와 같은 숫자
     // X = 동쪽(흐름 방향), Z = 남쪽(+) / 북쪽(−), Y = 위. 바닥 1칸 = 1 m
     // 높이(Y)는 상면도에 없는 값이라 이 파일에서 정한 개념값입니다.
     // =====================================================================
@@ -376,8 +376,6 @@
       sensor: std(0x1E3A8A, { roughness: 0.5 }),
       rfid: std(0x64748B, { roughness: 0.5 }),
       rfidFace: std(0x3B82F6, { emissive: 0x1D4ED8, emissiveIntensity: 0.4 }),
-      pusherBody: std(0x1D4ED8, { roughness: 0.45 }),
-      pusherCyl: std(0x94A3B8, { metalness: 0.5, roughness: 0.4 }),
       white: std(0xE5E7EB, { roughness: 0.5 }),
       post: std(0x334155),
       arm: std(0x475569),
@@ -474,7 +472,7 @@
     }
 
     // =====================================================================
-    // 센서 · 액추에이터 (Stop Blade · Diffuse Sensor · RFID Reader · Vision Sensor · Pop-up Wheel Sorter · Pusher)
+    // 센서 · 액추에이터 (Stop Blade · Diffuse Sensor · RFID Reader · Vision Sensor · Pop-up Wheel Sorter)
     // =====================================================================
     const blades = [], sensors = [], wheelSorters = {};
     function stopBlade(x, z, isDown) {
@@ -765,9 +763,12 @@
     const isoSiren = siren(SORT1_X - 1.15, 3.3);
 
     // =====================================================================
-    // 메인 라인: 메인 검사기(M1700 · RFID ② · Stop Blade) → M1720 Pusher → GOOD OUT
+    // 메인 라인: 메인 검사기(M1700 · RFID ② · Stop Blade) → M1720 Pop-up Wheel → GOOD OUT
     // =====================================================================
-    belt(SORT1_X + R, 0, GATE_X, 0);
+    belt(SORT1_X + R, 0, RETEST_X - 0.42, 0);
+    popupSorter('s3', RETEST_X, 0, [[1, 0, 0x22C55E], [0, 1, 0xF59E0B]]);   // M1720: 직진 GOOD / ↓ 재검사 라인
+    wheelSorters.s3.col = 0xF59E0B;
+    belt(RETEST_X + 0.42, 0, GATE_X, 0);
     function plateTex(text, wm, dm) {
       return canvasTex(Math.round(wm * 250), Math.round(dm * 250), (g, w, h) => {
         g.fillStyle = '#F59E0B'; g.fillRect(0, 0, w, h);
@@ -807,25 +808,6 @@
     diffuse(INSP_X - 0.9, 0, 1);
     mainT.lamp = stackLight(INSP_X + 0.85, -0.85);
 
-    // M1720 Pusher (북쪽에서 남쪽으로 밀어 재검사 라인에 넣음)
-    const pusher = { p: 0 };
-    {
-      const x = RETEST_X;
-      slab(x - 0.1, -1.1, x + 0.1, -0.9, 0, BELT_Y - 0.05, M.leg);
-      edges(slab(x - 0.42, -1.38, x + 0.42, -0.62, BELT_Y - 0.05, BELT_Y + 0.35, M.pusherBody), 0x93C5FD);
-      slab(x - 0.13, -1.28, x + 0.13, -0.72, BELT_Y + 0.35, BELT_Y + 0.42, M.pusherCyl);
-      pusher.plate = slab(x - 0.38, -0.52, x + 0.38, -0.42, BELT_Y + 0.02, BELT_Y + 0.3, M.white);
-      pusher.plateZ = pusher.plate.position.z;
-      pusher.rods = [-0.24, 0.24].map(dx => cyl(x + dx, BELT_Y + 0.16, -0.57, 0.022, 1, M.steel, 'z'));
-      arrow2d(x, -0.3, x, 0.22, 0xF59E0B, BELT_Y + 0.004);
-      rectLoop(x - 0.38, 0.3, x + 0.38, 0.4, BELT_Y + 0.006, 0xF59E0B, { dash: [0.05, 0.03] });
-      pusher.apply = () => {
-        pusher.plate.position.z = pusher.plateZ + pusher.p;
-        for (const r of pusher.rods) { const len = 0.1 + pusher.p; r.scale.y = len; r.position.z = -0.62 + len / 2; }
-      };
-      pusher.apply();
-    }
-    diffuse(RETEST_X - 0.62, 0, -1);
     diffuse(GATE_X - 0.6, 0, -1, false, 'X1900');
     remover(GATE_X + 0.45, 0, 0.9);
 
@@ -1241,7 +1223,7 @@
     }
     function mainVerdict(it, v) {
       const st = stations.main;
-      // GOOD 은 직진, RETEST · NG 는 모두 M1720 Pusher ↓ 재검사 라인 (M1710 라인 없음, 정치 버퍼 없음)
+      // GOOD 은 직진, RETEST · NG 는 모두 M1720 Pop-up Wheel ↓ 재검사 라인 (M1710 라인 없음, 정치 버퍼 없음)
       // 재검사 라인 줄이 분기점까지 차 있으면(M1800) 메인 검사기 출구에서 대기 — 메인 라인 위에 멈춰 서지 않게
       if (v !== VERDICT.PASS && lanes.retest.items.some(o => o.s < RT_ENTRY_CLEAR)) {
         if (!st.hold) { st.hold = true; sim.holds++; log(`[M1800] 재검사 라인 분기점까지 참 → ${it.name} 메인 검사기 출구 대기`, '#FCA5A5'); }
@@ -1250,7 +1232,7 @@
       st.item = null; st.hold = false; it.station = null;
       showLamp(mainT.lamp, v);
       it.tag[5] = v;
-      log(`[메인 검사] ${it.name} → ${VNAME[v]}${v === VERDICT.PASS ? ' → GOOD OUT 직진' : ' → M1720 Pusher ↓ 재검사 라인'}`, { 1: '#34D399', 2: '#FCD34D' }[v] || '#FCA5A5');
+      log(`[메인 검사] ${it.name} → ${VNAME[v]}${v === VERDICT.PASS ? ' → GOOD OUT 직진' : ' → M1720 Pop-up Wheel ↓ 재검사 라인'}`, { 1: '#34D399', 2: '#FCD34D' }[v] || '#FCA5A5');
       if (v === VERDICT.PASS) {
         setSticker(it, COL.pass);
         lanes.good.add(it, goodEnd, 0);
@@ -1311,7 +1293,7 @@
       }
     }
 
-    // --- 장치 표시: 벨트 무늬 · Stop Blade · Diffuse 빔 · Pusher · Pop-up Wheel · 경광등 ---
+    // --- 장치 표시: 벨트 무늬 · Stop Blade · Diffuse 빔 · Pop-up Wheel · 경광등 ---
     function updateDevices(dt) {
       for (const b of belts) b.tex.offset.x -= b.sign * SPEED.belt * dt / 0.3;
       const onBelt = sim.items.filter(i => i.lane || i.station);
@@ -1327,14 +1309,8 @@
         s.beamMat.opacity = blocked ? 1 : 0.45;
         s.ledMat.color.setHex(blocked ? 0xFBBF24 : 0x34D399);
       }
-      // Pusher: 재검사 라인으로 가는 팩이 분기점에 오면 판이 나와 남쪽으로 밀어 넣음
-      let target = 0;
-      for (const o of lanes.retest.items) {
-        if (o.s >= RT_MAIN_LEN - 0.4 && o.s < RT_MAIN_LEN + 0.42 + o.b.d / 2 + 0.05) target = Math.max(target, o.z - o.b.d / 2 + 0.42);
-      }
-      target = clamp(target, 0, 0.72);
-      pusher.p = target > pusher.p ? Math.min(target, pusher.p + 3 * dt) : Math.max(target, pusher.p - 2.5 * dt);
-      pusher.apply();
+      // M1720 Pop-up Wheel: 재검사 라인으로 가는 팩이 분기점 위에 있으면 바퀴가 올라와 남쪽(↓)으로 돌림
+      if (lanes.retest.items.some(o => o.s > RT_MAIN_LEN - 0.35 && o.s < RT_MAIN_LEN + 0.45)) { wheelSorters.s3.t = 0.1; wheelSorters.s3.dir = 1; }
       // Pop-up Wheel: 1차는 발사 타이머, 2차는 분기점 위 팩으로 판단
       const s2 = wheelSorters.s2;
       const nearS2 = (l, o) => o.s > SORT2_S - 0.35 && o.s < SORT2_S + 0.45;
@@ -1344,7 +1320,7 @@
         w.t = Math.max(0, w.t - dt);
         const up = w.t > 0;
         for (const g of w.wheels) { g.position.y = BELT_Y - 0.05 + (up ? 0.03 : 0); g.rotation.y = up && w.dir ? Math.PI / 2 : 0; }
-        w.wheelMat.emissive.setHex(up ? (w.dir > 0 ? 0xEF4444 : w.dir < 0 ? 0x10B981 : 0x38BDF8) : 0x000000);
+        w.wheelMat.emissive.setHex(up ? w.col || (w.dir > 0 ? 0xEF4444 : w.dir < 0 ? 0x10B981 : 0x38BDF8) : 0x000000);
         w.wheelMat.emissiveIntensity = up ? 0.7 : 0;
       }
       const L = mainT.lamp;
@@ -1374,7 +1350,7 @@
     }
 
     // =====================================================================
-    // 처음 배치 = 상면도 2판과 같은 순간 (위치 · 박스 종류 · LOCK · 발열 팩)
+    // 처음 배치 = 상면도 1판과 같은 순간 (1판에는 M1720 위 팩이 없어 P-08 없음) (위치 · 박스 종류 · LOCK · 발열 팩)
     // =====================================================================
     function snap(id, cells_, route, o = {}) {
       const it = makeItem(id, cells_, { route, thermal: o.thermal });
@@ -1392,7 +1368,6 @@
       it = snap(5, 4, [2, 1], { rc: 1, v: 2, sticker: COL.retest }); it.state = 'toRetest'; lanes.retest.add(it, arriveRetest, lanes.retest.project(11.2, RET_Z));
       it = snap(6, 6, [2, 4], { rc: 1, v: 2, sticker: COL.retest }); it.state = 'toRetest'; lanes.retest.add(it, arriveRetest, lanes.retest.project(9.6, RET_Z));
       it = snap(7, 4, [1], { v: 1, sticker: COL.pass }); it.state = 'out'; lanes.good.add(it, goodEnd, lanes.good.project(9.2, 0));
-      it = snap(8, 4, [3], { v: 3, sticker: COL.ng }); it.state = 'toRetest'; lanes.retest.add(it, arriveRetest, RT_MAIN_LEN - 0.02);
       it = snap(9, 6, [1], { sticker: COL.reg }); it.state = 'inspect'; placeStation(stations.main, it, 0.9); it.read = true;
       it = snap(10, 4, [1], { sticker: COL.reg }); it.state = 'toMain'; lanes.toMain.add(it, arriveMain, lanes.toMain.project(3.0, 0)); sim.enRoute = 1;
       // R02 에서 나온 발열 팩: 1차 분리 ↓ 뒤 격리 벨트 위
@@ -1434,7 +1409,7 @@
       { t: [2.75, 2.55], c: '#EF4444', obj: [SORT1_X + 0.4, 0.58, 3.1], ph: 0.9, lines: ['Remover · M1690 발열 격리', 'Diffuse X1902 → D1902 · DB ISO', 'Stack Light · Alarm Siren'] },
       { t: [1.0, -3.3], c: '#F59E0B', obj: [INSP_X, 1.25, -1.15], ph: 0.75, lines: ['메인 검사기 · Stop Blade · RFID ②', 'M1700 · D1520~27 · OCV·IR·온도(가상)'] },
       { t: [7.0, -1.6], c: '#94A3B8', obj: [10.5, FRAME_HI, -0.42], ph: 0.9, lines: ['Belt Conveyor · 메인 라인', 'GOOD 직진 → GOOD OUT (M1710 라인 없음)'] },
-      { t: [6.95, 0.55], c: '#F59E0B', obj: [RETEST_X + 0.4, BELT_Y, 0.2], pobj: () => [RETEST_X, BELT_Y + 0.42, -1.0], ph: 0.75, lines: ['Pusher · M1720', 'RETEST·NG ↓ 밀어 넣기'] },
+      { t: [6.95, 0.55], c: '#F59E0B', obj: [RETEST_X + 0.4, BELT_Y, 0.2], pobj: () => [RETEST_X, BELT_Y + 0.05, 0], ph: 0.75, lines: ['Pop-up Wheel · M1720', 'RETEST·NG ↓ 재검사'] },
       { t: [7.0, 2.6], c: '#F59E0B', obj: [9.0, FRAME_HI, RET_Z + 0.4], ph: 0.7, lines: ['재검사 라인 (연속 · 정치 없음)', '분기점까지 차면 M1800 · D1800'] },
       { t: [10.45, 0.52], c: '#F59E0B', obj: [RT_X - 0.35, BELT_Y + 0.26, RET_Z - 0.5], pobj: () => [RT_X, 1.25, RET_Z + 0.82], ph: 0.75, lines: ['재검사기 · RFID ③', 'Stop Blade · M1730', 'D1530~37 · 메인 NG 계측 생략'] },
       { t: [15.15, 1.45], c: '#22C55E', obj: [SORT2_X + 0.42, BELT_Y, RET_Z], ph: 0.9, lines: ['Pop-up Wheel Sorter · 2차 분리', 'M1731 ↑ GOOD 합류 / M1732 ↓ NG'] },
@@ -1559,7 +1534,7 @@
     const LEGEND = [
       ['Small box', '4S 팩 (2×2)', '#C99A5B'], ['Large box', '6S 팩 (2×3)', '#C99A5B'], ['Pallet', '랙 보관 단위', '#B88A55'],
       ['Belt Conveyor', '메인 · 재검사 · NG 라인', '#2C3136'], ['Curved Belt Conveyor', '90° 꺾임', '#2C3136'], ['Roller Conveyor', '크레인 입 · 출고 구간', '#C9D1D8'],
-      ['Pop-up Wheel Sorter', '1차 · 2차 분리', '#9AA3AB'], ['Pusher', 'M1720 재검사 라인 분기', '#1D4ED8'], ['Stop Blade', '검사 위치 정지', '#F2C200'],
+      ['Pop-up Wheel Sorter', '1차 · 2차 분리 · M1720', '#9AA3AB'], ['Stop Blade', '검사 위치 정지', '#F2C200'],
       ['Diffuse Sensor', 'X1900~X1903 통과 감지', '#1E3A8A'], ['RFID Reader', 'PACK ID ① ② ③', '#64748B'], ['Vision Sensor', '종류 판별 D1519', '#22D3EE'],
       ['Stacker Crane', '크레인 A · B', '#F5B700'], ['Rack', '6열 × 4단', '#E8731A'], ['Emitter', '투입 (Project C 인계)', '#3B82F6'],
       ['Remover', 'GOOD · NG · 격리 배출', '#EF4444'], ['Stack Light', '상태 표시', '#22C55E'], ['Alarm Siren', 'M1690 발열 경보', '#F97316'],
@@ -1712,7 +1687,7 @@
     window.__sim = { sim, counts, cells, lanes, stations, step, craneA, craneB, goView, setPlaying, gap, RT_MAIN_LEN, render: () => renderer.render(scene, activeCam()), info: renderer.info };
 
     goView(Q.get('view') || 'iso', true);
-    log('상면도 2판과 같은 배치로 시작 — ▶ 흐름 재생을 누르면 팩이 움직입니다', '#38BDF8');
+    log('상면도 1판과 같은 배치로 시작 — ▶ 흐름 재생을 누르면 팩이 움직입니다', '#38BDF8');
     if (Q.get('play') === '1') setPlaying(true);
     requestAnimationFrame(frame);
   </script>
