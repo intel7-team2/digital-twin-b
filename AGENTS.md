@@ -65,5 +65,6 @@
 ## 7. Git
 
 - 기본 브랜치 `main`. 커밋 · push는 사용자가 요청할 때만 합니다.
+- PC를 나눠 래더 · Factory I/O · HMI를 작업할 때(`확인필요_및_논의사항.md` 16장)는 `main`에 직접 push하지 않고 PC별 작업 브랜치에 올린 뒤 PR을 만듭니다. 브랜치를 모르면 push 전에 사용자에게 묻습니다.
 - `*.db` · `__pycache__/` · 인계 JSON은 커밋하지 않습니다(`.gitignore`).
 - 다른 브랜치(예: `test/computer-use-results`)의 변경을 가져올 때는 로컬 수정이 없는지 먼저 확인합니다.
