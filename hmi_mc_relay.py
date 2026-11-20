@@ -6,7 +6,7 @@ WinGP 쪽에서는 미쓰비시 Q 시리즈 PLC(이더넷)처럼 보이고, 실�
 
   WinGP (Pro-face, "Q Series QnU CPU Ethernet" 드라이버, IP = 이 PC)
      │  MC 프로토콜 3E 프레임 · 바이너리 · TCP/UDP
-  hmi_mc_relay.py  ── backend opc: plc_link.OpcLink (MX OPC Server, 32비트 Python + pywin32)
+  hmi_mc_relay.py  ── backend opc: plc_link.OpcLink (MX OPC Server, 직접 연결 · 64/32비트 Python, D21)
      │              └ backend memory: 이 프로그램 안의 메모리 (WinGP 접속 시험용, PLC 없이)
   GX Simulator2 (PLC 래더)
 
@@ -14,7 +14,7 @@ WinGP 쪽에서는 미쓰비시 Q 시리즈 PLC(이더넷)처럼 보이고, 실�
 
 사용법
   python hmi_mc_relay.py --backend memory --demo            # PLC 없이: 메모리 + 카운터가 저절로 늘어남 (WinGP 접속 시험)
-  python3.12-32 hmi_mc_relay.py --backend opc               # MX OPC Server(장치 QSIM) 경유로 GX Simulator2 에 중계
+  python hmi_mc_relay.py --backend opc                      # MX OPC Server(장치 QSIM) 경유로 GX Simulator2 에 중계 (64비트도 됨)
   옵션: --port 5000 (TCP·UDP 같은 번호) --bind 0.0.0.0 --no-udp --opc-device QSIM --verbose
 
 처리하는 명령 (3E 바이너리, Q/L 시리즈 형식: 디바이스 번호 3바이트 + 디바이스 코드 1바이트)
@@ -400,15 +400,17 @@ def main():
     p.add_argument("--no-udp", action="store_true")
     p.add_argument("--opc-server", default="Mitsubishi.MXOPC.6")
     p.add_argument("--opc-device", default="QSIM")
-    p.add_argument("--opc-wrapper", default="OPC.SiemensDAAuto")
+    p.add_argument("--opc-wrapper", default="auto", help="auto(직접 연결) / direct / 래퍼 ProgID")
+    p.add_argument("--opc-source", choices=("device", "cache"), default="device", help="Simulate 장치 시험은 cache")
     p.add_argument("--verbose", action="store_true", help="모든 요청 출력")
     args = p.parse_args()
 
     if args.backend == "memory":
         be = MemoryBackend(demo=args.demo)
     else:
-        from plc_link import OpcLink
-        be = OpcBackend(OpcLink(args.opc_server, args.opc_device, args.opc_wrapper))
+        from plc_link import OPC_DS_CACHE, OPC_DS_DEVICE, OpcLink
+        src = OPC_DS_CACHE if args.opc_source == "cache" else OPC_DS_DEVICE
+        be = OpcBackend(OpcLink(args.opc_server, args.opc_device, args.opc_wrapper, src))
     relay = Relay(be, args.verbose)
     servers = start(relay, args.bind, args.port, not args.no_udp)
     print(f"[중계] MC 3E 바이너리 TCP{'' if args.no_udp else '·UDP'} {args.bind}:{args.port} → {be.label}"

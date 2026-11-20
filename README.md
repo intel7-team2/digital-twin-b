@@ -55,18 +55,19 @@ python measurement_engine.py report                 # 양품 · 원인별 불량
 python hmi_counter_monitor.py --demo                # HMI 카운터 표시 형식
 ```
 
-**PLC 연결 (MX OPC Server 경유, 32비트 Python 필요)**
+**PLC 연결 (MX OPC Server 경유, D17 · D21 — 64비트 Python 가능, 래퍼 · pywin32 불필요)**
 ```
-pymanager install 3.12-32
-python3.12-32 -m pip install pywin32
-python3.12-32 tools\mxopc_tags.py --check           # MX OPC 태그 100개 등록 확인
-python3.12-32 measurement_engine.py serve           # 검사기 2대 + 발열 격리 핸드셰이크
-python3.12-32 hmi_counter_monitor.py                # 게이트 카운터 모니터
-python3.12-32 hmi_mc_relay.py --backend opc         # Pro-face HMI(WinGP) 중계 서버 (MC 프로토콜, 포트 5000)
+python tools\mxopc_tags.py --check --device QSIM   # MX OPC 태그 100개 등록 확인
+python measurement_engine.py serve                 # 검사기 2대 + 발열 격리 핸드셰이크
+python hmi_counter_monitor.py                      # 게이트 카운터 모니터
+python hmi_mc_relay.py --backend opc               # Pro-face HMI(WinGP) 중계 서버 (MC 프로토콜, 포트 5000)
 ```
+- OPC는 기본으로 OPC DA 커스텀 인터페이스에 직접 붙습니다(`--opc-wrapper auto`). OPC Core Components(프록시)만 있으면 됩니다. 이전 방식(32비트 Python + `OPC.SiemensDAAuto` 래퍼)은 `--opc-wrapper OPC.SiemensDAAuto`.
+- Simulate 장치로 시험할 때는 `--opc-source cache`(장치 직접 읽기 · 쓰기는 거부됨).
 - HMI 연결 1안(D20): WinGP 화면은 미쓰비시 "Q Series QnU CPU Ethernet" 드라이버로 만들고 접속 IP를 중계 서버로 둡니다. PLC 없이 접속만 시험할 때는 `python hmi_mc_relay.py --backend memory --demo`.
 - MX OPC Configurator에 1500~19FF 태그를 먼저 등록해야 합니다 → [확인필요_및_논의사항.md 4-14](확인필요_및_논의사항.md)
 - Modbus TCP로 직접 붙을 때: `--link modbus --host 192.168.0.XXX`
+- MC 프로토콜 3E로 PLC에 직접 붙을 때(MX OPC를 못 쓰는 PC, D21): `--link mc --host 192.168.0.XXX [--port 5000]` (`pymcprotocol` 필요, PLC 오픈 설정 필요)
 - 공유 DB 경로: `--db` 옵션 > 환경변수 `PROJECT_DB` > `inspection.db`
 
 ## 4. 파일 구성
@@ -75,6 +76,7 @@ python3.12-32 hmi_mc_relay.py --backend opc         # Pro-face HMI(WinGP) 중계
 |---|---|---|
 | `v7.html` | 구축 계획서 본문 + 2D 공정 시뮬레이터(v6) + 판정 테스트기(4S/6S 전환) + HMI 카운터 + 팩·셀 DB 패널(RFID 조회) | 브라우저로 열기 |
 | `3d_layout.html` | 3D 공정 레이아웃 뷰어(v6). 4S(작은 박스)·6S(큰 박스)가 구역별 입고 → 1차 분리(발열 격리) → 메인 검사 → 재검사 라인(연속) → 재검사 → 2차 분리(합류/NG)로 움직입니다. "구조 확인 포인트"를 누르면 해당 위치로 카메라가 이동합니다. 셀 조회 화면은 없습니다. | 브라우저로 열기 (인터넷 필요: three.js CDN) |
+| `3d_factoryio_v6.html` | **Factory I/O 부품 기준 3D 배치 뷰어(v6)**. 상면도 2판 `layout/factoryio_topview_v6_v2.svg`(M1720 = Pusher)와 같은 좌표(1칸 = 1 m) · 라벨 · 번지로 컨베이어 · 랙 · 스태커 크레인 · Small/Large box를 세웠습니다. 탑뷰(정사영)/사선 뷰 전환과 구간 카메라, 흐름 시연(D10~D18 경로 규칙)이 있습니다. 시연의 판정은 경로를 보여 주는 순서값이며 계측 엔진 값이 아닙니다. | 브라우저로 열기 (인터넷 필요: three.js CDN). `?view=top`(탑뷰로 열기) · `?play=1`(바로 재생) |
 | `measurement_engine.py` | Python 가상 계측 엔진(검사기 2대) + 공유 DB | `handoff --count 20` (C 인계 모사)<br>`demo --db` (인계 + 판정 저장, 재검사는 station 2)<br>`lookup --pack 17` / `--cell CELL-00017B` (팩 RFID 조회)<br>`isolate --pack 9 --temp 412` (발열 격리 DB 기록)<br>`report` (양품 · 원인별 불량 · 발열 격리 · 팩 종류별)<br>`stats --cells 6` (판정 비율)<br>`python3.12-32 measurement_engine.py serve` (검사기 2대 핸드셰이크 D1710 · D1740 + 발열 격리 D1650 + DB 저장. 기본 MX OPC Server 장치 `QSIM`, **32비트 Python + pywin32**. `--link modbus --host 192.168.0.XXX`로 Modbus 직접도 가능) |
 | `hmi_counter_monitor.py` | STEP 05 게이트 카운터 확인 도구. PLC `D1900~D1904`와 공유 DB 집계를 함께 보여 주고, PLC 합계·수율이나 NG·격리 수가 DB와 맞지 않으면 경고합니다. | `--demo` (PLC 없이 표시 형식 확인)<br>`python3.12-32 hmi_counter_monitor.py` (OPC, 1초마다 표시)<br>`--once`, `--reset` (M1920 리셋)<br>`--link modbus --host 192.168.0.XXX` (Modbus 직접) |
 | `hmi_mc_relay.py` | **HMI 중계 서버**(D20). Pro-face WinGP에는 미쓰비시 PLC처럼(MC 프로토콜 3E 바이너리, TCP · UDP 5000) 응답하고, 값은 MX OPC로 GX Simulator2와 주고받음. MX Component 불필요 | `python3.12-32 hmi_mc_relay.py --backend opc`<br>`python hmi_mc_relay.py --backend memory --demo` (PLC 없이 접속 시험) |
@@ -91,7 +93,7 @@ python3.12-32 hmi_mc_relay.py --backend opc         # Pro-face HMI(WinGP) 중계
 | `README.md` · `AGENTS.md` · `CLAUDE.md` | 저장소 안내 · AI 에이전트 공통 지침 · Claude Code 지침 | – |
 
 - `hmi_counter_monitor.py`는 `measurement_engine.py`·`plc_link.py`의 함수를 가져다 씁니다. 그래서 **세 파일을 같은 폴더에 두고**, `python -I` 없이 실행해야 합니다.
-- OPC 연결(`serve`, HMI 모니터, `mxopc_tags.py --check`)만 32비트 Python이 필요합니다. `demo` · `lookup` · `report` 등은 64비트 Python에서도 됩니다.
+- OPC 연결(`serve`, HMI 모니터, `mxopc_tags.py --check`)도 D21부터 64비트 Python에서 됩니다. 32비트가 필요한 것은 래퍼를 쓰는 `tools/mxopc_client.py` · `tools/mxopc_probe.vbs`뿐입니다.
 
 ## 5. 규칙
 

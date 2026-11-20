@@ -19,7 +19,7 @@
 - **팩 종류:** 4S 2×2 = Factory I/O Small box, 6S 2×3 = Large box, 18650 3.7 V. 판정 기준 = 셀 기준 × 셀 수(D8).
 - **번지:** 1500~19FF 블록만(M·D 10진, X·Y 16진)(D9). PACK ID 1~32767(D6).
 - **구조 v6:** 랙 1개(6열 × 4단, 4S 1~3열 · 6S 4~6열) · 크레인 A/B · 1차 분리(발열 격리) · 메인 검사기 · `M1720` → 정치 버퍼 없는 연속 재검사 라인 → 재검사기 · 2차 분리. `M1710` 라인 없음(D10~D18).
-- **통신:** Python ↔ PLC는 MX OPC Server(OPC DA) 기본, 태그 이름 = 디바이스 이름(D17). Modbus는 `--link modbus` 선택지로만 둡니다.
+- **통신:** Python ↔ PLC는 MX OPC Server(OPC DA) 기본, 태그 이름 = 디바이스 이름(D17). OPC는 래퍼 없이 직접 연결(64/32비트, D21). Modbus(`--link modbus`)와 MC 프로토콜(`--link mc`, D21)은 선택지로만 둡니다.
 - **HMI:** Pro-face(WinGP)(D19). 연결은 1안 WinGP ↔ `hmi_mc_relay.py`(MC 프로토콜 3E) ↔ MX OPC ↔ GX Simulator2(D20). MX Component(유료)를 전제로 한 구성을 기본으로 바꾸지 않습니다. `확인필요_및_논의사항.md` 13장 "HMI 확장 기능"(E1 랙 칸별 보관 현황 등)은 **기록만 해 둔 것**이며, 사용자가 착수를 정하기 전에는 구현하지 않습니다. 13장의 번지도 제안일 뿐이라 디바이스 표 · 태그 목록에 넣지 않습니다.
 - **보류 안건**(A1 · A2 · A5 · A9 · A12 · A16, 계측·판정)은 사용자가 다시 안내받아 정하기로 했습니다. 임의로 결정해 반영하지 않습니다.
 - **환경:** 이 환경에는 실물 PLC가 없습니다. 실물 PLC · B ↔ C 연결 확인은 Project C 환경에서 다른 날 합니다(12장). 이 환경의 테스트 계획에 실물 PLC 작업을 넣지 않습니다.
@@ -40,7 +40,7 @@
 
 - **Python:** `python measurement_engine.py demo --count 20`, `report`, `python hmi_counter_monitor.py --demo`가 오류 없이 도는지. Windows 콘솔에서는 `PYTHONIOENCODING=utf-8`을 붙입니다.
 - **HTML 시뮬레이터:** 브라우저 오류 0건, 정상 운전 처리량이 이전과 같은지(2D 1200초에 약 335~350팩), 메인 라인 위 정지 · 팩 근접이 없는지. 시험 방법과 기준값은 `확인필요_및_논의사항.md` 3장에 있습니다.
-- **OPC:** `serve`는 MX OPC Server가 있는 PC에서 32비트 Python으로만 실제 확인이 됩니다. 없는 환경에서는 가짜 연결(plc_link의 `read_words` · `write_words`를 흉내 내는 객체)로 핸드셰이크를 확인하고, "실기 미확인"으로 적습니다.
+- **OPC:** `serve`는 MX OPC Server가 있는 PC에서만 실제 확인이 됩니다(D21부터 64비트 Python 가능). Simulate 장치는 `--opc-source cache`로 읽기만 확인되고 쓰기는 거부됩니다. 없는 환경에서는 가짜 연결(plc_link의 `read_words` · `write_words`를 흉내 내는 객체)로 핸드셰이크를 확인하고, "실기 미확인"으로 적습니다.
 - 확인하지 못한 것은 확인한 것처럼 적지 않습니다. 결과는 숫자와 함께 문서에 남깁니다.
 
 ## 5. 문서 작성
