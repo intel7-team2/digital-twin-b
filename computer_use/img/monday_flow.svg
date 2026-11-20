@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" font-family="Malgun Gothic, Pretendard, sans-serif">
+<defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#2A3038"/><rect width="2" height="8" fill="#4B5563"/></pattern><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#CBD5E1"/></marker></defs>
+<rect x="0.0" y="0.0" width="1920.0" height="1080.0" rx="0" fill="#1B2027" stroke="none" stroke-width="1"/>
+<text x="24.0" y="38.0" font-size="22" font-weight="700" fill="#F8FAFC" text-anchor="start">월요일(11-23) Project B — Computer Use 작업 순서와 연결 구성</text>
+<text x="24.0" y="62.0" font-size="12.5" font-weight="400" fill="#94A3B8" text-anchor="start">화면 조작(Computer Use)은 GX Works2 · MX OPC Configurator · GP-Pro EX/WinGP · Factory I/O, 명령은 Claude Code가 직접 실행. 실물 PLC 없음 — GX Simulator2만 씀</text>
+<rect x="24.0" y="88.0" width="1100.0" height="380.0" rx="6" fill="#252B32" stroke="#3A424B" stroke-width="1"/>
+<text x="40.0" y="114.0" font-size="14" font-weight="700" fill="#F8FAFC" text-anchor="start">① 연결 구성 (D17 · D20 · D21)</text>
+<rect x="48.0" y="228.0" width="220.0" height="64.0" rx="8" fill="#1F2630" stroke="#A78BFA" stroke-width="2"/>
+<text x="158.0" y="254.0" font-size="14" font-weight="700" fill="#F8FAFC" text-anchor="middle">GX Simulator2</text>
+<text x="158.0" y="274.0" font-size="11" font-weight="400" fill="#94A3B8" text-anchor="middle">GX Works2 W_test.gxw · 래더</text>
+<rect x="380.0" y="228.0" width="240.0" height="64.0" rx="8" fill="#1F2630" stroke="#60A5FA" stroke-width="2"/>
+<text x="500.0" y="254.0" font-size="14" font-weight="700" fill="#F8FAFC" text-anchor="middle">MX OPC Server 6.10</text>
+<text x="500.0" y="274.0" font-size="11" font-weight="400" fill="#94A3B8" text-anchor="middle">장치 CSIM → GX Simulator2</text>
+<rect x="760.0" y="132.0" width="330.0" height="64.0" rx="8" fill="#1F2630" stroke="#34D399" stroke-width="2"/>
+<text x="925.0" y="158.0" font-size="14" font-weight="700" fill="#F8FAFC" text-anchor="middle">Factory I/O (OPC Client DA)</text>
+<text x="925.0" y="178.0" font-size="11" font-weight="400" fill="#94A3B8" text-anchor="middle">v6 씬 · 태그 = 디바이스 이름</text>
+<rect x="760.0" y="228.0" width="330.0" height="64.0" rx="8" fill="#1F2630" stroke="#FACC15" stroke-width="2"/>
+<text x="925.0" y="254.0" font-size="14" font-weight="700" fill="#F8FAFC" text-anchor="middle">Python serve · HMI 모니터</text>
+<text x="925.0" y="274.0" font-size="11" font-weight="400" fill="#94A3B8" text-anchor="middle">measurement_engine.py · plc_link</text>
+<rect x="760.0" y="324.0" width="330.0" height="64.0" rx="8" fill="#1F2630" stroke="#F59E0B" stroke-width="2"/>
+<text x="925.0" y="350.0" font-size="14" font-weight="700" fill="#F8FAFC" text-anchor="middle">hmi_mc_relay.py (MC 3E, 5000)</text>
+<text x="925.0" y="370.0" font-size="11" font-weight="400" fill="#94A3B8" text-anchor="middle">↔ WinGP (Pro-face) 화면</text>
+<line x1="268.0" y1="260.0" x2="378.0" y2="260.0" stroke="#CBD5E1" stroke-width="2" marker-end="url(#arr)"/>
+<line x1="620.0" y1="260.0" x2="758.0" y2="164.0" stroke="#CBD5E1" stroke-width="1.6" marker-end="url(#arr)"/>
+<line x1="620.0" y1="260.0" x2="758.0" y2="260.0" stroke="#CBD5E1" stroke-width="1.6" marker-end="url(#arr)"/>
+<line x1="620.0" y1="260.0" x2="758.0" y2="356.0" stroke="#CBD5E1" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="48.0" y="360.0" width="300.0" height="64.0" rx="8" fill="#1F2630" stroke="#6B7280" stroke-width="2"/>
+<text x="198.0" y="386.0" font-size="14" font-weight="700" fill="#F8FAFC" text-anchor="middle">Factory I/O (Modbus TCP Server)</text>
+<text x="198.0" y="406.0" font-size="11" font-weight="400" fill="#94A3B8" text-anchor="middle">F2~F4 시험 씬 전용 · 127.0.0.1:502</text>
+<rect x="380.0" y="360.0" width="240.0" height="64.0" rx="8" fill="#1F2630" stroke="#6B7280" stroke-width="2"/>
+<text x="500.0" y="386.0" font-size="14" font-weight="700" fill="#F8FAFC" text-anchor="middle">fio_modbus.py</text>
+<text x="500.0" y="406.0" font-size="11" font-weight="400" fill="#94A3B8" text-anchor="middle">크레인 · RFID · 센서 값</text>
+<line x1="348.0" y1="392.0" x2="378.0" y2="392.0" stroke="#CBD5E1" stroke-width="1.6" marker-end="url(#arr)"/>
+<text x="48.0" y="448.0" font-size="11.5" font-weight="400" fill="#94A3B8" text-anchor="start">Factory I/O 드라이버는 한 번에 하나뿐 → 시험(F2~F4)은 Modbus, 공정 씬(v6)은 OPC</text>
+<rect x="1140.0" y="88.0" width="756.0" height="380.0" rx="6" fill="#252B32" stroke="#3A424B" stroke-width="1"/>
+<text x="1156.0" y="114.0" font-size="14" font-weight="700" fill="#F8FAFC" text-anchor="start">② 설명서로 미리 찾은 것 → F2에서 확인하고 정함</text>
+<rect x="1156.0" y="136.0" width="6.0" height="38.0" rx="2" fill="#EF4444" stroke="none" stroke-width="1"/>
+<text x="1174.0" y="150.0" font-size="13.5" font-weight="700" fill="#F8FAFC" text-anchor="start">비전 센서는 박스를 못 알아봄</text>
+<text x="1174.0" y="169.0" font-size="11.5" font-weight="400" fill="#CBD5E1" text-anchor="start">원료 · 뚜껑 · 받침만 인식(설명서). D1519 박스 크기는 높이 센서 X1511로 (A26)</text>
+<rect x="1156.0" y="188.0" width="6.0" height="38.0" rx="2" fill="#F59E0B" stroke="none" stroke-width="1"/>
+<text x="1174.0" y="202.0" font-size="13.5" font-weight="700" fill="#F8FAFC" text-anchor="start">랙 1개 = 3열 × 6단 = 18칸</text>
+<text x="1174.0" y="221.0" font-size="11.5" font-weight="400" fill="#CBD5E1" text-anchor="start">랙 2개 · 아래 4단 = 24칸. 목표 칸 번호 순서는 F2a에서 (그림 asrs_fio_v6)</text>
+<rect x="1156.0" y="240.0" width="6.0" height="38.0" rx="2" fill="#F59E0B" stroke="none" stroke-width="1"/>
+<text x="1174.0" y="254.0" font-size="13.5" font-weight="700" fill="#F8FAFC" text-anchor="start">크레인은 팔레트 단위</text>
+<text x="1174.0" y="273.0" font-size="11.5" font-weight="400" fill="#CBD5E1" text-anchor="start">박스만 넣고 빼지는지 F2b. 안 되면 팔레트 + 박스로 라인 전체를 갈지 (A28)</text>
+<rect x="1156.0" y="292.0" width="6.0" height="38.0" rx="2" fill="#FACC15" stroke="none" stroke-width="1"/>
+<text x="1174.0" y="306.0" font-size="13.5" font-weight="700" fill="#F8FAFC" text-anchor="start">RFID는 태그 1개만 읽음</text>
+<text x="1174.0" y="325.0" font-size="11.5" font-weight="400" fill="#CBD5E1" text-anchor="start">팔레트와 박스 둘 다 태그가 있으면 Status 2. 리더 높이로 피하는지 F3</text>
+<rect x="1156.0" y="344.0" width="6.0" height="38.0" rx="2" fill="#34D399" stroke="none" stroke-width="1"/>
+<text x="1174.0" y="358.0" font-size="13.5" font-weight="700" fill="#F8FAFC" text-anchor="start">Emitter를 PLC가 고름</text>
+<text x="1174.0" y="377.0" font-size="11.5" font-weight="400" fill="#CBD5E1" text-anchor="start">Part 비트 1 = Small · 4 = Large → D1508 (C 인계 셀 수로)</text>
+<rect x="1156.0" y="396.0" width="6.0" height="38.0" rx="2" fill="#34D399" stroke="none" stroke-width="1"/>
+<text x="1174.0" y="410.0" font-size="13.5" font-weight="700" fill="#F8FAFC" text-anchor="start">씬 파일로 드라이버 연결</text>
+<text x="1174.0" y="429.0" font-size="11.5" font-weight="400" fill="#CBD5E1" text-anchor="start">Modbus = 32 · OPC = 16384. fio_scene.py 로 태그 연결 · 이름 바꾸기</text>
+<rect x="24.0" y="486.0" width="1872.0" height="566.0" rx="6" fill="#252B32" stroke="#3A424B" stroke-width="1"/>
+<text x="40.0" y="512.0" font-size="14" font-weight="700" fill="#F8FAFC" text-anchor="start">③ 월요일 순서 (위에서부터, 막히면 그 단계 결과를 &#x27;확인 불가 + 이유&#x27;로 적고 다음으로)</text>
+<text x="40.0" y="544.0" font-size="11" font-weight="700" fill="#94A3B8" text-anchor="start">#</text>
+<text x="92.0" y="544.0" font-size="11" font-weight="700" fill="#94A3B8" text-anchor="start">누가</text>
+<text x="160.0" y="544.0" font-size="11" font-weight="700" fill="#94A3B8" text-anchor="start">할 일</text>
+<text x="1010.0" y="544.0" font-size="11" font-weight="700" fill="#94A3B8" text-anchor="start">완료 기준 / 참고</text>
+<text x="1520.0" y="544.0" font-size="11" font-weight="700" fill="#94A3B8" text-anchor="start">예상</text>
+<rect x="32.0" y="550.0" width="1856.0" height="44.0" rx="4" fill="#1F2630" stroke="none" stroke-width="1"/>
+<circle cx="52.0" cy="571.0" r="13.0" fill="#EF4444" stroke="none" stroke-width="1"/>
+<text x="52.0" y="576.0" font-size="13" font-weight="700" fill="#111827" text-anchor="middle">0</text>
+<rect x="92.0" y="563.0" width="34.0" height="18.0" rx="3" fill="#EF4444" stroke="none" stroke-width="1" fill-opacity="0.18"/>
+<rect x="92.0" y="563.0" width="34.0" height="18.0" rx="3" fill="none" stroke="#EF4444" stroke-width="1"/>
+<text x="98.0" y="577.0" font-size="11" font-weight="700" fill="#EF4444" text-anchor="start">사람</text>
+<text x="160.0" y="576.0" font-size="13.5" font-weight="400" fill="#F8FAFC" text-anchor="start">Claude 앱에서 Computer use 켜기 · Factory I/O 라이선스 · 작업 PC 결정</text>
+<text x="1010.0" y="576.0" font-size="12.5" font-weight="400" fill="#CBD5E1" text-anchor="start">설정 → Computer use / 라이선스 코드</text>
+<text x="1520.0" y="576.0" font-size="12.5" font-weight="400" fill="#94A3B8" text-anchor="start">준비물 표</text>
+<rect x="32.0" y="602.0" width="1856.0" height="44.0" rx="4" fill="#252B32" stroke="none" stroke-width="1"/>
+<circle cx="52.0" cy="623.0" r="13.0" fill="#34D399" stroke="none" stroke-width="1"/>
+<text x="52.0" y="628.0" font-size="13" font-weight="700" fill="#111827" text-anchor="middle">1</text>
+<rect x="92.0" y="615.0" width="34.0" height="18.0" rx="3" fill="#34D399" stroke="none" stroke-width="1" fill-opacity="0.18"/>
+<rect x="92.0" y="615.0" width="34.0" height="18.0" rx="3" fill="none" stroke="#34D399" stroke-width="1"/>
+<text x="98.0" y="629.0" font-size="11" font-weight="700" fill="#34D399" text-anchor="start">명령</text>
+<text x="160.0" y="628.0" font-size="13.5" font-weight="400" fill="#F8FAFC" text-anchor="start">점검: python computer_use/preflight.py --opc</text>
+<text x="1010.0" y="628.0" font-size="12.5" font-weight="400" fill="#CBD5E1" text-anchor="start">NG 0개면 진행</text>
+<text x="1520.0" y="628.0" font-size="12.5" font-weight="400" fill="#94A3B8" text-anchor="start">5분</text>
+<rect x="32.0" y="654.0" width="1856.0" height="44.0" rx="4" fill="#1F2630" stroke="none" stroke-width="1"/>
+<circle cx="52.0" cy="675.0" r="13.0" fill="#F59E0B" stroke="none" stroke-width="1"/>
+<text x="52.0" y="680.0" font-size="13" font-weight="700" fill="#111827" text-anchor="middle">2</text>
+<rect x="92.0" y="667.0" width="34.0" height="18.0" rx="3" fill="#F59E0B" stroke="none" stroke-width="1" fill-opacity="0.18"/>
+<rect x="92.0" y="667.0" width="34.0" height="18.0" rx="3" fill="none" stroke="#F59E0B" stroke-width="1"/>
+<text x="98.0" y="681.0" font-size="11" font-weight="700" fill="#F59E0B" text-anchor="start">화면</text>
+<text x="160.0" y="680.0" font-size="13.5" font-weight="400" fill="#F8FAFC" text-anchor="start">C7 1단계: 중계 서버(memory) + GP-Pro EX 화면 → WinGP 접속</text>
+<text x="1010.0" y="680.0" font-size="12.5" font-weight="400" fill="#CBD5E1" text-anchor="start">c7_wingp_screen 그림대로</text>
+<text x="1520.0" y="680.0" font-size="12.5" font-weight="400" fill="#94A3B8" text-anchor="start">40분</text>
+<rect x="32.0" y="706.0" width="1856.0" height="44.0" rx="4" fill="#252B32" stroke="none" stroke-width="1"/>
+<circle cx="52.0" cy="727.0" r="13.0" fill="#F59E0B" stroke="none" stroke-width="1"/>
+<text x="52.0" y="732.0" font-size="13" font-weight="700" fill="#111827" text-anchor="middle">3</text>
+<rect x="92.0" y="719.0" width="34.0" height="18.0" rx="3" fill="#F59E0B" stroke="none" stroke-width="1" fill-opacity="0.18"/>
+<rect x="92.0" y="719.0" width="34.0" height="18.0" rx="3" fill="none" stroke="#F59E0B" stroke-width="1"/>
+<text x="98.0" y="733.0" font-size="11" font-weight="700" fill="#F59E0B" text-anchor="start">화면</text>
+<text x="160.0" y="732.0" font-size="13.5" font-weight="400" fill="#F8FAFC" text-anchor="start">MX OPC Configurator: CSIM Transfer Setup = GX Simulator2, Simulate 끄기</text>
+<text x="1010.0" y="732.0" font-size="12.5" font-weight="400" fill="#CBD5E1" text-anchor="start">쓰기 · 복원 시험</text>
+<text x="1520.0" y="732.0" font-size="12.5" font-weight="400" fill="#94A3B8" text-anchor="start">20분</text>
+<rect x="32.0" y="758.0" width="1856.0" height="44.0" rx="4" fill="#1F2630" stroke="none" stroke-width="1"/>
+<circle cx="52.0" cy="779.0" r="13.0" fill="#F59E0B" stroke="none" stroke-width="1"/>
+<text x="52.0" y="784.0" font-size="13" font-weight="700" fill="#111827" text-anchor="middle">4</text>
+<rect x="92.0" y="771.0" width="34.0" height="18.0" rx="3" fill="#F59E0B" stroke="none" stroke-width="1" fill-opacity="0.18"/>
+<rect x="92.0" y="771.0" width="34.0" height="18.0" rx="3" fill="none" stroke="#F59E0B" stroke-width="1"/>
+<text x="98.0" y="785.0" font-size="11" font-weight="700" fill="#F59E0B" text-anchor="start">화면</text>
+<text x="160.0" y="784.0" font-size="13.5" font-weight="400" fill="#F8FAFC" text-anchor="start">GX Works2: W_test.gxw 열기 → 시뮬레이션 시작(RUN)</text>
+<text x="1010.0" y="784.0" font-size="12.5" font-weight="400" fill="#CBD5E1" text-anchor="start">X1900 ON 3회 → D1900 = 3</text>
+<text x="1520.0" y="784.0" font-size="12.5" font-weight="400" fill="#94A3B8" text-anchor="start">15분</text>
+<rect x="32.0" y="810.0" width="1856.0" height="44.0" rx="4" fill="#252B32" stroke="none" stroke-width="1"/>
+<circle cx="52.0" cy="831.0" r="13.0" fill="#34D399" stroke="none" stroke-width="1"/>
+<text x="52.0" y="836.0" font-size="13" font-weight="700" fill="#111827" text-anchor="middle">5</text>
+<rect x="92.0" y="823.0" width="34.0" height="18.0" rx="3" fill="#34D399" stroke="none" stroke-width="1" fill-opacity="0.18"/>
+<rect x="92.0" y="823.0" width="34.0" height="18.0" rx="3" fill="none" stroke="#34D399" stroke-width="1"/>
+<text x="98.0" y="837.0" font-size="11" font-weight="700" fill="#34D399" text-anchor="start">명령</text>
+<text x="160.0" y="836.0" font-size="13.5" font-weight="400" fill="#F8FAFC" text-anchor="start">serve 핸드셰이크 3개(D1710 · D1740 · D1650) OPC로 · C7 2단계</text>
+<text x="1010.0" y="836.0" font-size="12.5" font-weight="400" fill="#CBD5E1" text-anchor="start">DB 기록 · WinGP 값 일치</text>
+<text x="1520.0" y="836.0" font-size="12.5" font-weight="400" fill="#94A3B8" text-anchor="start">30분</text>
+<rect x="32.0" y="862.0" width="1856.0" height="44.0" rx="4" fill="#1F2630" stroke="none" stroke-width="1"/>
+<circle cx="52.0" cy="883.0" r="13.0" fill="#F59E0B" stroke="none" stroke-width="1"/>
+<text x="52.0" y="888.0" font-size="13" font-weight="700" fill="#111827" text-anchor="middle">6</text>
+<rect x="92.0" y="875.0" width="34.0" height="18.0" rx="3" fill="#F59E0B" stroke="none" stroke-width="1" fill-opacity="0.18"/>
+<rect x="92.0" y="875.0" width="34.0" height="18.0" rx="3" fill="none" stroke="#F59E0B" stroke-width="1"/>
+<text x="98.0" y="889.0" font-size="11" font-weight="700" fill="#F59E0B" text-anchor="start">화면</text>
+<text x="160.0" y="888.0" font-size="13.5" font-weight="400" fill="#F8FAFC" text-anchor="start">F2: 시험 씬 6개를 차례로 열고(load:) 박스 · 랙 · 분기 · 비전 확인</text>
+<text x="1010.0" y="888.0" font-size="12.5" font-weight="400" fill="#CBD5E1" text-anchor="start">fio_modbus.py 로 크레인 · 센서</text>
+<text x="1520.0" y="888.0" font-size="12.5" font-weight="400" fill="#94A3B8" text-anchor="start">60분</text>
+<rect x="32.0" y="914.0" width="1856.0" height="44.0" rx="4" fill="#252B32" stroke="none" stroke-width="1"/>
+<circle cx="52.0" cy="935.0" r="13.0" fill="#F59E0B" stroke="none" stroke-width="1"/>
+<text x="52.0" y="940.0" font-size="13" font-weight="700" fill="#111827" text-anchor="middle">7</text>
+<rect x="92.0" y="927.0" width="34.0" height="18.0" rx="3" fill="#F59E0B" stroke="none" stroke-width="1" fill-opacity="0.18"/>
+<rect x="92.0" y="927.0" width="34.0" height="18.0" rx="3" fill="none" stroke="#F59E0B" stroke-width="1"/>
+<text x="98.0" y="941.0" font-size="11" font-weight="700" fill="#F59E0B" text-anchor="start">화면</text>
+<text x="160.0" y="940.0" font-size="13.5" font-weight="400" fill="#F8FAFC" text-anchor="start">F3 · F4: RFID Reader 3개 끌어 놓기 → 저장 → map-modbus → rfid-check</text>
+<text x="1010.0" y="940.0" font-size="12.5" font-weight="400" fill="#CBD5E1" text-anchor="start">Status · 시리얼 · 22200/40000</text>
+<text x="1520.0" y="940.0" font-size="12.5" font-weight="400" fill="#94A3B8" text-anchor="start">40분</text>
+<rect x="32.0" y="966.0" width="1856.0" height="44.0" rx="4" fill="#1F2630" stroke="none" stroke-width="1"/>
+<circle cx="52.0" cy="987.0" r="13.0" fill="#34D399" stroke="none" stroke-width="1"/>
+<text x="52.0" y="992.0" font-size="13" font-weight="700" fill="#111827" text-anchor="middle">8</text>
+<rect x="92.0" y="979.0" width="34.0" height="18.0" rx="3" fill="#34D399" stroke="none" stroke-width="1" fill-opacity="0.18"/>
+<rect x="92.0" y="979.0" width="34.0" height="18.0" rx="3" fill="none" stroke="#34D399" stroke-width="1"/>
+<text x="98.0" y="993.0" font-size="11" font-weight="700" fill="#34D399" text-anchor="start">명령</text>
+<text x="160.0" y="992.0" font-size="13.5" font-weight="400" fill="#F8FAFC" text-anchor="start">결과를 11장 표 · 15장에 숫자와 함께 기록, A26~A28 정리, 스크린샷 test_results/</text>
+<text x="1010.0" y="992.0" font-size="12.5" font-weight="400" fill="#CBD5E1" text-anchor="start">실기 · 시뮬레이션 구분</text>
+<text x="1520.0" y="992.0" font-size="12.5" font-weight="400" fill="#94A3B8" text-anchor="start">20분</text>
+</svg>

@@ -6,7 +6,8 @@
 ## 1. 먼저 읽을 것
 
 1. `README.md` — 프로젝트 범위, 환경, 파일 구성, 규칙
-2. `확인필요_및_논의사항.md`
+2. `computer_use/README.md` — Computer Use(화면 조작) 작업 지시서 · 준비 도구 · 알려진 함정 (Factory I/O · GX Works2 · MX OPC · WinGP 화면 작업 전에)
+3. `확인필요_및_논의사항.md`
    - 0장: 현재 구조(v6) · 판정 기준 · 디바이스 표 · DB 스키마 — **현재 상태의 기준**
    - 2장: 확정된 결정 D1~D18 — 결정을 거스르는 변경은 사용자에게 먼저 묻습니다
    - 4장 · 5장: 확인 필요 사항 · 논의 안건(열림 / 보류 / 닫힘)
@@ -29,11 +30,12 @@
 | 바꾸는 것 | 같이 고칠 곳 |
 |---|---|
 | 계측 분포 · 판정 기준 · C 인계 모사 | `v7.html`(MEAS · makeHandoff) · `3d_layout.html`(MEAS) · `measurement_engine.py`(measure · judge · c_handoff) — 같은 PACK ID에서 같은 값이 나와야 함 |
-| 공정 흐름 · 라인 구조 | `v7.html` 2D 시뮬레이터(SVG + JS) · `3d_layout.html` · `layout/make_layout_v*.py`(새 판 생성, 이전 판 삭제) · `measurement_engine.py` 안내 문구 · `v7.html` 계획서 본문 |
+| 공정 흐름 · 라인 구조 | `v7.html` 2D 시뮬레이터(SVG + JS) · `3d_layout.html` · `3d_factoryio_v6.html` · `3d_factoryio_v6_v2.html`(Factory I/O 부품 3D 1판 · 2판, 좌표는 `layout/make_factoryio_topview.py`와 같게) · `layout/make_layout_v*.py`(새 판 생성, 이전 판 삭제) · `measurement_engine.py` 안내 문구 · `v7.html` 계획서 본문 |
 | PLC 디바이스 번지 | `확인필요_및_논의사항.md` 0-4 · `v7.html` PLC 디바이스 맵 · `tools/mxopc_tags.py` TAGS(→ `--csv`로 `tools/mxopc_tags_v5.csv` 다시 생성) · Python 상수(`STATIONS` · `ISO_BLOCK` · `COUNTER_BASE` · `RESET_COIL`) |
 | 공유 DB 스키마 | `measurement_engine.py` `SCHEMA_VERSION` 올림 · `확인필요_및_논의사항.md` 0-5 · `v7.html` DB 패널(필요 시) |
 | PLC 통신 | `plc_link.py` 한 곳. `serve` · HMI 모니터 · `modbus_probe.py` · `hmi_mc_relay.py`(OPC 백엔드)는 이 모듈을 씀 |
 | HMI 화면이 쓰는 번지 | MX OPC 태그 목록(`tools/mxopc_tags.py`)에 있어야 중계 서버가 읽고 씀. 없는 번지는 C05C 오류 응답 |
+| Factory I/O 센서 · 액추에이터 번지(4-16) | `computer_use/fio_io_map_v6.csv` → `python computer_use/make_guides.py`(그림) · 확정하면 PLC 디바이스 번지 행처럼 0-4 · `v7.html` · `tools/mxopc_tags.py`도 |
 | 결정 · 안건 | `확인필요_및_논의사항.md` 2장(D#) · 5장(A#) · 8장 변경 이력 · 맨 위 "진행 현황" 표 |
 
 ## 4. 검증
