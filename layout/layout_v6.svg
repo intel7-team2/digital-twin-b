@@ -65,8 +65,8 @@
 <polyline points="970.0,378.0 970.0,446.0 1290.0,446.0 1290.0,378.0" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#ar)"/>
 <polyline points="1290.0,462.0 1290.0,510.0 1590.0,510.0" fill="none" stroke="#CBD5E1" stroke-width="20.0" stroke-linejoin="round"/>
 <polyline points="1290.0,462.0 1290.0,510.0 1590.0,510.0" fill="none" stroke="#EF4444" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#ar)"/>
-<polyline points="830.0,378.0 830.0,454.0" fill="none" stroke="#CBD5E1" stroke-width="14.0" stroke-linejoin="round"/>
-<polyline points="830.0,378.0 830.0,454.0" fill="none" stroke="#B91C1C" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#ar)"/>
+<polyline points="774.0,430.0 774.0,458.0" fill="none" stroke="#CBD5E1" stroke-width="14.0" stroke-linejoin="round"/>
+<polyline points="774.0,430.0 774.0,458.0" fill="none" stroke="#B91C1C" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#ar)"/>
 <rect x="390.0" y="346.0" width="56.0" height="40.0" rx="4" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1.5"/>
 <text x="418.0" y="363.8" text-anchor="middle" font-size="9" font-weight="400" fill="#0F172A">R01~</text>
 <text x="418.0" y="374.6" text-anchor="middle" font-size="9" font-weight="400" fill="#0F172A">(4단)</text>
@@ -104,17 +104,17 @@
 <text x="558.0" y="292.0" text-anchor="middle" font-size="9" font-weight="400" fill="#1D4ED8">입고면 · 크레인 A (M1600) — 종류별 구역 입고</text>
 <rect x="334.0" y="412.0" width="420.0" height="12.0" rx="4" fill="#BAE6FD" stroke="#0284C7" stroke-width="1.5"/>
 <text x="558.0" y="440.0" text-anchor="middle" font-size="9" font-weight="400" fill="#0369A1">출고면 · 크레인 B (M1601) — 모든 팩 동쪽 출구 (발열 우선 → EDD)</text>
-<rect x="804.0" y="454.0" width="52.0" height="52.0" rx="4" fill="#FEE2E2" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="6 4"/>
-<text x="830.0" y="467.0" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">M1690</text>
-<text x="830.0" y="477.8" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">발열 격리</text>
-<text x="830.0" y="488.6" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">X1902/D1902</text>
-<text x="830.0" y="499.4" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">DB ISO</text>
-<rect x="816.0" y="352.0" width="28.0" height="28.0" rx="4" fill="#D1FAE5" stroke="#10B981" stroke-width="1.5"/>
-<text x="830.0" y="368.8" text-anchor="middle" font-size="8" font-weight="700" fill="#0F172A">PW</text>
-<rect x="800.0" y="314.0" width="48.0" height="24.0" rx="4" fill="#ECFDF5" stroke="#10B981" stroke-width="1.5"/>
-<text x="824.0" y="324.0" text-anchor="middle" font-size="8" font-weight="700" fill="#0F172A">1차 분리</text>
-<text x="824.0" y="333.6" text-anchor="middle" font-size="8" font-weight="700" fill="#0F172A">M1660 / M1661</text>
-<text x="766.0" y="458.0" text-anchor="middle" font-size="9" font-weight="700" fill="#B91C1C">발열 ↓</text>
+<rect x="748.0" y="458.0" width="52.0" height="52.0" rx="4" fill="#FEE2E2" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="774.0" y="471.0" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">M1690</text>
+<text x="774.0" y="481.8" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">발열 격리</text>
+<text x="774.0" y="492.6" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">X1902/D1902</text>
+<text x="774.0" y="503.4" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">DB ISO</text>
+<rect x="760.0" y="404.0" width="28.0" height="28.0" rx="4" fill="#D1FAE5" stroke="#10B981" stroke-width="1.5"/>
+<text x="774.0" y="420.8" text-anchor="middle" font-size="8" font-weight="700" fill="#0F172A">PW</text>
+<rect x="794.0" y="406.0" width="60.0" height="24.0" rx="4" fill="#ECFDF5" stroke="#10B981" stroke-width="1.5"/>
+<text x="824.0" y="416.0" text-anchor="middle" font-size="8" font-weight="700" fill="#0F172A">1차 분리</text>
+<text x="824.0" y="425.6" text-anchor="middle" font-size="8" font-weight="700" fill="#0F172A">M1660 / M1661</text>
+<text x="738.0" y="448.0" text-anchor="middle" font-size="9" font-weight="700" fill="#B91C1C">발열 ↓</text>
 <rect x="866.0" y="342.0" width="48.0" height="48.0" rx="4" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
 <text x="890.0" y="354.4" text-anchor="middle" font-size="8" font-weight="700" fill="#0F172A">STEP 03</text>
 <text x="890.0" y="364.0" text-anchor="middle" font-size="8" font-weight="700" fill="#0F172A">메인 검사</text>

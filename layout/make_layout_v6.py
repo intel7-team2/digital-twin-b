@@ -50,10 +50,11 @@ RET_Z = 2.0                        # RETEST loop level
 BUF_X0, BUF_N, BUF_PITCH = 7.2, 8, 0.5
 BUF_X1 = BUF_X0 + (BUF_N - 1) * BUF_PITCH
 RT_X = 12.6                        # retest tester
-SORT1_X = 3.0                      # 1차 분리 Pop-up Wheel: hot → south isolation (M1661) / normal → straight (M1660)
+SORT1_X = 1.6                      # 1차 분리 (출고 라인이 북쪽으로 꺾이는 지점) Pop-up Wheel: hot → south isolation (M1661) / normal → straight (M1660)
 SORT2_X = 14.5                     # 2차 분리 Pop-up Wheel: GOOD → north merge (M1731) / NG → south NG OUT (M1732)
 NG_Z = 3.6
-CHAMBER = (SORT1_X, 2.85)
+SORT1_Z = RAIL_OUT_Z
+CHAMBER = (SORT1_X, 2.95)
 
 BLUE, ORANGE, RED, GREEN, GREY = '#38BDF8', '#F59E0B', '#EF4444', '#10B981', '#94A3B8'
 
@@ -83,7 +84,7 @@ belt([(DROP_OUT, RAIL_OUT_Z), (1.6, RAIL_OUT_Z), (1.6, 0), (GATE_X, 0)], BLUE, '
 belt([(RETEST_X, 0.3), (RETEST_X, RET_Z), (SORT2_X, RET_Z), (SORT2_X, 0.3)], ORANGE, None)
 belt([(SORT2_X, RET_Z + 0.4), (SORT2_X, NG_Z), (GATE_X, NG_Z)], RED, None)
 text(18.0, 3.1, 'NG 라인 (2차 분리 ↓ · 메인 NG + 재검사 NG)', '#B91C1C', 9, w=6)
-belt([(SORT1_X, 0.3), (SORT1_X, CHAMBER[1] - 0.65)], '#B91C1C', None, 0.35)
+belt([(SORT1_X, SORT1_Z + 0.3), (SORT1_X, CHAMBER[1] - 0.65)], '#B91C1C', None, 0.35)
 
 # ---------------------------------------------------------------- STEP 01
 rect(-16.9, -1.1, -14.7, 1.1, 'Project C 인계\n4S = 작은 박스\n6S = 큰 박스', '#F1F5F9', GREY, 9)
@@ -98,9 +99,9 @@ rect(RACK_X0 - 1.4, RAIL_OUT_Z - 0.15, DROP_OUT + 0.3, RAIL_OUT_Z + 0.15, '', '#
 text((RACK_X0 + RACK_X1) / 2, RAIL_OUT_Z + 0.55, '출고면 · 크레인 B (M1601) — 모든 팩 동쪽 출구 (발열 우선 → EDD)', '#0369A1', 9, w=11)
 rect(CHAMBER[0] - 0.65, CHAMBER[1] - 0.65, CHAMBER[0] + 0.65, CHAMBER[1] + 0.65,
      'M1690\n발열 격리\nX1902/D1902\nDB ISO', '#FEE2E2', RED, 9, True, True)
-rect(SORT1_X - 0.35, -0.35, SORT1_X + 0.35, 0.35, 'PW', '#D1FAE5', GREEN, 8, True)
-rect(SORT1_X - 0.75, -1.3, SORT1_X + 0.45, -0.7, '1차 분리\nM1660 / M1661', '#ECFDF5', GREEN, 8, True)
-text(SORT1_X - 1.6, 2.3, '발열 ↓', '#B91C1C', 9, True, w=2)
+rect(SORT1_X - 0.35, SORT1_Z - 0.35, SORT1_X + 0.35, SORT1_Z + 0.35, 'PW', '#D1FAE5', GREEN, 8, True)
+rect(SORT1_X + 0.5, SORT1_Z - 0.3, SORT1_X + 2.0, SORT1_Z + 0.3, '1차 분리\nM1660 / M1661', '#ECFDF5', GREEN, 8, True)
+text(SORT1_X - 0.9, 2.05, '발열 ↓', '#B91C1C', 9, True, w=2)
 
 # ---------------------------------------------------------------- main tester
 rect(INSP_X - 0.6, -0.6, INSP_X + 0.6, 0.6, 'STEP 03\n메인 검사\nOCV·IR·온도\nM1700', '#FEF3C7', ORANGE, 8, True)
