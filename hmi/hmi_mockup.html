@@ -2,320 +2,537 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<title>Project B HMI 화면 시안 (Pro-face WinGP 1024×768)</title>
+<title>Project B HMI 화면 시안 v2 (Pro-face WinGP 1024×768)</title>
+<!--
+  v2 (11-20): GP-Pro EX 4.08 매뉴얼로 WinGP 작화 가능 여부를 확인하고 고친 시안.
+  - 화면 = 배경 이미지(정적: 패널 · 글자 · 번지 표기 · 벨트 · 램프 받침 · 값 칸) + GP-Pro EX 부품(동적: class="p").
+  - 부품 색은 GP-Pro EX 256색 팔레트 코드만 씀(--cNNN = 색 코드 NNN). 배경 이미지는 전체 색 가능.
+  - 시스템 설정 [표시기] 색 = "16,777,216색 깜박임 없음"(256색 작화). 깜박임 모드는 색 코드가 0~63으로 줄어 이 시안 색과 안 맞음.
+  보기: #s1 ~ #s4 완성 시안, #s1-bg 배경 이미지만, #s1-guide 부품 위치 안내, #all 4장 모두, #parts 부품 목록(CSV)
+-->
 <style>
   :root {
-    --bg: #1B222C; --panel: #232C38; --panel2: #2B3644; --line: #3A4757; --ink: #E8EEF5; --ink2: #9FB0C3; --ink3: #6B7C90;
-    --good: #22C55E; --good-d: #0F3D24; --ng: #EF4444; --ng-d: #4A1717; --warn: #F59E0B; --warn-d: #4A3209;
-    --cyan: #38BDF8; --cyan-d: #0E3A52; --off: #3B4656; --iso: #FB7185;
-    --mono: Consolas, 'Cascadia Mono', monospace; --font: 'Malgun Gothic', 'Segoe UI', sans-serif;
+    /* 배경 이미지 전용 색 (이미지라 팔레트 제한 없음) */
+    --bg: #1B222C; --panel: #232C38; --panel2: #2B3644; --line: #3A4757; --slot: #0F151D;
+    --ink: #E8EEF5; --ink2: #9FB0C3; --ink3: #6B7C90; --bar: #121821;
+    /* 부품 색 = GP-Pro EX 색 코드 (RGB는 매뉴얼 8.16 색 코드 표) */
+    --c0: #000000; --c7: #FFFFFF; --c25: #404040; --c46: #A0A0A0;
+    --c81: #40C040; --c50: #A0FFA0; --c255: #002000;   /* GOOD · PASS */
+    --c55: #FF4040; --c60: #FFA0A0; --c232: #200000; --c240: #800000;  /* NG */
+    --c100: #FFC000; --c63: #FFFFA0; --c120: #402000;  /* RETEST · 대기 */
+    --c75: #00C0FF;                                     /* 동작 */
+    --c56: #FF40A0;                                     /* 발열 격리 */
+    --c47: #A0A0FF;                                     /* 수율 막대 */
+    --font: 'Malgun Gothic', 'Segoe UI', sans-serif; --mono: Consolas, 'Cascadia Mono', monospace;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: #0D1117; font-family: var(--font); color: var(--ink); }
   .screen { width: 1024px; height: 768px; background: var(--bg); position: relative; overflow: hidden; display: none; }
   .screen.on { display: block; }
   body.all .screen { display: block; margin: 0 0 24px; }
+  .a { position: absolute; }
 
-  /* header / footer common to every screen */
-  .hdr { height: 56px; background: #121821; border-bottom: 2px solid var(--line); display: flex; align-items: center; padding: 0 14px; gap: 14px; }
-  .hdr .no { font: 700 13px var(--mono); color: var(--cyan); background: var(--cyan-d); padding: 3px 8px; border-radius: 3px; }
-  .hdr .tt { font-size: 20px; font-weight: 800; }
-  .hdr .sp { flex: 1; }
-  .hdr .clock { font: 600 15px var(--mono); color: var(--ink2); }
-  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 4px; font-size: 13px; font-weight: 700; border: 1px solid var(--line); background: var(--panel); }
-  .ftr { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; background: #121821; border-top: 2px solid var(--line); display: flex; gap: 8px; padding: 8px 10px; }
-  .nav { flex: 1; border: 1px solid var(--line); background: var(--panel2); border-radius: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: var(--ink2); }
+  /* ---------- 배경 (정적) ---------- */
+  .hdr { position: absolute; left: 0; top: 0; width: 1024px; height: 56px; background: var(--bar); border-bottom: 2px solid var(--line); }
+  .hdr .no { position: absolute; left: 14px; top: 16px; font: 700 13px var(--mono); color: var(--c75); background: #0E3A52; padding: 3px 8px; border-radius: 3px; }
+  .hdr .tt { position: absolute; left: 56px; top: 12px; font-size: 20px; font-weight: 800; }
+  .pill { position: absolute; top: 13px; height: 30px; display: flex; align-items: center; gap: 6px; padding: 0 10px 0 6px; border-radius: 4px; font-size: 13px; font-weight: 700; border: 1px solid var(--line); background: var(--panel); white-space: nowrap; }
+  .ftr { position: absolute; left: 0; top: 704px; width: 1024px; height: 64px; background: var(--bar); border-top: 2px solid var(--line); }
+  .nav { position: absolute; top: 712px; width: 245px; height: 48px; border: 1px solid var(--line); background: var(--panel2); border-radius: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: var(--ink2); }
   .nav small { font: 600 10px var(--mono); color: var(--ink3); }
-  .nav.cur { background: var(--cyan-d); border-color: var(--cyan); color: #fff; }
-  .body { position: absolute; top: 56px; bottom: 64px; left: 0; right: 0; padding: 10px 12px; }
-
-  .box { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; position: absolute; }
-  .box h3 { font-size: 14px; font-weight: 800; color: var(--ink2); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: baseline; }
-  .dev { font: 600 10.5px var(--mono); color: var(--ink3); }
-  .lamp { width: 14px; height: 14px; border-radius: 50%; display: inline-block; background: var(--off); border: 2px solid #1a222d; flex: none; }
-  .lamp.g { background: var(--good); box-shadow: 0 0 6px var(--good); }
-  .lamp.r { background: var(--ng); box-shadow: 0 0 6px var(--ng); }
-  .lamp.y { background: var(--warn); box-shadow: 0 0 6px var(--warn); }
-  .lamp.c { background: var(--cyan); box-shadow: 0 0 6px var(--cyan); }
-  .num { font: 700 22px var(--mono); text-align: right; background: #0F151D; border: 1px solid var(--line); border-radius: 3px; padding: 2px 8px; }
-  .btn { border: 2px solid var(--line); background: var(--panel2); border-radius: 6px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .btn.red { border-color: var(--ng); background: var(--ng-d); color: #FECACA; }
-  .note { position: absolute; font-size: 11px; color: var(--warn); background: var(--warn-d); border: 1px dashed var(--warn); border-radius: 4px; padding: 3px 7px; }
-  table.kv { width: 100%; border-collapse: collapse; font-size: 13px; }
-  table.kv td { padding: 4px 4px; border-bottom: 1px solid #2E3a48; }
-  table.kv td.v { font: 700 16px var(--mono); text-align: right; }
-  table.kv td.d { font: 600 10.5px var(--mono); color: var(--ink3); width: 74px; text-align: right; }
-  table.kv-wide td.d { width: 120px; }
-
-  /* screen 1: flow */
-  .flow { left: 12px; top: 10px; width: 1000px; height: 300px; }
-  .st { position: absolute; width: 104px; height: 70px; border: 2px solid var(--line); border-radius: 6px; background: var(--panel2); text-align: center; padding-top: 5px; font-size: 12.5px; font-weight: 800; }
-  .st .dev { display: block; margin-top: 1px; }
-  .st .lamp { margin-top: 4px; }
+  .nav.cur { background: #0E3A52; border-color: var(--c75); color: #fff; }
+  .box { position: absolute; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
+  .box > h3 { position: absolute; left: 10px; right: 10px; top: 7px; font-size: 14px; font-weight: 800; color: var(--ink2); display: flex; justify-content: space-between; align-items: baseline; }
+  .dev { font: 600 10.5px var(--mono); color: var(--ink3); white-space: nowrap; }
+  .lbl { font-size: 13px; white-space: nowrap; }
+  .unit { font-size: 13px; color: var(--ink2); white-space: nowrap; }
+  .crit { font-size: 11.5px; color: var(--ink3); white-space: nowrap; }
+  .slot { position: absolute; background: var(--slot); border: 1px solid var(--line); border-radius: 3px; }
+  .sock { position: absolute; width: 20px; height: 20px; border-radius: 50%; background: #0B1016; border: 1px solid var(--line); }
+  .st { position: absolute; border: 2px solid var(--line); border-radius: 6px; background: var(--panel2); text-align: center; font-size: 12.5px; font-weight: 800; }
+  .st .dev { display: block; }
   .belt { position: absolute; background: #475569; }
-  .cnt { position: absolute; width: 190px; height: 112px; }
-  .cnt .big { font: 800 34px var(--mono); text-align: right; margin-top: 2px; }
-  .cnt .big small { font-size: 14px; color: var(--ink2); margin-left: 4px; }
+  .sep { position: absolute; height: 1px; background: #2E3A48; }
+  .note { position: absolute; font-size: 11px; color: var(--c100); background: #4A3209; border: 1px dashed var(--c100); border-radius: 4px; padding: 3px 7px; white-space: nowrap; }
+  .cell { position: absolute; width: 101px; height: 40px; border-radius: 4px; font: 700 11px var(--mono); padding: 3px 5px; background: #1E3A5F; border: 1px solid #2B5A8A; color: #BFDBFE; }
+  .cell.z6 { background: #134034; border-color: #1F6B55; color: #A7F3D0; }
+  .btnslot { position: absolute; border: 1px dashed var(--line); border-radius: 6px; background: #161D26; }
+
+  /* ---------- 부품 (동적, GP-Pro EX에서 올림) ---------- */
+  .p { position: absolute; }
+  .p.lamp { width: 14px; height: 14px; border-radius: 50%; background: var(--c25); }
+  .p.lamp.g { background: var(--c81); } .p.lamp.r { background: var(--c55); } .p.lamp.y { background: var(--c100); }
+  .p.lamp.c { background: var(--c75); } .p.lamp.m { background: var(--c56); }
+  .p.val { display: flex; align-items: center; justify-content: flex-end; padding: 0 6px; color: var(--c7); font-weight: 800; font-family: 'Malgun Gothic', Arial, sans-serif; white-space: nowrap; }
+  .p.val.l { justify-content: flex-start; } .p.val.c { justify-content: center; }
+  .p.txt { display: flex; align-items: center; justify-content: center; font-weight: 800; border-radius: 3px; white-space: nowrap; }
+  .p.sw { display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 800; border-radius: 4px; border: 2px solid var(--c46); background: var(--c25); color: var(--c7); text-align: center; }
+  .p.sw.red { border-color: var(--c55); background: var(--c240); color: var(--c7); }
+  .p.sw small { font-size: 11px; font-weight: 600; }
+  .p.inv { } /* 모양 없음(투명) 스위치 */
+  .p.alarm { font-size: 13px; }
+  .p.alarm .row { display: grid; grid-template-columns: 150px 1fr 82px 82px 52px; height: 30px; align-items: center; padding: 0 8px; border-bottom: 1px solid #2E3A48; white-space: nowrap; overflow: hidden; }
+  .p.alarm .row span { overflow: hidden; }
+  .p.alarm .row.trg { color: var(--c60); } .p.alarm .row.ack { color: var(--c63); } .p.alarm .row.rec { color: var(--c46); }
+  .p.alarm .row.cur { background: #00204099; }
+
+  /* 배경 이미지만 */
+  body.bg .p { visibility: hidden; }
+  /* 부품 위치 안내 */
+  body.guide .p { visibility: visible; outline: 1px dashed #FFC000; outline-offset: -1px; background: rgba(255,192,0,.14) !important; color: transparent !important; border-color: transparent !important; }
+  body.guide .p * { visibility: hidden; }
+  body.guide .p::after { content: attr(data-id); position: absolute; left: 1px; top: -1px; font: 700 9px var(--mono); color: #FFE08A; background: #000c; padding: 0 2px; white-space: nowrap; visibility: visible; z-index: 5; }
+  body.guide .p.lamp::after { top: -11px; left: -4px; }
+  pre#csv { display: none; }
+  body.parts pre#csv { display: block; color: #ddd; font: 12px var(--mono); padding: 10px; white-space: pre; }
+  body.parts .screen { display: none !important; }
 </style>
 </head>
 <body>
 
 <!-- ============================================================ 01 운전 현황 -->
 <section class="screen" id="s1">
-  <div class="hdr">
-    <span class="no">01</span><span class="tt">운전 현황</span>
-    <span class="pill"><span class="lamp g"></span>운전 중 <span class="dev">(제안)</span></span>
-    <span class="pill"><span class="lamp"></span>비상정지 <span class="dev">M1500</span></span>
-    <span class="pill"><span class="lamp"></span>재검사 라인 대기 <span class="dev">M1800</span></span>
-    <span class="sp"></span><span class="clock">2026-11-19 14:32:05</span>
+  <div class="hdr"><span class="no">01</span><span class="tt">운전 현황</span></div>
+  <div class="pill" style="left:160px;width:142px;"><span style="position:relative;width:20px;height:20px;"><i class="sock" style="left:0;top:0;"></i></span>운전 중 <span class="dev">(제안 A24)</span></div>
+  <i class="p lamp g" style="left:169px;top:21px;" data-k="BL" data-d="(제안 A24)" data-f="ON 81 · OFF 25"></i>
+  <div class="pill" style="left:310px;width:130px;"><span style="position:relative;width:20px;height:20px;"><i class="sock" style="left:0;top:0;"></i></span>비상정지 <span class="dev">M1500</span></div>
+  <i class="p lamp" style="left:319px;top:21px;" data-k="BL" data-d="M1500" data-f="ON 55 · OFF 25"></i>
+  <div class="pill" style="left:448px;width:182px;"><span style="position:relative;width:20px;height:20px;"><i class="sock" style="left:0;top:0;"></i></span>재검사 라인 대기 <span class="dev">M1800</span></div>
+  <i class="p lamp" style="left:457px;top:21px;" data-k="BL" data-d="M1800" data-f="ON 100 · OFF 25"></i>
+  <div class="p val" style="left:790px;top:14px;width:222px;height:28px;font-size:16px;color:var(--c46);" data-k="DT" data-d="(본체 시계)" data-f="날짜 20yy/mm/dd · 시각 hh:mm:ss · 글자 46 · ASCII">2026/11/19 14:32:05</div>
+
+  <!-- 공정 흐름 -->
+  <div class="box" style="left:12px;top:66px;width:1000px;height:300px;">
+    <h3>공정 흐름 (v6) <span class="dev">램프 = 해당 비트 ON</span></h3>
+    <div class="belt" style="left:96px;top:96px;width:810px;height:6px;"></div>
+    <div class="belt" style="left:528px;top:96px;width:6px;height:120px;"></div>
+    <div class="belt" style="left:528px;top:210px;width:300px;height:6px;"></div>
+    <div class="belt" style="left:822px;top:96px;width:6px;height:120px;"></div>
+    <div class="belt" style="left:822px;top:210px;width:6px;height:60px;background:#7F1D1D;"></div>
+    <div class="belt" style="left:296px;top:96px;width:6px;height:120px;background:#7F1D1D;"></div>
+
+    <div class="st" style="left:8px;top:56px;width:112px;height:82px;padding-top:4px;">입고 RFID①<span class="dev">PACK D1516</span><span class="dev">상태 D1514</span></div>
+    <div class="st" style="left:136px;top:62px;width:104px;height:70px;padding-top:5px;">AS/RS 24칸<span class="dev">A M1600 · B M1601</span></div>
+    <div class="st" style="left:248px;top:26px;width:100px;height:62px;padding-top:5px;">1차 분리<span class="dev">M1660 · M1661</span></div>
+    <div class="st" style="left:250px;top:212px;width:100px;height:64px;padding-top:5px;border-color:#7F1D1D;">발열 격리<span class="dev">M1690 · X1902</span></div>
+    <div class="st" style="left:372px;top:62px;width:104px;height:70px;padding-top:5px;">메인 검사<span class="dev">M1700 · RFID②</span></div>
+    <div class="st" style="left:482px;top:26px;width:100px;height:62px;padding-top:5px;">분기<span class="dev">M1720</span></div>
+    <div class="st" style="left:552px;top:176px;width:128px;height:70px;padding-top:5px;">재검사 라인<span class="dev">D1800 · M1800</span></div>
+    <div class="st" style="left:690px;top:176px;width:104px;height:70px;padding-top:5px;">재검사기<span class="dev">M1730 · RFID③</span></div>
+    <div class="st" style="left:766px;top:112px;width:116px;height:62px;padding-top:5px;">2차 분리<span class="dev">M1731↑ · M1732↓</span></div>
+    <div class="st" style="left:756px;top:22px;width:104px;height:62px;padding-top:5px;">합류<span class="dev">X1903</span></div>
+    <div class="st" style="left:898px;top:62px;width:92px;height:70px;padding-top:5px;border-color:var(--c81);">GOOD OUT<span class="dev">X1900</span></div>
+    <div class="st" style="left:898px;top:214px;width:92px;height:64px;padding-top:5px;border-color:var(--c55);">NG OUT<span class="dev">X1901</span></div>
+    <!-- 값 칸 · 램프 받침 -->
+    <div class="slot" style="left:20px;top:105px;width:56px;height:24px;"></div><i class="sock" style="left:84px;top:107px;"></i>
+    <i class="sock" style="left:166px;top:104px;"></i><i class="sock" style="left:190px;top:104px;"></i>
+    <i class="sock" style="left:276px;top:62px;"></i><i class="sock" style="left:300px;top:62px;"></i>
+    <i class="sock" style="left:290px;top:250px;"></i>
+    <i class="sock" style="left:414px;top:104px;"></i>
+    <i class="sock" style="left:522px;top:62px;"></i>
+    <div class="slot" style="left:578px;top:216px;width:40px;height:24px;"></div><span class="unit a" style="left:622px;top:220px;font-size:11px;">EA</span><i class="sock" style="left:644px;top:218px;"></i>
+    <i class="sock" style="left:732px;top:218px;"></i>
+    <i class="sock" style="left:800px;top:148px;"></i><i class="sock" style="left:828px;top:148px;"></i>
+    <i class="sock" style="left:798px;top:58px;"></i>
+    <i class="sock" style="left:934px;top:104px;"></i>
+    <i class="sock" style="left:934px;top:250px;"></i>
   </div>
-  <div class="body">
-    <div class="box flow">
-      <h3>공정 흐름 (v6) <span class="dev">램프 = 해당 비트 ON</span></h3>
-      <!-- belts -->
-      <div class="belt" style="left:96px;top:96px;width:810px;height:6px;"></div>
-      <div class="belt" style="left:528px;top:96px;width:6px;height:120px;"></div>
-      <div class="belt" style="left:528px;top:210px;width:300px;height:6px;"></div>
-      <div class="belt" style="left:822px;top:96px;width:6px;height:120px;"></div>
-      <div class="belt" style="left:822px;top:210px;width:6px;height:60px;background:#7F1D1D;"></div>
-      <div class="belt" style="left:296px;top:96px;width:6px;height:120px;background:#7F1D1D;"></div>
+  <!-- 흐름 부품 (화면 좌표 = 상자 좌표 + 13, 67) -->
+  <div class="p val" style="left:34px;top:173px;width:54px;height:22px;font-size:15px;" data-k="ND" data-d="D1516" data-f="10진 4자리 앞자리 0 · 글자 7 · 판 투명">0037</div>
+  <i class="p lamp g" style="left:100px;top:177px;" data-k="WL" data-d="D1514" data-f="범위: 0 → 81(정상) · 1~65535 → 55(오류)"></i>
+  <i class="p lamp c" style="left:182px;top:174px;" data-k="BL" data-d="M1600" data-f="ON 75 · OFF 25"></i>
+  <i class="p lamp" style="left:206px;top:174px;" data-k="BL" data-d="M1601" data-f="ON 75 · OFF 25"></i>
+  <i class="p lamp c" style="left:292px;top:132px;" data-k="BL" data-d="M1660" data-f="ON 75 · OFF 25"></i>
+  <i class="p lamp" style="left:316px;top:132px;" data-k="BL" data-d="M1661" data-f="ON 56 · OFF 25"></i>
+  <i class="p lamp" style="left:306px;top:320px;" data-k="BL" data-d="M1690" data-f="ON 56 · OFF 25"></i>
+  <i class="p lamp g" style="left:430px;top:174px;" data-k="BL" data-d="M1700" data-f="ON 81 · OFF 25"></i>
+  <i class="p lamp" style="left:538px;top:132px;" data-k="BL" data-d="M1720" data-f="ON 100 · OFF 25"></i>
+  <div class="p val" style="left:592px;top:284px;width:38px;height:22px;font-size:15px;" data-k="ND" data-d="D1800" data-f="10진 2자리 · 글자 7 · 판 투명">1</div>
+  <i class="p lamp y" style="left:660px;top:288px;" data-k="BL" data-d="M1800" data-f="ON 100 · OFF 25"></i>
+  <i class="p lamp" style="left:748px;top:288px;" data-k="BL" data-d="M1730" data-f="ON 81 · OFF 25"></i>
+  <i class="p lamp g" style="left:816px;top:218px;" data-k="BL" data-d="M1731" data-f="ON 81 · OFF 25"></i>
+  <i class="p lamp" style="left:844px;top:218px;" data-k="BL" data-d="M1732" data-f="ON 55 · OFF 25"></i>
+  <i class="p lamp" style="left:814px;top:128px;" data-k="BL" data-d="X1903" data-f="ON 100 · OFF 25"></i>
+  <i class="p lamp g" style="left:950px;top:174px;" data-k="BL" data-d="X1900" data-f="ON 81 · OFF 25"></i>
+  <i class="p lamp" style="left:950px;top:320px;" data-k="BL" data-d="X1901" data-f="ON 55 · OFF 25"></i>
 
-      <div class="st" style="left:8px;top:62px;">STEP 01<br>RFID①<span class="dev">D1516 0037</span><span class="lamp g"></span></div>
-      <div class="st" style="left:130px;top:62px;">AS/RS 24칸<span class="dev">A M1600 · B M1601</span><span class="lamp c"></span> <span class="lamp"></span></div>
-      <div class="st" style="left:248px;top:30px;width:100px;height:58px;">1차 분리<span class="dev">M1660 · M1661</span><span class="lamp c"></span> <span class="lamp"></span></div>
-      <div class="st" style="left:250px;top:214px;width:100px;height:62px;border-color:#7F1D1D;">발열 격리<span class="dev">M1690 · X1902</span><span class="lamp"></span></div>
-      <div class="st" style="left:372px;top:62px;">메인 검사<span class="dev">M1700 · RFID②</span><span class="lamp g"></span></div>
-      <div class="st" style="left:482px;top:30px;width:100px;height:58px;">분기<span class="dev">M1720</span><span class="lamp"></span></div>
-      <div class="st" style="left:560px;top:180px;width:120px;height:62px;">재검사 라인<span class="dev">D1800 = 1 EA</span><span class="lamp y"></span></div>
-      <div class="st" style="left:690px;top:180px;width:104px;height:62px;">재검사기<span class="dev">M1730 · RFID③</span><span class="lamp"></span></div>
-      <div class="st" style="left:772px;top:116px;width:104px;height:58px;">2차 분리<span class="dev">M1731 ↑ · M1732 ↓</span><span class="lamp g"></span> <span class="lamp"></span></div>
-      <div class="st" style="left:760px;top:24px;width:96px;height:50px;">합류<span class="dev">X1903</span></div>
-      <div class="st" style="left:900px;top:62px;width:90px;border-color:var(--good);">GOOD OUT<span class="dev">X1900</span><span class="lamp g"></span></div>
-      <div class="st" style="left:900px;top:222px;width:90px;height:58px;border-color:var(--ng);">NG OUT<span class="dev">X1901</span><span class="lamp"></span></div>
-    </div>
+  <!-- 게이트 카운터 -->
+  <div class="box" style="left:12px;top:378px;width:190px;height:120px;border-top:4px solid var(--c81);"><h3>GOOD OUT <span class="dev">D1900</span></h3><div class="slot" style="left:10px;top:40px;width:136px;height:52px;"></div><span class="unit a" style="left:152px;top:66px;">EA</span></div>
+  <div class="box" style="left:212px;top:378px;width:190px;height:120px;border-top:4px solid var(--c55);"><h3>NG OUT <span class="dev">D1901</span></h3><div class="slot" style="left:10px;top:40px;width:136px;height:52px;"></div><span class="unit a" style="left:152px;top:66px;">EA</span></div>
+  <div class="box" style="left:412px;top:378px;width:190px;height:120px;border-top:4px solid var(--c56);"><h3>발열 격리 <span class="dev">D1902</span></h3><div class="slot" style="left:10px;top:40px;width:136px;height:52px;"></div><span class="unit a" style="left:152px;top:66px;">EA</span></div>
+  <div class="box" style="left:612px;top:378px;width:190px;height:120px;border-top:4px solid var(--c75);"><h3>합계 <span class="dev">D1903</span></h3><div class="slot" style="left:10px;top:40px;width:136px;height:52px;"></div><span class="unit a" style="left:152px;top:66px;">EA</span></div>
+  <div class="box" style="left:812px;top:378px;width:200px;height:120px;border-top:4px solid var(--c47);"><h3>수율 <span class="dev">D1904 ÷10</span></h3><div class="slot" style="left:10px;top:36px;width:150px;height:46px;"></div><span class="unit a" style="left:166px;top:58px;">%</span><div class="slot" style="left:10px;top:92px;width:178px;height:14px;"></div></div>
+  <div class="p val" style="left:24px;top:420px;width:134px;height:50px;font-size:34px;" data-k="ND" data-d="D1900" data-f="10진 5자리 · 글자 7 · 판 투명">812</div>
+  <div class="p val" style="left:224px;top:420px;width:134px;height:50px;font-size:34px;" data-k="ND" data-d="D1901" data-f="10진 5자리 · 글자 7 · 판 투명">152</div>
+  <div class="p val" style="left:424px;top:420px;width:134px;height:50px;font-size:34px;" data-k="ND" data-d="D1902" data-f="10진 5자리 · 글자 7 · 판 투명">12</div>
+  <div class="p val" style="left:624px;top:420px;width:134px;height:50px;font-size:34px;" data-k="ND" data-d="D1903" data-f="10진 5자리 · 글자 7 · 판 투명">976</div>
+  <div class="p val" style="left:824px;top:416px;width:148px;height:44px;font-size:32px;" data-k="ND" data-d="D1904" data-f="10진 소수 1자리(÷10) · 글자 7 · 판 투명">83.1</div>
+  <div class="p" style="left:824px;top:472px;width:176px;height:12px;" data-k="BG" data-d="D1904" data-f="막대그래프 가로 · 0~1000 · 막대 47 · 배경 투명"><div style="width:83.1%;height:100%;background:var(--c47);"></div></div>
 
-    <div class="box cnt" style="left:12px;top:322px;border-top:4px solid var(--good);"><h3>GOOD OUT <span class="dev">D1900</span></h3><div class="big">812<small>EA</small></div></div>
-    <div class="box cnt" style="left:212px;top:322px;border-top:4px solid var(--ng);"><h3>NG OUT <span class="dev">D1901</span></h3><div class="big">152<small>EA</small></div></div>
-    <div class="box cnt" style="left:412px;top:322px;border-top:4px solid var(--iso);"><h3>발열 격리 <span class="dev">D1902</span></h3><div class="big">12<small>EA</small></div></div>
-    <div class="box cnt" style="left:612px;top:322px;border-top:4px solid var(--cyan);"><h3>합계 <span class="dev">D1903</span></h3><div class="big">976<small>EA</small></div></div>
-    <div class="box cnt" style="left:812px;top:322px;width:200px;border-top:4px solid #A78BFA;"><h3>수율 <span class="dev">D1904 ÷10</span></h3><div class="big">83.1<small>%</small></div>
-      <div style="height:8px;background:#0F151D;border-radius:4px;margin-top:6px;"><div style="width:83.1%;height:100%;background:#A78BFA;border-radius:4px;"></div></div></div>
-
-    <div class="box" style="left:12px;top:446px;width:600px;height:128px;">
-      <h3>최근 판정 <span class="dev">상세는 02 검사 화면</span></h3>
-      <table class="kv kv-wide">
-        <tr><td>메인 검사 PACK 0037 (4S)</td><td class="v" style="color:var(--good)">PASS</td><td class="d">D1526 · D1700</td></tr>
-        <tr><td>재검사 PACK 0029 (4S · 재검사 1회)</td><td class="v" style="color:var(--ng)">NG-ΔV</td><td class="d">D1536 · D1730</td></tr>
-        <tr><td>마지막 발열 격리 PACK 0011 · 41.2 °C</td><td class="v" style="color:var(--iso)">ISO</td><td class="d">D1651 · D1652</td></tr>
-      </table>
-    </div>
-    <div class="btn red" style="position:absolute;left:628px;top:446px;width:180px;height:128px;font-size:18px;">카운터 리셋<span class="dev" style="color:#FCA5A5">M1920 · 2초 길게</span><span style="font-size:11px;color:#FCA5A5;font-weight:600;margin-top:4px;">DB 이력은 유지</span></div>
-    <div class="box" style="left:824px;top:446px;width:188px;height:128px;">
-      <h3>Python 응답 <span class="dev">완료 비트</span></h3>
-      <table class="kv">
-        <tr><td><span class="lamp g"></span> 메인</td><td class="d">D1713</td></tr>
-        <tr><td><span class="lamp"></span> 재검사</td><td class="d">D1743</td></tr>
-        <tr><td><span class="lamp"></span> 격리 기록</td><td class="d">D1653</td></tr>
-      </table>
-    </div>
+  <!-- 최근 판정 -->
+  <div class="box" style="left:12px;top:510px;width:600px;height:184px;">
+    <h3>최근 판정 <span class="dev">상세는 02 검사 화면</span></h3>
+    <span class="lbl a" style="left:12px;top:44px;">메인 검사</span><span class="lbl a" style="left:92px;top:44px;color:var(--ink2);">PACK</span><div class="slot" style="left:132px;top:38px;width:60px;height:30px;"></div><div class="slot" style="left:200px;top:38px;width:44px;height:30px;"></div><div class="slot" style="left:376px;top:38px;width:110px;height:30px;"></div><span class="dev a" style="left:494px;top:46px;">D1526·D1714·D1700</span>
+    <div class="sep" style="left:10px;right:10px;top:80px;"></div>
+    <span class="lbl a" style="left:12px;top:96px;">재검사</span><span class="lbl a" style="left:92px;top:96px;color:var(--ink2);">PACK</span><div class="slot" style="left:132px;top:90px;width:60px;height:30px;"></div><div class="slot" style="left:200px;top:90px;width:44px;height:30px;"></div><span class="unit a" style="left:254px;top:96px;">재검사</span><div class="slot" style="left:300px;top:90px;width:32px;height:30px;"></div><span class="unit a" style="left:338px;top:96px;">회</span><div class="slot" style="left:376px;top:90px;width:110px;height:30px;"></div><span class="dev a" style="left:494px;top:92px;">D1536·D1744</span><span class="dev a" style="left:494px;top:105px;">D1537·D1730</span>
+    <div class="sep" style="left:10px;right:10px;top:132px;"></div>
+    <span class="lbl a" style="left:12px;top:148px;">발열 격리</span><span class="lbl a" style="left:92px;top:148px;color:var(--ink2);">PACK</span><div class="slot" style="left:132px;top:142px;width:60px;height:30px;"></div><div class="slot" style="left:200px;top:142px;width:66px;height:30px;"></div><span class="unit a" style="left:272px;top:148px;">°C</span><div class="slot" style="left:376px;top:142px;width:110px;height:30px;"></div><span class="dev a" style="left:494px;top:150px;">D1651·D1652</span>
   </div>
-  <div class="ftr"><div class="nav cur">운전 현황<small>01</small></div><div class="nav">검사<small>02</small></div><div class="nav">AS/RS · 격리<small>03</small></div><div class="nav">알람<small>04</small></div></div>
+  <div class="p val" style="left:146px;top:550px;width:58px;height:28px;font-size:16px;" data-k="ND" data-d="D1526" data-f="10진 4자리 앞자리 0 · 글자 7">0037</div>
+  <div class="p txt" style="left:214px;top:550px;width:42px;height:28px;font-size:14px;color:var(--c7);" data-k="WL" data-d="D1714" data-f="범위 상태 글자: 4 → 4S · 6 → 6S · 그 외 → ? (글자 7)">4S</div>
+  <div class="p txt" style="left:390px;top:550px;width:108px;height:28px;font-size:16px;color:var(--c81);" data-k="WL" data-d="D1700" data-f="판정 글자·색: 0 → — · 1 PASS(81) · 2 RETEST(100) · 3 NG-ΔV · 4 NG-IR · 5 NG-TEMP(55)">PASS</div>
+  <div class="p val" style="left:146px;top:602px;width:58px;height:28px;font-size:16px;" data-k="ND" data-d="D1536" data-f="10진 4자리 앞자리 0 · 글자 7">0029</div>
+  <div class="p txt" style="left:214px;top:602px;width:42px;height:28px;font-size:14px;color:var(--c7);" data-k="WL" data-d="D1744" data-f="범위 상태 글자: 4 → 4S · 6 → 6S">4S</div>
+  <div class="p val c" style="left:314px;top:602px;width:30px;height:28px;font-size:16px;" data-k="ND" data-d="D1537" data-f="10진 1자리 · 글자 7">1</div>
+  <div class="p txt" style="left:390px;top:602px;width:108px;height:28px;font-size:16px;color:var(--c55);" data-k="WL" data-d="D1730" data-f="판정 글자·색 (D1700과 같은 상태표)">NG-ΔV</div>
+  <div class="p val" style="left:146px;top:654px;width:58px;height:28px;font-size:16px;" data-k="ND" data-d="D1651" data-f="10진 4자리 앞자리 0 · 글자 7">0011</div>
+  <div class="p val" style="left:214px;top:654px;width:64px;height:28px;font-size:16px;" data-k="ND" data-d="D1652" data-f="10진 소수 1자리(÷10) · 글자 7">41.2</div>
+  <div class="p txt" style="left:390px;top:654px;width:108px;height:28px;font-size:16px;color:var(--c56);" data-k="WL" data-d="D1651" data-f="범위 상태 글자: 0 → (빈칸) · 1~32767 → ISO(56)">ISO</div>
+
+  <!-- 카운터 리셋 -->
+  <div class="box" style="left:624px;top:510px;width:190px;height:184px;">
+    <h3>카운터 리셋 <span class="dev">M1920</span></h3>
+    <div class="btnslot" style="left:10px;top:32px;width:168px;height:106px;"></div>
+    <span class="crit a" style="left:12px;top:146px;">2초 길게 누르기(ON 지연)</span>
+    <span class="crit a" style="left:12px;top:162px;">DB 이력은 유지</span>
+  </div>
+  <div class="p sw red" style="left:638px;top:544px;width:164px;height:102px;font-size:18px;" data-k="SW" data-d="M1920" data-f="비트 스위치 모멘터리 · 지연 ON 2.0초 · 지연 중 표시: 판 100 글자 0 · 평소 판 240 글자 7">카운터 리셋<small>2초 누르기</small></div>
+
+  <!-- Python 응답 -->
+  <div class="box" style="left:824px;top:510px;width:188px;height:184px;">
+    <h3>Python 응답 <span class="dev">완료 = 1</span></h3>
+    <i class="sock" style="left:12px;top:42px;"></i><span class="lbl a" style="left:40px;top:43px;">메인</span><span class="dev a" style="left:136px;top:46px;">D1713</span>
+    <div class="sep" style="left:10px;right:10px;top:74px;"></div>
+    <i class="sock" style="left:12px;top:86px;"></i><span class="lbl a" style="left:40px;top:87px;">재검사</span><span class="dev a" style="left:136px;top:90px;">D1743</span>
+    <div class="sep" style="left:10px;right:10px;top:118px;"></div>
+    <i class="sock" style="left:12px;top:130px;"></i><span class="lbl a" style="left:40px;top:131px;">격리 기록</span><span class="dev a" style="left:136px;top:134px;">D1653</span>
+  </div>
+  <i class="p lamp g" style="left:840px;top:556px;" data-k="WL" data-d="D1713" data-f="범위: 1 → 81 · 그 외 → 25"></i>
+  <i class="p lamp" style="left:840px;top:600px;" data-k="WL" data-d="D1743" data-f="범위: 1 → 81 · 그 외 → 25"></i>
+  <i class="p lamp" style="left:840px;top:644px;" data-k="WL" data-d="D1653" data-f="범위: 1 → 81 · 그 외 → 25"></i>
+
+  <div class="ftr"></div>
+  <div class="nav cur" style="left:10px;">운전 현황<small>01</small></div><div class="nav" style="left:263px;">검사<small>02</small></div><div class="nav" style="left:516px;">AS/RS · 격리<small>03</small></div><div class="nav" style="left:769px;">알람<small>04</small></div>
+  <div class="p inv" style="left:263px;top:712px;width:245px;height:48px;" data-k="SC" data-d="→ 화면 2" data-f="화면 전환 스위치 · 모양 없음"></div>
+  <div class="p inv" style="left:516px;top:712px;width:245px;height:48px;" data-k="SC" data-d="→ 화면 3" data-f="화면 전환 스위치 · 모양 없음"></div>
+  <div class="p inv" style="left:769px;top:712px;width:245px;height:48px;" data-k="SC" data-d="→ 화면 4" data-f="화면 전환 스위치 · 모양 없음"></div>
 </section>
 
 <!-- ============================================================ 02 검사 -->
 <section class="screen" id="s2">
-  <div class="hdr">
-    <span class="no">02</span><span class="tt">검사 (메인 · 재검사)</span>
-    <span class="pill">판정 코드 1 PASS · 2 RETEST · 3 NG-ΔV · 4 NG-IR · 5 NG-TEMP</span>
-    <span class="sp"></span><span class="clock">2026-11-19 14:32:05</span>
-  </div>
-  <div class="body">
-    <div class="box" style="left:12px;top:10px;width:494px;height:470px;border-top:4px solid var(--good);">
-      <h3>메인 검사기 <span class="dev">RFID② D1520~ · 결과 D1700~D1703</span></h3>
-      <table class="kv">
-        <tr><td>PACK ID</td><td class="v">0037</td><td class="d">D1526</td></tr>
-        <tr><td>팩 종류 (셀 수)</td><td class="v">4S (4)</td><td class="d">D1714</td></tr>
-        <tr><td>재검사 횟수</td><td class="v">0</td><td class="d">D1527</td></tr>
-      </table>
-      <div style="margin:10px 0;padding:10px;border-radius:6px;background:var(--good-d);border:2px solid var(--good);text-align:center;">
-        <div class="dev">판정 D1700 = 1</div><div style="font:800 34px var(--mono);color:#86EFAC;">PASS</div>
-      </div>
-      <table class="kv">
-        <tr><td>팩 ΔV</td><td class="v">0.244 V</td><td class="d">D1701 ÷1000</td></tr>
-        <tr><td style="color:var(--ink3);font-size:11.5px;" colspan="3">기준 4S: PASS ≤ 0.320 · RETEST ≤ 0.600 · NG &gt; 0.600 V</td></tr>
-        <tr><td>팩 AC-IR</td><td class="v">8.58 mΩ</td><td class="d">D1702 ÷100</td></tr>
-        <tr><td style="color:var(--ink3);font-size:11.5px;" colspan="3">기준 4S: PASS ≤ 10.00 · RETEST ≤ 12.80 mΩ</td></tr>
-        <tr><td>온도</td><td class="v">24.5 °C</td><td class="d">D1703 ÷10</td></tr>
-        <tr><td style="color:var(--ink3);font-size:11.5px;" colspan="3">기준: PASS ≤ 38.0 °C</td></tr>
-      </table>
-      <div style="display:flex;gap:14px;margin-top:10px;font-size:12.5px;">
-        <span><span class="lamp"></span> 요청 <span class="dev">D1710</span></span>
-        <span><span class="lamp g"></span> 완료 <span class="dev">D1713</span></span>
-        <span><span class="lamp g"></span> 프로브 <span class="dev">M1700</span></span>
-      </div>
-    </div>
+  <div class="hdr"><span class="no">02</span><span class="tt">검사 (메인 · 재검사)</span></div>
+  <div class="pill" style="left:260px;width:420px;color:var(--ink2);">판정 코드 1 PASS · 2 RETEST · 3 NG-ΔV · 4 NG-IR · 5 NG-TEMP</div>
+  <div class="p val" style="left:790px;top:14px;width:222px;height:28px;font-size:16px;color:var(--c46);" data-k="DT" data-d="(본체 시계)" data-f="날짜 20yy/mm/dd · 시각 hh:mm:ss · 글자 46 · ASCII">2026/11/19 14:32:05</div>
 
-    <div class="box" style="left:518px;top:10px;width:494px;height:470px;border-top:4px solid var(--warn);">
-      <h3>재검사기 <span class="dev">RFID③ D1530~ · 결과 D1730~D1733</span></h3>
-      <table class="kv">
-        <tr><td>PACK ID</td><td class="v">0029</td><td class="d">D1536</td></tr>
-        <tr><td>팩 종류 (셀 수)</td><td class="v">4S (4)</td><td class="d">D1744</td></tr>
-        <tr><td>재검사 횟수</td><td class="v">1</td><td class="d">D1537</td></tr>
-      </table>
-      <div style="margin:10px 0;padding:10px;border-radius:6px;background:var(--ng-d);border:2px solid var(--ng);text-align:center;">
-        <div class="dev">판정 D1730 = 3</div><div style="font:800 34px var(--mono);color:#FCA5A5;">NG-ΔV</div>
-      </div>
-      <table class="kv">
-        <tr><td>팩 ΔV</td><td class="v" style="color:#FCA5A5">0.875 V</td><td class="d">D1731 ÷1000</td></tr>
-        <tr><td style="color:var(--ink3);font-size:11.5px;" colspan="3">재검사는 RETEST 없음: PASS ≤ 0.320 · 그 외 NG</td></tr>
-        <tr><td>팩 AC-IR</td><td class="v">9.40 mΩ</td><td class="d">D1732 ÷100</td></tr>
-        <tr><td>온도</td><td class="v">34.8 °C</td><td class="d">D1733 ÷10</td></tr>
-        <tr><td colspan="3" style="font-size:12px;color:var(--ink2);">메인 NG 팩(태그 idx5 = 3·4·5)은 계측 없이 통과 → 2차 분리 ↓</td></tr>
-      </table>
-      <div style="display:flex;gap:14px;margin-top:10px;font-size:12.5px;">
-        <span><span class="lamp"></span> 요청 <span class="dev">D1740</span></span>
-        <span><span class="lamp g"></span> 완료 <span class="dev">D1743</span></span>
-        <span><span class="lamp"></span> 프로브 <span class="dev">M1730</span></span>
-        <span><span class="lamp r"></span> ↓ NG <span class="dev">M1732</span></span>
-      </div>
-    </div>
-
-    <div class="box" style="left:12px;top:492px;width:1000px;height:82px;">
-      <h3>재검사 라인 <span class="dev">D1800 · M1800 · M1720</span></h3>
-      <div style="display:flex;gap:24px;align-items:center;font-size:14px;">
-        <span>라인 위 팩 <b class="num" style="font-size:18px;display:inline-block;width:70px;">1</b> EA <span class="dev">D1800</span></span>
-        <span><span class="lamp"></span> 분기점까지 참 → 메인 출구 대기 <span class="dev">M1800</span></span>
-        <span><span class="lamp"></span> 분기 동작 <span class="dev">M1720</span></span>
-        <span><span class="lamp"></span> 합류 간격 감지 <span class="dev">X1903</span></span>
-      </div>
-    </div>
+  <!-- 메인 검사기 -->
+  <div class="box" style="left:12px;top:66px;width:494px;height:490px;border-top:4px solid var(--c81);">
+    <h3>메인 검사기 <span class="dev">RFID② D1520~ · 결과 D1700~D1703</span></h3>
+    <span class="lbl a" style="left:12px;top:42px;">PACK ID</span><div class="slot" style="left:270px;top:36px;width:120px;height:30px;"></div><span class="dev a" style="left:404px;top:44px;">D1526</span>
+    <span class="lbl a" style="left:12px;top:80px;">팩 종류 (셀 수)</span><div class="slot" style="left:270px;top:74px;width:120px;height:30px;"></div><span class="dev a" style="left:404px;top:82px;">D1714</span>
+    <span class="lbl a" style="left:12px;top:118px;">재검사 횟수</span><div class="slot" style="left:270px;top:112px;width:120px;height:30px;"></div><span class="dev a" style="left:404px;top:120px;">D1527</span>
+    <span class="dev a" style="left:12px;top:156px;">판정 D1700</span>
+    <div class="slot" style="left:10px;top:172px;width:472px;height:62px;"></div>
+    <span class="lbl a" style="left:12px;top:252px;">팩 ΔV</span><div class="slot" style="left:236px;top:246px;width:120px;height:30px;"></div><span class="unit a" style="left:362px;top:252px;">V</span><span class="dev a" style="left:400px;top:254px;">D1701 ÷1000</span>
+    <span class="crit a" style="left:12px;top:282px;">PASS ≤ 0.320 / RETEST ≤ 0.600 V (4S) · ≤ 0.480 / ≤ 0.900 V (6S)</span>
+    <span class="lbl a" style="left:12px;top:312px;">팩 AC-IR</span><div class="slot" style="left:236px;top:306px;width:120px;height:30px;"></div><span class="unit a" style="left:362px;top:312px;">mΩ</span><span class="dev a" style="left:400px;top:314px;">D1702 ÷100</span>
+    <span class="crit a" style="left:12px;top:342px;">PASS ≤ 10.00 / RETEST ≤ 12.80 mΩ (4S) · ≤ 15.00 / ≤ 19.20 mΩ (6S)</span>
+    <span class="lbl a" style="left:12px;top:372px;">온도</span><div class="slot" style="left:236px;top:366px;width:120px;height:30px;"></div><span class="unit a" style="left:362px;top:372px;">°C</span><span class="dev a" style="left:400px;top:374px;">D1703 ÷10</span>
+    <span class="crit a" style="left:12px;top:402px;">PASS ≤ 38.0 °C (4S · 6S 공통)</span>
+    <div class="sep" style="left:10px;right:10px;top:428px;"></div>
+    <i class="sock" style="left:12px;top:444px;"></i><span class="lbl a" style="left:38px;top:445px;">요청</span><span class="dev a" style="left:74px;top:448px;">D1710</span>
+    <i class="sock" style="left:150px;top:444px;"></i><span class="lbl a" style="left:176px;top:445px;">완료</span><span class="dev a" style="left:212px;top:448px;">D1713</span>
+    <i class="sock" style="left:288px;top:444px;"></i><span class="lbl a" style="left:314px;top:445px;">프로브</span><span class="dev a" style="left:362px;top:448px;">M1700</span>
   </div>
-  <div class="ftr"><div class="nav">운전 현황<small>01</small></div><div class="nav cur">검사<small>02</small></div><div class="nav">AS/RS · 격리<small>03</small></div><div class="nav">알람<small>04</small></div></div>
+  <div class="p val" style="left:284px;top:104px;width:116px;height:28px;font-size:18px;" data-k="ND" data-d="D1526" data-f="10진 4자리 앞자리 0 · 글자 7">0037</div>
+  <div class="p txt" style="left:284px;top:142px;width:116px;height:28px;font-size:16px;color:var(--c7);justify-content:flex-end;padding-right:6px;" data-k="WL" data-d="D1714" data-f="범위 상태 글자: 4 → 4S (4) · 6 → 6S (6)">4S (4)</div>
+  <div class="p val" style="left:284px;top:180px;width:116px;height:28px;font-size:18px;" data-k="ND" data-d="D1527" data-f="10진 1자리 · 글자 7">0</div>
+  <div class="p txt" style="left:25px;top:241px;width:468px;height:58px;font-size:34px;background:var(--c255);color:var(--c50);border:2px solid var(--c81);" data-k="WL" data-d="D1700" data-f="범위 상태(판·테두리·글자): 0 → — (25) · 1 PASS(255·81·50) · 2 RETEST(120·100·63) · 3 NG-ΔV · 4 NG-IR · 5 NG-TEMP(232·55·60)">PASS</div>
+  <div class="p val" style="left:250px;top:314px;width:116px;height:28px;font-size:18px;" data-k="ND" data-d="D1701" data-f="10진 소수 3자리(÷1000) · 글자 7 · 알람색: 321 이상 → 글자 100">0.244</div>
+  <div class="p val" style="left:250px;top:374px;width:116px;height:28px;font-size:18px;" data-k="ND" data-d="D1702" data-f="10진 소수 2자리(÷100) · 글자 7">8.58</div>
+  <div class="p val" style="left:250px;top:434px;width:116px;height:28px;font-size:18px;" data-k="ND" data-d="D1703" data-f="10진 소수 1자리(÷10) · 글자 7 · 알람색: 381 이상 → 글자 55">24.5</div>
+  <i class="p lamp" style="left:28px;top:513px;" data-k="WL" data-d="D1710" data-f="범위: 1 → 100 · 그 외 → 25"></i>
+  <i class="p lamp g" style="left:166px;top:513px;" data-k="WL" data-d="D1713" data-f="범위: 1 → 81 · 그 외 → 25"></i>
+  <i class="p lamp g" style="left:304px;top:513px;" data-k="BL" data-d="M1700" data-f="ON 81 · OFF 25"></i>
+
+  <!-- 재검사기 -->
+  <div class="box" style="left:518px;top:66px;width:494px;height:490px;border-top:4px solid var(--c100);">
+    <h3>재검사기 <span class="dev">RFID③ D1530~ · 결과 D1730~D1733</span></h3>
+    <span class="lbl a" style="left:12px;top:42px;">PACK ID</span><div class="slot" style="left:270px;top:36px;width:120px;height:30px;"></div><span class="dev a" style="left:404px;top:44px;">D1536</span>
+    <span class="lbl a" style="left:12px;top:80px;">팩 종류 (셀 수)</span><div class="slot" style="left:270px;top:74px;width:120px;height:30px;"></div><span class="dev a" style="left:404px;top:82px;">D1744</span>
+    <span class="lbl a" style="left:12px;top:118px;">재검사 횟수</span><div class="slot" style="left:270px;top:112px;width:120px;height:30px;"></div><span class="dev a" style="left:404px;top:120px;">D1537</span>
+    <span class="dev a" style="left:12px;top:156px;">판정 D1730</span>
+    <div class="slot" style="left:10px;top:172px;width:472px;height:62px;"></div>
+    <span class="lbl a" style="left:12px;top:252px;">팩 ΔV</span><div class="slot" style="left:236px;top:246px;width:120px;height:30px;"></div><span class="unit a" style="left:362px;top:252px;">V</span><span class="dev a" style="left:400px;top:254px;">D1731 ÷1000</span>
+    <span class="crit a" style="left:12px;top:282px;">재검사는 RETEST 없음: PASS 기준을 넘으면 NG</span>
+    <span class="lbl a" style="left:12px;top:312px;">팩 AC-IR</span><div class="slot" style="left:236px;top:306px;width:120px;height:30px;"></div><span class="unit a" style="left:362px;top:312px;">mΩ</span><span class="dev a" style="left:400px;top:314px;">D1732 ÷100</span>
+    <span class="crit a" style="left:12px;top:342px;">PASS ≤ 10.00 mΩ (4S) · ≤ 15.00 mΩ (6S)</span>
+    <span class="lbl a" style="left:12px;top:372px;">온도</span><div class="slot" style="left:236px;top:366px;width:120px;height:30px;"></div><span class="unit a" style="left:362px;top:372px;">°C</span><span class="dev a" style="left:400px;top:374px;">D1733 ÷10</span>
+    <span class="crit a" style="left:12px;top:402px;">메인 NG 팩(3·4·5)은 계측 없이 통과 → 2차 분리 ↓</span>
+    <div class="sep" style="left:10px;right:10px;top:428px;"></div>
+    <i class="sock" style="left:12px;top:444px;"></i><span class="lbl a" style="left:38px;top:445px;">요청</span><span class="dev a" style="left:74px;top:448px;">D1740</span>
+    <i class="sock" style="left:130px;top:444px;"></i><span class="lbl a" style="left:156px;top:445px;">완료</span><span class="dev a" style="left:192px;top:448px;">D1743</span>
+    <i class="sock" style="left:248px;top:444px;"></i><span class="lbl a" style="left:274px;top:445px;">프로브</span><span class="dev a" style="left:322px;top:448px;">M1730</span>
+    <i class="sock" style="left:372px;top:444px;"></i><span class="lbl a" style="left:398px;top:445px;">↓NG</span><span class="dev a" style="left:436px;top:448px;">M1732</span>
+  </div>
+  <div class="p val" style="left:790px;top:104px;width:116px;height:28px;font-size:18px;" data-k="ND" data-d="D1536" data-f="10진 4자리 앞자리 0 · 글자 7">0029</div>
+  <div class="p txt" style="left:790px;top:142px;width:116px;height:28px;font-size:16px;color:var(--c7);justify-content:flex-end;padding-right:6px;" data-k="WL" data-d="D1744" data-f="범위 상태 글자: 4 → 4S (4) · 6 → 6S (6)">4S (4)</div>
+  <div class="p val" style="left:790px;top:180px;width:116px;height:28px;font-size:18px;" data-k="ND" data-d="D1537" data-f="10진 1자리 · 글자 7">1</div>
+  <div class="p txt" style="left:531px;top:241px;width:468px;height:58px;font-size:34px;background:var(--c232);color:var(--c60);border:2px solid var(--c55);" data-k="WL" data-d="D1730" data-f="범위 상태(판·테두리·글자): D1700과 같은 상태표">NG-ΔV</div>
+  <div class="p val" style="left:756px;top:314px;width:116px;height:28px;font-size:18px;color:var(--c100);" data-k="ND" data-d="D1731" data-f="10진 소수 3자리(÷1000) · 글자 7 · 알람색: 321 이상 → 글자 100">0.875</div>
+  <div class="p val" style="left:756px;top:374px;width:116px;height:28px;font-size:18px;" data-k="ND" data-d="D1732" data-f="10진 소수 2자리(÷100) · 글자 7">9.40</div>
+  <div class="p val" style="left:756px;top:434px;width:116px;height:28px;font-size:18px;" data-k="ND" data-d="D1733" data-f="10진 소수 1자리(÷10) · 글자 7 · 알람색: 381 이상 → 글자 55">34.8</div>
+  <i class="p lamp" style="left:534px;top:513px;" data-k="WL" data-d="D1740" data-f="범위: 1 → 100 · 그 외 → 25"></i>
+  <i class="p lamp g" style="left:652px;top:513px;" data-k="WL" data-d="D1743" data-f="범위: 1 → 81 · 그 외 → 25"></i>
+  <i class="p lamp" style="left:770px;top:513px;" data-k="BL" data-d="M1730" data-f="ON 81 · OFF 25"></i>
+  <i class="p lamp r" style="left:894px;top:513px;" data-k="BL" data-d="M1732" data-f="ON 55 · OFF 25"></i>
+
+  <!-- 재검사 라인 -->
+  <div class="box" style="left:12px;top:568px;width:1000px;height:126px;">
+    <h3>재검사 라인 <span class="dev">D1800 · M1800 · M1720 · X1903</span></h3>
+    <span class="lbl a" style="left:12px;top:52px;">라인 위 팩</span><div class="slot" style="left:92px;top:44px;width:64px;height:34px;"></div><span class="unit a" style="left:162px;top:52px;">EA</span><span class="dev a" style="left:12px;top:86px;">D1800</span>
+    <i class="sock" style="left:226px;top:50px;"></i><span class="lbl a" style="left:252px;top:51px;">분기점까지 참 → 메인 출구 대기</span><span class="dev a" style="left:252px;top:72px;">M1800</span>
+    <i class="sock" style="left:500px;top:50px;"></i><span class="lbl a" style="left:526px;top:51px;">분기 동작</span><span class="dev a" style="left:526px;top:72px;">M1720</span>
+    <i class="sock" style="left:680px;top:50px;"></i><span class="lbl a" style="left:706px;top:51px;">합류 간격 감지</span><span class="dev a" style="left:706px;top:72px;">X1903</span>
+  </div>
+  <div class="p val" style="left:106px;top:615px;width:60px;height:30px;font-size:20px;" data-k="ND" data-d="D1800" data-f="10진 2자리 · 글자 7">1</div>
+  <i class="p lamp" style="left:242px;top:621px;" data-k="BL" data-d="M1800" data-f="ON 100 · OFF 25"></i>
+  <i class="p lamp" style="left:516px;top:621px;" data-k="BL" data-d="M1720" data-f="ON 100 · OFF 25"></i>
+  <i class="p lamp" style="left:696px;top:621px;" data-k="BL" data-d="X1903" data-f="ON 100 · OFF 25"></i>
+
+  <div class="ftr"></div>
+  <div class="nav" style="left:10px;">운전 현황<small>01</small></div><div class="nav cur" style="left:263px;">검사<small>02</small></div><div class="nav" style="left:516px;">AS/RS · 격리<small>03</small></div><div class="nav" style="left:769px;">알람<small>04</small></div>
+  <div class="p inv" style="left:10px;top:712px;width:245px;height:48px;" data-k="SC" data-d="→ 화면 1" data-f="화면 전환 스위치 · 모양 없음"></div>
+  <div class="p inv" style="left:516px;top:712px;width:245px;height:48px;" data-k="SC" data-d="→ 화면 3" data-f="화면 전환 스위치 · 모양 없음"></div>
+  <div class="p inv" style="left:769px;top:712px;width:245px;height:48px;" data-k="SC" data-d="→ 화면 4" data-f="화면 전환 스위치 · 모양 없음"></div>
 </section>
 
 <!-- ============================================================ 03 AS/RS · 격리 -->
 <section class="screen" id="s3">
-  <div class="hdr">
-    <span class="no">03</span><span class="tt">입고 · AS/RS · 발열 격리</span>
-    <span class="sp"></span><span class="clock">2026-11-19 14:32:05</span>
+  <div class="hdr"><span class="no">03</span><span class="tt">입고 · AS/RS · 발열 격리</span></div>
+  <div class="p val" style="left:790px;top:14px;width:222px;height:28px;font-size:16px;color:var(--c46);" data-k="DT" data-d="(본체 시계)" data-f="날짜 20yy/mm/dd · 시각 hh:mm:ss · 글자 46 · ASCII">2026/11/19 14:32:05</div>
+
+  <!-- STEP 01 -->
+  <div class="box" style="left:12px;top:66px;width:330px;height:254px;">
+    <h3>STEP 01 입고 · RFID① <span class="dev">D1510~D1519</span></h3>
+    <span class="lbl a" style="left:12px;top:40px;">PACK ID</span><div class="slot" style="left:150px;top:34px;width:110px;height:28px;"></div><span class="dev a" style="left:268px;top:42px;">D1516</span>
+    <span class="lbl a" style="left:12px;top:74px;">태그 시리얼</span><div class="slot" style="left:150px;top:68px;width:110px;height:28px;"></div><span class="dev a" style="left:268px;top:76px;">D1517</span>
+    <span class="lbl a" style="left:12px;top:108px;">DB 셀 수</span><div class="slot" style="left:150px;top:102px;width:110px;height:28px;"></div><span class="dev a" style="left:268px;top:110px;">D1518</span>
+    <span class="lbl a" style="left:12px;top:142px;">비전 박스 크기</span><div class="slot" style="left:150px;top:136px;width:110px;height:28px;"></div><span class="dev a" style="left:268px;top:144px;">D1519</span>
+    <span class="lbl a" style="left:12px;top:176px;">RFID 상태</span><div class="slot" style="left:150px;top:170px;width:110px;height:28px;"></div><span class="dev a" style="left:268px;top:178px;">D1514</span>
+    <div class="sep" style="left:10px;right:10px;top:208px;"></div>
+    <i class="sock" style="left:12px;top:220px;"></i><span class="lbl a" style="left:38px;top:221px;font-size:12px;">셀 수 = 비전</span><span class="dev a" style="left:118px;top:224px;">(비교 비트 A24)</span>
+    <i class="sock" style="left:220px;top:220px;"></i><span class="lbl a" style="left:246px;top:221px;font-size:12px;">C 인계</span><span class="dev a" style="left:290px;top:224px;">M1510</span>
   </div>
-  <div class="body">
-    <div class="box" style="left:12px;top:10px;width:330px;height:236px;">
-      <h3>STEP 01 입고 · RFID① <span class="dev">D1510~D1519</span></h3>
-      <table class="kv">
-        <tr><td>PACK ID</td><td class="v">0038</td><td class="d">D1516</td></tr>
-        <tr><td>태그 시리얼</td><td class="v">6212</td><td class="d">D1517</td></tr>
-        <tr><td>DB 셀 수</td><td class="v">6</td><td class="d">D1518</td></tr>
-        <tr><td>비전 박스 크기</td><td class="v">6 (Large)</td><td class="d">D1519</td></tr>
-        <tr><td>RFID 상태</td><td class="v" style="color:var(--good)">0 정상</td><td class="d">D1514</td></tr>
-      </table>
-      <div style="margin-top:6px;font-size:12px;"><span class="lamp g"></span> 셀 수 = 비전 일치 <span class="dev">D1518 = D1519</span> · <span class="lamp"></span> C 인계 <span class="dev">M1510</span></div>
-    </div>
+  <div class="p val" style="left:164px;top:102px;width:106px;height:26px;font-size:16px;" data-k="ND" data-d="D1516" data-f="10진 4자리 앞자리 0 · 글자 7">0038</div>
+  <div class="p val" style="left:164px;top:136px;width:106px;height:26px;font-size:16px;" data-k="ND" data-d="D1517" data-f="10진 5자리 · 글자 7">6212</div>
+  <div class="p val" style="left:164px;top:170px;width:106px;height:26px;font-size:16px;" data-k="ND" data-d="D1518" data-f="10진 1자리 · 글자 7">6</div>
+  <div class="p txt" style="left:164px;top:204px;width:106px;height:26px;font-size:15px;color:var(--c7);justify-content:flex-end;padding-right:6px;" data-k="WL" data-d="D1519" data-f="범위 상태 글자: 0 → — · 4 → 4 (Small) · 6 → 6 (Large)">6 (Large)</div>
+  <div class="p txt" style="left:164px;top:238px;width:106px;height:26px;font-size:15px;color:var(--c81);justify-content:flex-end;padding-right:6px;" data-k="WL" data-d="D1514" data-f="범위 상태 글자·색: 0 → 0 정상(81) · 1~65535 → 오류(55) (오류 코드 뜻은 A24에서 확정)">0 정상</div>
+  <i class="p lamp g" style="left:28px;top:289px;" data-k="BL" data-d="(제안 A24: D1518=D1519 비교 비트)" data-f="ON 81 · OFF 55 — HMI는 두 번지 비교를 못 하므로 래더 비트 필요"></i>
+  <i class="p lamp" style="left:236px;top:289px;" data-k="BL" data-d="M1510" data-f="ON 75 · OFF 25"></i>
 
-    <div class="box" style="left:354px;top:10px;width:658px;height:236px;">
-      <h3>AS/RS 6열 × 4단 — LOCK 경과 시간 <span class="dev">D1610~D1633 (초) · 0 = LOCK 없음</span></h3>
-      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;">
-        <!-- generated statically: R01..R24 -->
-        <div class="cell">R01<b>0</b></div><div class="cell">R02<b>0</b></div><div class="cell">R03<b>0</b></div><div class="cell z6">R04<b>0</b></div><div class="cell z6">R05<b>0</b></div><div class="cell z6">R06<b>0</b></div>
-        <div class="cell">R07<b>0</b></div><div class="cell lock">R08<b>12</b></div><div class="cell">R09<b>0</b></div><div class="cell z6">R10<b>0</b></div><div class="cell z6">R11<b>0</b></div><div class="cell z6">R12<b>0</b></div>
-        <div class="cell">R13<b>0</b></div><div class="cell">R14<b>0</b></div><div class="cell">R15<b>0</b></div><div class="cell z6">R16<b>0</b></div><div class="cell z6">R17<b>0</b></div><div class="cell z6">R18<b>0</b></div>
-        <div class="cell">R19<b>0</b></div><div class="cell">R20<b>0</b></div><div class="cell">R21<b>0</b></div><div class="cell z6">R22<b>0</b></div><div class="cell z6">R23<b>0</b></div><div class="cell z6">R24<b>0</b></div>
-      </div>
-      <div style="display:flex;gap:16px;margin-top:8px;font-size:12px;align-items:center;">
-        <span style="color:#93C5FD;">■ 1~3열 4S 구역</span><span style="color:#6EE7B7;">■ 4~6열 6S 구역</span><span style="color:#FCA5A5;">■ LOCK 중 (20초 뒤 자동 해제)</span>
-        <span>현재 랙 번호 <b class="num" style="font-size:15px;display:inline-block;width:46px;">8</b> <span class="dev">D1600</span></span>
-      </div>
-    </div>
-    <div class="note" style="left:620px;top:252px;">칸별 보관 PACK ID · 점유 · 숙성 완료 표시는 확장 기능 E1(13장, 보류)</div>
-
-    <div class="box" style="left:12px;top:276px;width:330px;height:150px;">
-      <h3>크레인 <span class="dev">M1600 · M1601</span></h3>
-      <table class="kv">
-        <tr><td><span class="lamp c"></span> 크레인 A (입고면)</td><td class="v">동작</td><td class="d">M1600</td></tr>
-        <tr><td><span class="lamp"></span> 크레인 B (출고면)</td><td class="v">대기</td><td class="d">M1601</td></tr>
-        <tr><td colspan="3" style="font-size:12px;color:var(--ink2);">출고 순서: 발열 우선 → EDD, 메인 검사기가 빌 때</td></tr>
-      </table>
-    </div>
-
-    <div class="box" style="left:354px;top:276px;width:658px;height:150px;border-top:4px solid var(--iso);">
-      <h3>발열 격리 (1차 분리 ↓) <span class="dev">M1690 · D1650~D1653 · X1902</span></h3>
-      <table class="kv">
-        <tr><td><span class="lamp"></span> 보관 중 이상 발열</td><td class="v">—</td><td class="d">M1690</td></tr>
-        <tr><td>마지막 격리 PACK ID · 가상 온도</td><td class="v">0011 · 41.2 °C</td><td class="d">D1651 · D1652</td></tr>
-        <tr><td><span class="lamp"></span> DB 기록 요청 &nbsp; <span class="lamp g"></span> DB 기록 완료</td><td class="v">ISO</td><td class="d">D1650 · D1653</td></tr>
-      </table>
-    </div>
-
-    <div class="box" style="left:12px;top:438px;width:1000px;height:136px;">
-      <h3>1차 분리 Pop-up Wheel <span class="dev">M1660 직진 · M1661 ↓ 격리</span></h3>
-      <div style="display:flex;gap:28px;align-items:center;font-size:14px;margin-top:6px;">
-        <span><span class="lamp c"></span> 직진 → 메인 검사 <span class="dev">M1660</span></span>
-        <span><span class="lamp"></span> 아래 → 발열 격리 <span class="dev">M1661</span></span>
-        <span>격리 누적 <b class="num" style="font-size:18px;display:inline-block;width:70px;">12</b> EA <span class="dev">D1902</span></span>
-      </div>
-      <div style="margin-top:10px;font-size:12px;color:var(--ink2);">태그 idx5 = 5(발열) 팩만 아래로. 격리 팩은 DB에 ISO(station 0)로 남습니다.</div>
-    </div>
+  <!-- 랙 격자 -->
+  <div class="box" style="left:354px;top:66px;width:658px;height:254px;">
+    <h3>AS/RS 6열 × 4단 — LOCK 경과 시간 <span class="dev">D1610~D1633 (초) · 0 = LOCK 없음</span></h3>
+    <div id="grid"></div>
+    <span class="a" style="left:12px;top:226px;font-size:12px;color:#93C5FD;">■ 1~3열 4S 구역</span>
+    <span class="a" style="left:120px;top:226px;font-size:12px;color:#6EE7B7;">■ 4~6열 6S 구역</span>
+    <span class="a" style="left:228px;top:226px;font-size:12px;color:#FCA5A5;">■ LOCK 중 (20초 뒤 자동 해제)</span>
+    <span class="lbl a" style="left:470px;top:224px;font-size:12px;">현재 랙 번호</span><div class="slot" style="left:552px;top:218px;width:46px;height:26px;"></div><span class="dev a" style="left:604px;top:226px;">D1600</span>
   </div>
-  <div class="ftr"><div class="nav">운전 현황<small>01</small></div><div class="nav">검사<small>02</small></div><div class="nav cur">AS/RS · 격리<small>03</small></div><div class="nav">알람<small>04</small></div></div>
+  <div class="p val" style="left:908px;top:286px;width:44px;height:24px;font-size:15px;" data-k="ND" data-d="D1600" data-f="10진 2자리 · 글자 7">8</div>
+  <div id="gridparts"></div>
+  <div class="note" style="left:620px;top:324px;">칸별 보관 PACK ID · 점유 · 숙성 완료 표시는 확장 기능 E1(13장, 보류)</div>
+
+  <!-- 크레인 -->
+  <div class="box" style="left:12px;top:350px;width:330px;height:150px;">
+    <h3>크레인 <span class="dev">M1600 · M1601</span></h3>
+    <span class="lbl a" style="left:12px;top:44px;">크레인 A (입고면)</span><div class="slot" style="left:170px;top:38px;width:90px;height:28px;"></div><span class="dev a" style="left:268px;top:46px;">M1600</span>
+    <span class="lbl a" style="left:12px;top:82px;">크레인 B (출고면)</span><div class="slot" style="left:170px;top:76px;width:90px;height:28px;"></div><span class="dev a" style="left:268px;top:84px;">M1601</span>
+    <span class="crit a" style="left:12px;top:120px;">출고 순서: 발열 우선 → EDD, 메인 검사기가 빌 때</span>
+  </div>
+  <div class="p txt" style="left:184px;top:390px;width:86px;height:26px;font-size:15px;background:#0E3A52;color:var(--c75);" data-k="BL" data-d="M1600" data-f="비트 램프(사각) 글자: ON 동작(판 0 글자 75) · OFF 대기(판 0 글자 46)">동작</div>
+  <div class="p txt" style="left:184px;top:428px;width:86px;height:26px;font-size:15px;color:var(--c46);" data-k="BL" data-d="M1601" data-f="비트 램프(사각) 글자: ON 동작 · OFF 대기">대기</div>
+
+  <!-- 발열 격리 -->
+  <div class="box" style="left:354px;top:350px;width:658px;height:150px;border-top:4px solid var(--c56);">
+    <h3>발열 격리 (1차 분리 ↓) <span class="dev">M1690 · D1650~D1653 · X1902</span></h3>
+    <i class="sock" style="left:12px;top:38px;"></i><span class="lbl a" style="left:38px;top:39px;">보관 중 이상 발열</span><span class="dev a" style="left:160px;top:42px;">M1690</span>
+    <i class="sock" style="left:260px;top:38px;"></i><span class="lbl a" style="left:286px;top:39px;">격리 라인 도착</span><span class="dev a" style="left:384px;top:42px;">X1902</span>
+    <span class="lbl a" style="left:12px;top:78px;">마지막 격리 PACK ID</span><div class="slot" style="left:150px;top:72px;width:70px;height:28px;"></div><span class="lbl a" style="left:236px;top:78px;">가상 온도</span><div class="slot" style="left:300px;top:72px;width:70px;height:28px;"></div><span class="unit a" style="left:376px;top:78px;">°C</span><span class="dev a" style="left:410px;top:80px;">D1651 · D1652</span>
+    <i class="sock" style="left:12px;top:114px;"></i><span class="lbl a" style="left:38px;top:115px;">DB 기록 요청</span><span class="dev a" style="left:126px;top:118px;">D1650</span>
+    <i class="sock" style="left:200px;top:114px;"></i><span class="lbl a" style="left:226px;top:115px;">DB 기록 완료</span><span class="dev a" style="left:314px;top:118px;">D1653</span>
+  </div>
+  <i class="p lamp" style="left:370px;top:395px;" data-k="BL" data-d="M1690" data-f="ON 56 · OFF 25"></i>
+  <i class="p lamp" style="left:618px;top:395px;" data-k="BL" data-d="X1902" data-f="ON 56 · OFF 25"></i>
+  <div class="p val" style="left:506px;top:427px;width:66px;height:26px;font-size:16px;" data-k="ND" data-d="D1651" data-f="10진 4자리 앞자리 0 · 글자 7">0011</div>
+  <div class="p val" style="left:656px;top:427px;width:66px;height:26px;font-size:16px;" data-k="ND" data-d="D1652" data-f="10진 소수 1자리(÷10) · 글자 7">41.2</div>
+  <i class="p lamp" style="left:370px;top:471px;" data-k="WL" data-d="D1650" data-f="범위: 1 → 100 · 그 외 → 25"></i>
+  <i class="p lamp g" style="left:558px;top:471px;" data-k="WL" data-d="D1653" data-f="범위: 1 → 81 · 그 외 → 25"></i>
+
+  <!-- 1차 분리 -->
+  <div class="box" style="left:12px;top:512px;width:1000px;height:182px;">
+    <h3>1차 분리 Pop-up Wheel <span class="dev">M1660 직진 · M1661 ↓ 격리</span></h3>
+    <i class="sock" style="left:12px;top:46px;"></i><span class="lbl a" style="left:38px;top:47px;font-size:14px;">직진 → 메인 검사</span><span class="dev a" style="left:164px;top:50px;">M1660</span>
+    <i class="sock" style="left:250px;top:46px;"></i><span class="lbl a" style="left:276px;top:47px;font-size:14px;">아래 → 발열 격리</span><span class="dev a" style="left:404px;top:50px;">M1661</span>
+    <span class="lbl a" style="left:480px;top:47px;font-size:14px;">격리 누적</span><div class="slot" style="left:556px;top:40px;width:76px;height:32px;"></div><span class="unit a" style="left:638px;top:48px;">EA</span><span class="dev a" style="left:666px;top:50px;">D1902</span>
+    <span class="crit a" style="left:12px;top:92px;font-size:12px;color:var(--ink2);">태그 idx5 = 5(발열) 팩만 아래로. 격리 팩은 DB에 ISO(station 0)로 남습니다.</span>
+  </div>
+  <i class="p lamp c" style="left:28px;top:562px;" data-k="BL" data-d="M1660" data-f="ON 75 · OFF 25"></i>
+  <i class="p lamp" style="left:266px;top:562px;" data-k="BL" data-d="M1661" data-f="ON 56 · OFF 25"></i>
+  <div class="p val" style="left:570px;top:555px;width:72px;height:28px;font-size:18px;" data-k="ND" data-d="D1902" data-f="10진 5자리 · 글자 7">12</div>
+
+  <div class="ftr"></div>
+  <div class="nav" style="left:10px;">운전 현황<small>01</small></div><div class="nav" style="left:263px;">검사<small>02</small></div><div class="nav cur" style="left:516px;">AS/RS · 격리<small>03</small></div><div class="nav" style="left:769px;">알람<small>04</small></div>
+  <div class="p inv" style="left:10px;top:712px;width:245px;height:48px;" data-k="SC" data-d="→ 화면 1" data-f="화면 전환 스위치 · 모양 없음"></div>
+  <div class="p inv" style="left:263px;top:712px;width:245px;height:48px;" data-k="SC" data-d="→ 화면 2" data-f="화면 전환 스위치 · 모양 없음"></div>
+  <div class="p inv" style="left:769px;top:712px;width:245px;height:48px;" data-k="SC" data-d="→ 화면 4" data-f="화면 전환 스위치 · 모양 없음"></div>
 </section>
 
 <!-- ============================================================ 04 알람 -->
 <section class="screen" id="s4">
-  <div class="hdr">
-    <span class="no">04</span><span class="tt">알람 · 통신</span>
-    <span class="pill" style="border-color:var(--ng);color:#FCA5A5;"><span class="lamp r"></span>발생 2건</span>
-    <span class="sp"></span><span class="clock">2026-11-19 14:32:05</span>
-  </div>
-  <div class="body">
-    <div class="box" style="left:12px;top:10px;width:1000px;height:330px;">
-      <h3>알람 이력 <span class="dev">알람 비트 M1950~ (제안 · 래더에서 조건 계산)</span></h3>
-      <table class="kv" style="font-size:13px;">
-        <tr style="color:var(--ink3);font-size:11.5px;"><td>발생 시각</td><td>내용</td><td>조건 (원본 디바이스)</td><td>상태</td></tr>
-        <tr style="color:#FCA5A5;"><td class="dev" style="text-align:left;width:auto;">14:31:48</td><td>재검사 라인 분기점까지 참 — 메인 출구 대기</td><td class="dev" style="text-align:left;width:auto;">M1800 ON</td><td>발생</td></tr>
-        <tr style="color:#FCA5A5;"><td class="dev" style="text-align:left;width:auto;">14:30:02</td><td>보관 중 이상 발열 — R08 LOCK</td><td class="dev" style="text-align:left;width:auto;">M1690 ON</td><td>발생</td></tr>
-        <tr><td class="dev" style="text-align:left;width:auto;">14:12:40</td><td>박스 크기 불일치 (DB 셀 수 ≠ 비전) — 투입 정지</td><td class="dev" style="text-align:left;width:auto;">D1518 ≠ D1519</td><td style="color:var(--ink3)">복구</td></tr>
-        <tr><td class="dev" style="text-align:left;width:auto;">13:58:11</td><td>RFID② 판독 실패 3회 — 계측 없이 NG 배출</td><td class="dev" style="text-align:left;width:auto;">D1524 ≠ 0</td><td style="color:var(--ink3)">복구</td></tr>
-        <tr><td class="dev" style="text-align:left;width:auto;">13:40:27</td><td>Python 엔진 응답 없음 (메인 요청 후 5초)</td><td class="dev" style="text-align:left;width:auto;">D1710 = 1 · D1713 = 0</td><td style="color:var(--ink3)">복구</td></tr>
-        <tr><td class="dev" style="text-align:left;width:auto;">—</td><td>비상정지</td><td class="dev" style="text-align:left;width:auto;">M1500 ON</td><td style="color:var(--ink3)">—</td></tr>
-        <tr><td class="dev" style="text-align:left;width:auto;">—</td><td>RFID①·③ 오류 / 재검사 응답 없음 / 격리 DB 기록 응답 없음</td><td class="dev" style="text-align:left;width:auto;">D1514 · D1534 / D1740·D1743 / D1650·D1653</td><td style="color:var(--ink3)">—</td></tr>
-      </table>
-    </div>
+  <div class="hdr"><span class="no">04</span><span class="tt">알람 · 통신</span></div>
+  <div class="pill" style="left:200px;width:150px;"><span style="position:relative;width:20px;height:20px;"><i class="sock" style="left:0;top:0;"></i></span>알람 발생 중</div>
+  <i class="p lamp r" style="left:209px;top:21px;" data-k="BL" data-d="(알람 발생 중 시스템 비트 · 작화 때 확인)" data-f="ON 55 · OFF 25"></i>
+  <div class="p val" style="left:790px;top:14px;width:222px;height:28px;font-size:16px;color:var(--c46);" data-k="DT" data-d="(본체 시계)" data-f="날짜 20yy/mm/dd · 시각 hh:mm:ss · 글자 46 · ASCII">2026/11/19 14:32:05</div>
 
-    <div class="box" style="left:12px;top:352px;width:494px;height:222px;">
-      <h3>통신 상태</h3>
-      <table class="kv">
-        <tr><td><span class="lamp g"></span> HMI ↔ 중계 서버 (MC 3E, 포트 5000)</td><td class="d">D20</td></tr>
-        <tr><td><span class="lamp g"></span> 중계 서버 ↔ MX OPC ↔ GX Simulator2</td><td class="d">hmi_mc_relay</td></tr>
-        <tr><td><span class="lamp g"></span> Python 계측 엔진 (마지막 응답 2초 전)</td><td class="d">D1713 · D1743</td></tr>
-        <tr><td><span class="lamp g"></span> RFID ① ② ③ 상태</td><td class="d">D1514·24·34</td></tr>
-      </table>
-      <div style="font-size:11.5px;color:var(--ink3);margin-top:6px;">HMI 통신 끊김은 WinGP 자체 통신 오류 표시로 확인</div>
-    </div>
-
-    <div class="box" style="left:518px;top:352px;width:494px;height:222px;">
-      <h3>조작</h3>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;height:160px;">
-        <div class="btn red" style="font-size:16px;">카운터 리셋<span class="dev" style="color:#FCA5A5">M1920 · 확인 창</span></div>
-        <div class="btn" style="font-size:16px;">알람 확인(ACK)<span class="dev">M1960 (제안)</span></div>
-        <div class="btn" style="font-size:16px;">LOCK 일괄 해제<span class="dev">(제안 · 래더 필요)</span></div>
-        <div class="btn" style="font-size:16px;color:var(--ink3);">칸 상태 초기화<span class="dev">E1 확장 · 보류</span></div>
-      </div>
-    </div>
+  <div class="box" style="left:12px;top:66px;width:1000px;height:352px;">
+    <h3>알람 이력 <span class="dev">GP-Pro EX 알람 부품(이력) · 메시지에 원본 번지 표기</span></h3>
+    <div class="a" style="left:10px;top:32px;width:910px;height:26px;display:grid;grid-template-columns:150px 1fr 82px 82px 52px;padding:0 8px;align-items:center;font-size:11.5px;color:var(--ink3);border-bottom:1px solid var(--line);"><span>발생 일시</span><span>메시지</span><span>확인</span><span>복구</span><span>횟수</span></div>
+    <div class="slot" style="left:10px;top:60px;width:910px;height:244px;"></div>
+    <span class="crit a" style="left:12px;top:316px;">글자색: 발생 = 빨강(60) · 확인 = 노랑(63) · 복구 = 회색(46)</span>
+    <span class="crit a" style="left:12px;top:332px;">≠ 비교 · 응답 없음(5초) 조건은 래더에서 알람 비트로 계산(A24)</span>
   </div>
-  <div class="ftr"><div class="nav">운전 현황<small>01</small></div><div class="nav">검사<small>02</small></div><div class="nav">AS/RS · 격리<small>03</small></div><div class="nav cur">알람<small>04</small></div></div>
+  <div class="p alarm" style="left:23px;top:127px;width:908px;height:242px;" data-k="AL" data-d="알람 블록 1 (비트 M1500·M1800·M1690 · 워드 D1514·D1524·D1534 ≠0 · 제안 M1950~)" data-f="이력 모드 · 항목: 발생 일시(mm/dd hh:mm:ss)·메시지·확인·복구·횟수 · 8줄 · 메시지 46자">
+    <div class="row trg cur"><span>11/19 14:31:48</span><span>[M1800] 재검사 라인 분기점까지 참 — 메인 출구 대기</span><span>--:--:--</span><span>--:--:--</span><span>3</span></div>
+    <div class="row ack"><span>11/19 14:30:02</span><span>[M1690] 보관 중 이상 발열 — 해당 칸 LOCK</span><span>14:30:20</span><span>--:--:--</span><span>1</span></div>
+    <div class="row rec"><span>11/19 14:12:40</span><span>[A24] 박스 크기 불일치 (DB 셀 수 ≠ 비전) — 투입 정지</span><span>14:12:55</span><span>14:13:30</span><span>1</span></div>
+    <div class="row rec"><span>11/19 13:58:11</span><span>[D1524] RFID② 판독 실패 — 계측 없이 NG 배출</span><span>13:58:30</span><span>13:58:40</span><span>2</span></div>
+    <div class="row rec"><span>11/19 13:40:27</span><span>[A24] Python 엔진 응답 없음 (메인 요청 후 5초)</span><span>13:41:02</span><span>13:41:05</span><span>1</span></div>
+  </div>
+  <div class="btnslot" style="left:934px;top:126px;width:66px;height:244px;"></div>
+  <div class="p sw" style="left:940px;top:132px;width:54px;height:54px;font-size:20px;" data-k="SW" data-d="(알람 부품 스위치)" data-f="알람 부품 스위치: 위로 스크롤">▲</div>
+  <div class="p sw" style="left:940px;top:194px;width:54px;height:54px;font-size:20px;" data-k="SW" data-d="(알람 부품 스위치)" data-f="알람 부품 스위치: 아래로 스크롤">▼</div>
+  <div class="p sw" style="left:940px;top:256px;width:54px;height:54px;font-size:14px;" data-k="SW" data-d="(알람 부품 스위치)" data-f="알람 부품 스위치: 확인(선택 줄)">확인</div>
+  <div class="p sw" style="left:940px;top:318px;width:54px;height:46px;font-size:12px;" data-k="SW" data-d="(알람 부품 스위치)" data-f="알람 부품 스위치: 전체 확인">전체<br>확인</div>
+
+  <!-- 통신 상태 -->
+  <div class="box" style="left:12px;top:430px;width:494px;height:264px;">
+    <h3>통신 · 응답 상태</h3>
+    <i class="sock" style="left:12px;top:38px;"></i><span class="lbl a" style="left:38px;top:39px;">HMI ↔ 중계 서버 (MC 3E, 포트 5000)</span><span class="dev a" style="left:300px;top:42px;">WinGP 통신 오류 상태</span>
+    <span class="crit a" style="left:38px;top:60px;">중계 ↔ MX OPC ↔ GX Simulator2 끊김도 중계가 오류로 답하면 여기서 보임</span>
+    <div class="sep" style="left:10px;right:10px;top:84px;"></div>
+    <span class="lbl a" style="left:12px;top:96px;">Python 계측 엔진</span><span class="crit a" style="left:126px;top:98px;">요청 → 완료</span>
+    <span class="lbl a" style="left:12px;top:124px;">메인</span><i class="sock" style="left:84px;top:122px;"></i><i class="sock" style="left:110px;top:122px;"></i><span class="dev a" style="left:140px;top:126px;">D1710 · D1713</span>
+    <span class="lbl a" style="left:250px;top:124px;">재검사</span><i class="sock" style="left:308px;top:122px;"></i><i class="sock" style="left:334px;top:122px;"></i><span class="dev a" style="left:362px;top:126px;">D1740 · D1743</span>
+    <span class="lbl a" style="left:12px;top:154px;">격리 기록</span><i class="sock" style="left:84px;top:152px;"></i><i class="sock" style="left:110px;top:152px;"></i><span class="dev a" style="left:140px;top:156px;">D1650 · D1653</span>
+    <div class="sep" style="left:10px;right:10px;top:186px;"></div>
+    <span class="lbl a" style="left:12px;top:200px;">RFID 상태</span>
+    <i class="sock" style="left:90px;top:198px;"></i><span class="lbl a" style="left:116px;top:200px;">①</span>
+    <i class="sock" style="left:150px;top:198px;"></i><span class="lbl a" style="left:176px;top:200px;">②</span>
+    <i class="sock" style="left:210px;top:198px;"></i><span class="lbl a" style="left:236px;top:200px;">③</span>
+    <span class="dev a" style="left:270px;top:202px;">D1514 · D1524 · D1534 (0 = 정상)</span>
+    <span class="crit a" style="left:12px;top:234px;">응답 경과 시간은 번지가 없어 표시하지 않음</span>
+  </div>
+  <i class="p lamp g" style="left:28px;top:472px;" data-k="BL" data-d="(WinGP 시스템 데이터: 통신 오류 상태 · 작화 때 번지 확인)" data-f="정상 81 · 오류 55 (비트 반전 필요 시 범위 램프)"></i>
+  <i class="p lamp" style="left:86px;top:556px;" data-k="WL" data-d="D1710" data-f="범위: 1 → 100 · 그 외 → 25"></i>
+  <i class="p lamp g" style="left:112px;top:556px;" data-k="WL" data-d="D1713" data-f="범위: 1 → 81 · 그 외 → 25"></i>
+  <i class="p lamp" style="left:324px;top:556px;" data-k="WL" data-d="D1740" data-f="범위: 1 → 100 · 그 외 → 25"></i>
+  <i class="p lamp g" style="left:350px;top:556px;" data-k="WL" data-d="D1743" data-f="범위: 1 → 81 · 그 외 → 25"></i>
+  <i class="p lamp" style="left:86px;top:586px;" data-k="WL" data-d="D1650" data-f="범위: 1 → 100 · 그 외 → 25"></i>
+  <i class="p lamp g" style="left:112px;top:586px;" data-k="WL" data-d="D1653" data-f="범위: 1 → 81 · 그 외 → 25"></i>
+  <i class="p lamp g" style="left:106px;top:632px;" data-k="WL" data-d="D1514" data-f="범위: 0 → 81 · 1~65535 → 55"></i>
+  <i class="p lamp g" style="left:166px;top:632px;" data-k="WL" data-d="D1524" data-f="범위: 0 → 81 · 1~65535 → 55"></i>
+  <i class="p lamp g" style="left:226px;top:632px;" data-k="WL" data-d="D1534" data-f="범위: 0 → 81 · 1~65535 → 55"></i>
+
+  <!-- 조작 -->
+  <div class="box" style="left:518px;top:430px;width:494px;height:264px;">
+    <h3>조작</h3>
+    <div class="btnslot" style="left:10px;top:34px;width:230px;height:100px;"></div>
+    <div class="btnslot" style="left:252px;top:34px;width:230px;height:100px;"></div>
+    <div class="btnslot" style="left:10px;top:146px;width:230px;height:100px;"></div>
+    <div class="a" style="left:252px;top:146px;width:230px;height:100px;border:2px solid var(--line);border-radius:6px;background:var(--panel2);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--ink3);">칸 상태 초기화<span class="dev">E1 확장 · 보류 (부품 없음)</span></div>
+  </div>
+  <div class="p sw red" style="left:534px;top:470px;width:222px;height:92px;font-size:16px;" data-k="SW" data-d="M1920" data-f="화면 전환(창 화면 '카운터 리셋 확인') → 창 안 '예' = 비트 스위치 M1920 모멘터리">카운터 리셋<small>M1920 · 확인 창</small></div>
+  <div class="p sw" style="left:776px;top:470px;width:222px;height:92px;font-size:16px;" data-k="SW" data-d="(제안 M1960)" data-f="비트 스위치 모멘터리. HMI 안의 알람 확인은 알람 부품 스위치로 가능 — PLC가 알아야 할 때만 M1960">알람 확인(PLC)<small>M1960 (제안)</small></div>
+  <div class="p sw" style="left:534px;top:582px;width:222px;height:92px;font-size:16px;" data-k="SW" data-d="(제안 A24)" data-f="비트 스위치 · 지연 ON 2.0초 · 래더 필요">LOCK 일괄 해제<small>(제안 · 래더 필요)</small></div>
+
+  <div class="ftr"></div>
+  <div class="nav" style="left:10px;">운전 현황<small>01</small></div><div class="nav" style="left:263px;">검사<small>02</small></div><div class="nav" style="left:516px;">AS/RS · 격리<small>03</small></div><div class="nav cur" style="left:769px;">알람<small>04</small></div>
+  <div class="p inv" style="left:10px;top:712px;width:245px;height:48px;" data-k="SC" data-d="→ 화면 1" data-f="화면 전환 스위치 · 모양 없음"></div>
+  <div class="p inv" style="left:263px;top:712px;width:245px;height:48px;" data-k="SC" data-d="→ 화면 2" data-f="화면 전환 스위치 · 모양 없음"></div>
+  <div class="p inv" style="left:516px;top:712px;width:245px;height:48px;" data-k="SC" data-d="→ 화면 3" data-f="화면 전환 스위치 · 모양 없음"></div>
 </section>
 
-<style>
-  .cell { background: #1E3A5F; border: 1px solid #2B5A8A; border-radius: 4px; height: 40px; font: 700 11px var(--mono); color: #BFDBFE; padding: 3px 5px; display: flex; justify-content: space-between; }
-  .cell b { font-size: 16px; align-self: flex-end; }
-  .cell.z6 { background: #134034; border-color: #1F6B55; color: #A7F3D0; }
-  .cell.lock { background: var(--ng-d); border-color: var(--ng); color: #FECACA; }
-</style>
+<pre id="csv"></pre>
+
 <script>
-  // #s1 ~ #s4 shows one screen (for screenshots), #all shows all
+  // 03 화면 랙 격자: 칸 배경(정적) + LOCK 범위 램프 · 숫자 표시(부품). 예시 값은 R08 = 12초.
+  (function () {
+    const g = document.getElementById('grid'), gp = document.getElementById('gridparts');
+    for (let i = 0; i < 24; i++) {
+      const col = i % 6, row = Math.floor(i / 6), x = 10 + col * 106, y = 34 + row * 46;
+      const r = 'R' + String(i + 1).padStart(2, '0'), dev = 'D' + (1610 + i), v = (i === 7) ? 12 : 0;
+      g.insertAdjacentHTML('beforeend', `<div class="cell${col >= 3 ? ' z6' : ''}" style="left:${x}px;top:${y}px;">${r}</div>`);
+      const sx = 354 + 1 + x, sy = 66 + 1 + y;
+      gp.insertAdjacentHTML('beforeend',
+        `<div class="p" style="left:${sx}px;top:${sy}px;width:101px;height:40px;border-radius:4px;${v ? 'background:var(--c232);outline:1px solid var(--c55);' : ''}" data-k="WL" data-d="${dev}" data-f="${r} 칸 덮개(사각): 0 → 투명 · 1~65535 → 판 232 테두리 55"></div>` +
+        `<div class="p val" style="left:${sx + 40}px;top:${sy + 12}px;width:58px;height:26px;font-size:16px;${v ? 'color:var(--c60);' : 'color:var(--c46);'}" data-k="ND" data-d="${dev}" data-f="${r} 10진 3자리 · 글자 46 · 알람색 1~65535 → 글자 60 · 판 투명">${v}</div>`);
+    }
+  })();
+
+  // 부품 맞춤: 램프 → 가장 가까운 받침(.sock) 가운데, 값 · 글자 · 그래프 → 들어 있는 값 칸(.slot) 안쪽 1px
+  document.querySelectorAll('.screen').forEach(s => {
+    s.style.display = 'block';
+    const sr = s.getBoundingClientRect(), R = e => { const r = e.getBoundingClientRect(); return { x: r.left - sr.left, y: r.top - sr.top, w: r.width, h: r.height }; };
+    const socks = [...s.querySelectorAll('.sock')].map(R), slots = [...s.querySelectorAll('.slot')].map(R);
+    s.querySelectorAll('.p.lamp').forEach(p => {
+      const a = R(p), cx = a.x + a.w / 2, cy = a.y + a.h / 2;
+      let best = null, bd = 16;
+      socks.forEach(k => { const d = Math.hypot(k.x + k.w / 2 - cx, k.y + k.h / 2 - cy); if (d < bd) { bd = d; best = k; } });
+      if (best) { p.style.left = (best.x + best.w / 2 - 7) + 'px'; p.style.top = (best.y + best.h / 2 - 7) + 'px'; }
+      else console.warn('받침 없는 램프', p.dataset.d);
+    });
+    s.querySelectorAll('.p.val, .p.txt, .p.alarm, .p[data-k="BG"]').forEach(p => {
+      const a = R(p), cx = a.x + a.w / 2, cy = a.y + a.h / 2;
+      const k = slots.find(k => cx > k.x && cx < k.x + k.w && cy > k.y && cy < k.y + k.h);
+      if (k) Object.assign(p.style, { left: (k.x + 1) + 'px', top: (k.y + 1) + 'px', width: (k.w - 2) + 'px', height: (k.h - 2) + 'px' });
+    });
+    s.style.display = '';
+  });
+
+  // 부품 번호 매기기 + 부품 목록(CSV)
+  const KIND = { BL: '램프(비트)', WL: '램프(워드 범위 상태)', ND: '데이터 표시(숫자)', DT: '데이터 표시(날짜/시각)',
+                 SW: '스위치', SC: '스위치(화면 전환)', BG: '그래프(막대)', AL: '알람(이력)' };
+  const rows = ['화면,부품 번호,부품(GP-Pro EX),번지,X,Y,폭,높이,설정(색 = 색 코드)'];
+  document.querySelectorAll('.screen').forEach((s, si) => {
+    let n = 0;
+    s.querySelectorAll('.p').forEach(p => { p.dataset.id = `S${si + 1}-${String(++n).padStart(2, '0')}`; });
+  });
+  function dumpCsv() {
+    document.querySelectorAll('.screen').forEach((s, si) => {
+      const wasOn = getComputedStyle(s).display === 'none';
+      if (wasOn) s.style.display = 'block';
+      const sr = s.getBoundingClientRect();
+      s.querySelectorAll('.p').forEach(p => {
+        const r = p.getBoundingClientRect(), q = v => '"' + String(v).replace(/"/g, '""') + '"';
+        rows.push([si + 1, p.dataset.id, q(KIND[p.dataset.k] || p.dataset.k), q(p.dataset.d || ''),
+          Math.round(r.left - sr.left), Math.round(r.top - sr.top), Math.round(r.width), Math.round(r.height), q(p.dataset.f || '')].join(','));
+      });
+      if (wasOn) s.style.display = '';
+    });
+    document.getElementById('csv').textContent = rows.join('\n');
+  }
+
+  // #s1 완성 시안 · #s1-bg 배경만 · #s1-guide 부품 위치 · #all · #parts
+  dumpCsv();
   const h = location.hash.slice(1) || 'all';
-  if (h === 'all') document.body.classList.add('all');
-  else { const el = document.getElementById(h); if (el) el.classList.add('on'); }
+  const [scr, mode] = h.split('-');
+  if (mode === 'bg') document.body.classList.add('bg');
+  if (mode === 'guide') document.body.classList.add('guide');
+  if (scr === 'all') document.body.classList.add('all');
+  else if (scr === 'parts') { document.body.classList.add('parts'); }
+  else { const el = document.getElementById(scr); if (el) el.classList.add('on'); }
 </script>
 </body>
 </html>
