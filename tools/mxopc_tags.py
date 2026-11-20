@@ -21,8 +21,9 @@ Project B 는 **태그 이름 = 디바이스 이름**(D1700, M1920, X1900 …)�
    이름은 그대로 두고 번지만 바꿉니다(기존 Factory I/O 씬의 OPC 연결 이름 유지).
    v5 에서 쓰지 않는 번지(BYPASS · M1710 등)는 목록으로 알려 줍니다.
 
-4) 등록 확인 (MX OPC Server 가 있는 PC, 32비트 Python + pywin32)
-     python3.12-32 tools/mxopc_tags.py --check            # 모든 v5 태그 AddItem + 읽기
+4) 등록 확인 (MX OPC Server 가 있는 PC. 직접 연결이라 64비트 Python 도 됨, D21)
+     python tools/mxopc_tags.py --check --device QSIM     # 모든 v5 태그 AddItem + 읽기
+     python tools/mxopc_tags.py --check --device CSIM --source cache   # Simulate 장치 시험
 """
 
 import argparse
@@ -266,9 +267,9 @@ def cmd_remap(args):
 
 def cmd_check(args):
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from plc_link import LinkError, OpcLink
+    from plc_link import OPC_DS_CACHE, OPC_DS_DEVICE, LinkError, OpcLink
 
-    link = OpcLink(args.server, args.device, args.wrapper)
+    link = OpcLink(args.server, args.device, args.wrapper, OPC_DS_CACHE if args.source == "cache" else OPC_DS_DEVICE)
     ok, bad = 0, []
     try:
         for d, _, _ in TAGS:
@@ -294,10 +295,11 @@ def main():
     p.add_argument("--name-col", type=int)
     p.add_argument("--addr-col", type=int)
     p.add_argument("--desc-col", type=int)
-    p.add_argument("--check", action="store_true", help="MX OPC Server 에서 v5 태그 읽기 확인 (32비트 Python)")
+    p.add_argument("--check", action="store_true", help="MX OPC Server 에서 v5 태그 읽기 확인")
     p.add_argument("--server", default="Mitsubishi.MXOPC.6")
     p.add_argument("--device", default="QSIM")
-    p.add_argument("--wrapper", default="OPC.SiemensDAAuto")
+    p.add_argument("--wrapper", default="auto", help="auto(직접 연결) / direct / 래퍼 ProgID")
+    p.add_argument("--source", choices=("device", "cache"), default="device", help="Simulate 장치 시험은 cache")
     args = p.parse_args()
 
     if (args.template or args.remap_old) and not args.out:
