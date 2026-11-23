@@ -2,7 +2,7 @@
 GX Simulator2 ↔ MX OPC는 쓰기 1회 약 0.2초라 입고점 0.15초 제동 같은 타이밍 시험이 안 되므로, 래더 '논리'를 씬에서 확인하는 용도.
 시험 스크립트가 C 인계(투입)와 검사 엔진(Python serve) 응답을 대신함.
 사용: softplc.py <씬> <시나리오: 판정 목록, 예 1,2,3> [제한 초]
-  판정 1 = GOOD, 2 = RETEST(재검사에서 GOOD), 3 = NG(메인 NG → 재검사 라인 → NG OUT), H = 입고 뒤 발열 접수(격리)"""
+  판정 1 = GOOD, 2 = RETEST(재검사에서 GOOD), 3 = NG(메인 NG → 재검사 라인 → NG OUT), H = 입고 뒤 발열 접수(격리). 뒤에 L을 붙이면 Large(6S, D1518 = 6)"""
 import sys, re, time, io
 sys.path.insert(0, r"D:\seojung\digital-twin-b\computer_use")
 sys.path.insert(0, r"D:\seojung\digital-twin-b\test_results\a28_1123")   # pyModbusTCP 대체 모듈
@@ -173,20 +173,22 @@ def io_out():
 
 # ---------------- 바깥(투입 · 검사 엔진) 대신 ----------------
 import os
+TSCALE = float(os.environ.get("TSCALE", "1"))   # Factory I/O 툴바 Time Scale과 같은 값(2 · 3 · 4). 타이머만 그만큼 빨리 감
+STOPAT = (lambda v: (v.split("=")[0], int(v.split("=")[1])) if v else None)(os.environ.get("STOPAT", ""))   # 예: STOPAT=D1760=10 (그 순간 멈춰 화면 확인)
 FORCE = {k: v == "1" for k, v in (x.split("=") for x in os.environ.get("FORCE", "").split(",") if x)}   # 예: FORCE=X1511=1 (씬에 없는 센서 대신)
 T0 = time.time()
 def log(m): print(f"{time.time()-T0:6.1f}s {m}", flush=True)
 pack_ids = list(range(101, 101 + len(plan)))
-fed = 0; judged = {}; watch = ["D1524", "D1534", "D1549", "D1550", "D1551", "D1541", "D1548", "D1640", "D1641", "D1656", "D1657", "D1658", "D1659", "D1750", "D1760"]
+fed = 0; judged = {}; watch = ["D1525", "D1535", "D1558", "D1568", "D1750", "D1760", "D1517"]
 prev = {}
 def outside():
     global fed
     if fed < len(plan) and W.get("D1541", 0) == 0 and not B.get("M1510") and time.time() - T0 > 3:
-        B["M1510"] = True; W["D1516"] = pack_ids[fed]; W["D1518"] = 4; W["D1542"] = 1480; log(f"C 인계: PACK {pack_ids[fed]} 판정 계획 {plan[fed]}"); fed += 1
+        B["M1510"] = True; W["D1516"] = pack_ids[fed]; W["D1518"] = 6 if plan[fed].endswith("L") else 4; W["D1542"] = 1480; log(f"C 인계: PACK {pack_ids[fed]} 판정 계획 {plan[fed]}"); fed += 1
     # 메인 검사 핸드셰이크 D1710~D1714 ↔ D1700~D1703
     if W.get("D1710") == 1 and W.get("D1713", 0) == 0:
         pid = W.get("D1711"); p = plan[pack_ids.index(pid)] if pid in pack_ids else "1"
-        j = {"1": 1, "H": 1, "2": 2, "3": 3}[p]; W["D1700"] = j; W["D1701"] = 5; W["D1702"] = 60; W["D1703"] = 250; W["D1713"] = 1
+        j = {"1": 1, "H": 1, "2": 2, "3": 3}[p.rstrip("L")]; W["D1700"] = j; W["D1701"] = 5; W["D1702"] = 60; W["D1703"] = 250; W["D1713"] = 1
         log(f"메인 검사 PACK {pid} → 판정 {j}")
     if W.get("D1710") == 0 and W.get("D1713") == 1: W["D1713"] = 0
     if W.get("D1740") == 1 and W.get("D1743", 0) == 0:
@@ -197,8 +199,52 @@ def outside():
     # 발열 접수(H): 계획이 H인 팩이 랙에 들어가면 그 칸을 발열로
     for k in range(24):
         pid = W.get(f"D{1660+k}", 0)
-        if pid in pack_ids and plan[pack_ids.index(pid)] == "H" and W.get(f"D{1810+k}", 0) > 0 and pid not in judged:
+        if pid in pack_ids and plan[pack_ids.index(pid)].rstrip("L") == "H" and W.get(f"D{1810+k}", 0) > 0 and pid not in judged:
             judged[pid] = 1; W["D1697"] = k + 1; W["D1698"] = 410; B["M1672"] = True; log(f"발열 접수: 칸 {k+1} PACK {pid}")
+
+# ---------------- 자동 화면 저장 (11-23) ----------------
+# SHOTS=<폴더>를 주면 SHOT_EVERY초(기본 2)마다 화면을 JPEG로 저장하고 index.csv에 시각 · 주요 스텝 · 알람을 남김.
+# 스캔을 늦추지 않도록 별도 스레드에서 찍음. Factory I/O 창을 최대화해 맨 앞에 두고 돌릴 것(가려진 창은 안 찍힘).
+# 끝난 뒤 index.csv에서 문제가 난 시각을 찾아 그 전후 몇 장만 열어 보면 됨.
+SHOTS = os.environ.get("SHOTS", ""); SHOT_EVERY = float(os.environ.get("SHOT_EVERY", "2")); SHOT_W = int(os.environ.get("SHOT_W", "1600"))
+SHOT_KEYS = ["D1541", "D1548", "D1640", "D1641", "D1656", "D1549", "D1750", "D1657", "D1551", "D1760", "D1658", "D1659", "D1900", "D1901", "D1902"]
+def _shooter():
+    import threading, csv as _csv
+    from PIL import ImageGrab
+    os.makedirs(SHOTS, exist_ok=True)
+    idx = open(os.path.join(SHOTS, "index.csv"), "w", encoding="utf-8-sig", newline="")
+    wr = _csv.writer(idx); wr.writerow(["초", "파일"] + SHOT_KEYS + ["알람"]); stop = threading.Event()
+    import ctypes
+    from ctypes import wintypes
+    try: ctypes.windll.user32.SetProcessDPIAware()          # 175% 배율에서도 실제 픽셀 좌표로
+    except Exception: pass
+    def fio_rect():
+        """Factory I/O 창 영역만 찍음(다른 창 · 개인 화면이 들어가지 않게). 못 찾으면 None → 그 회차는 건너뜀"""
+        h = ctypes.windll.user32.FindWindowW(None, "Factory IO")
+        if not h or ctypes.windll.user32.IsIconic(h): return None
+        r = wintypes.RECT(); ctypes.windll.user32.GetWindowRect(h, ctypes.byref(r))
+        return (r.left, r.top, r.right, r.bottom) if r.right - r.left > 100 else None
+    def run():
+        n = 0
+        while not stop.is_set():
+            t = time.time() - T0
+            try:
+                box = fio_rect()
+                if box is None:
+                    print("화면 저장: Factory IO 창을 못 찾음(최소화?) — 건너뜀", flush=True); stop.wait(SHOT_EVERY); continue
+                im = ImageGrab.grab(bbox=box, all_screens=True)
+                if im.width > SHOT_W: im = im.resize((SHOT_W, int(im.height * SHOT_W / im.width)))
+                fn = f"{n:04d}_{t:06.1f}s.jpg"; im.save(os.path.join(SHOTS, fn), quality=70)
+                al = " ".join(a for a in ("M1951", "M1952", "M1953", "M1954", "M1955", "M1956", "M1957") if B.get(a))
+                wr.writerow([f"{t:.1f}", fn] + [W.get(k, 0) for k in SHOT_KEYS] + [al]); idx.flush(); n += 1
+            except Exception as e:
+                print("화면 저장 오류:", e, flush=True)
+            stop.wait(SHOT_EVERY)
+        idx.close()
+    th = threading.Thread(target=run, daemon=True); th.start()
+    return stop
+shot_stop = _shooter() if SHOTS else None
+if SHOTS: log(f"자동 화면 저장: {SHOTS} ({SHOT_EVERY}초마다)")
 
 # ---------------- 실행 ----------------
 FIRST = True; last = time.time()
@@ -208,7 +254,7 @@ try:
     io_in(); B["X1501"] = True; scan(0.01); io_out(); log("시작 버튼(X1501)")
     end_need = len(plan)
     while time.time() - T0 < LIMIT:
-        now = time.time(); dt = now - last; last = now
+        now = time.time(); dt = (now - last) * TSCALE; last = now   # Factory I/O 배속(Time Scale)과 맞춤
         io_in(); outside(); scan(dt); io_out()
         for w in watch:
             v = W.get(w, 0)
@@ -219,9 +265,11 @@ try:
         done = W.get("D1900", 0) + W.get("D1901", 0) + W.get("D1902", 0)
         if prev.get("cnt") != done: prev["cnt"] = done; log(f"카운터 GOOD {W.get('D1900',0)} · NG {W.get('D1901',0)} · 격리 {W.get('D1902',0)}")
         if done >= end_need: log("모든 팩 배출"); break
+        if STOPAT and (B.get(STOPAT[0]) if STOPAT[0][0] in "MXY" else W.get(STOPAT[0], 0)) == STOPAT[1]: log(f"멈춤 조건 {STOPAT}"); break
         time.sleep(0.005)
     print(f"결과: GOOD {W.get('D1900',0)} · NG {W.get('D1901',0)} · 격리 {W.get('D1902',0)} / 계획 {plan}", flush=True)
 finally:
+    if shot_stop: shot_stop.set(); time.sleep(0.5)
     for n, ar, a in outs_:
         if ar == "coil": B[n] = False
     io_out()

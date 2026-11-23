@@ -50,8 +50,7 @@ B04  LD= D1545 K2  =>  OUT M1511 | OUT T1502 K20
 B05  LD= D1545 K2 | AND<> D1513 D1546  =>  MOV K3 D1545
 B06  LD= D1545 K2 | AND T1502  =>  INC D1547 | MOV K4 D1545
 B07  LD= D1545 K3  =>  OUT T1503 K2
-B08  LD= D1545 K3 | AND T1503 | AND= D1514 K0  =>  SET M1546 | MOV K0 D1545
-B09  LD= D1545 K3 | AND T1503 | AND<> D1514 K0  =>  INC D1547 | MOV K4 D1545
+B08  LD= D1545 K3 | AND T1503  =>  SET M1546 | MOV K0 D1545                  ; 명령 ID 바뀜 = 완료. 상태(D1514)는 보지 않음(11-23 사용자 결정: 상태는 박스 크기 · 자세에 따라 0/1로 흔들리고 시리얼 · 읽기 · 쓰기는 정상)
 B10  LD= D1545 K4  =>  OUT T1504 K5
 B11  LD= D1545 K4 | AND T1504 | AND< D1547 K3  =>  MOV K1 D1545
 B12  LD= D1545 K4 | AND T1504 | AND>= D1547 K3  =>  SET M1547 | MOV K0 D1545
@@ -65,8 +64,7 @@ B24  LD= D1555 K2  =>  OUT M1521 | OUT T1506 K20
 B25  LD= D1555 K2 | AND<> D1523 D1556  =>  MOV K3 D1555
 B26  LD= D1555 K2 | AND T1506  =>  INC D1557 | MOV K4 D1555
 B27  LD= D1555 K3  =>  OUT T1507 K2
-B28  LD= D1555 K3 | AND T1507 | AND= D1524 K0  =>  SET M1556 | MOV K0 D1555
-B29  LD= D1555 K3 | AND T1507 | AND<> D1524 K0  =>  INC D1557 | MOV K4 D1555
+B28  LD= D1555 K3 | AND T1507  =>  SET M1556 | MOV K0 D1555                  ; 상태(D1524)는 보지 않음(B08과 같음)
 B30  LD= D1555 K4  =>  OUT T1508 K5
 B31  LD= D1555 K4 | AND T1508 | AND< D1557 K3  =>  MOV K1 D1555
 B32  LD= D1555 K4 | AND T1508 | AND>= D1557 K3  =>  SET M1557 | MOV K0 D1555
@@ -80,8 +78,7 @@ B44  LD= D1565 K2  =>  OUT M1531 | OUT T1510 K20
 B45  LD= D1565 K2 | AND<> D1533 D1566  =>  MOV K3 D1565
 B46  LD= D1565 K2 | AND T1510  =>  INC D1567 | MOV K4 D1565
 B47  LD= D1565 K3  =>  OUT T1511 K2
-B48  LD= D1565 K3 | AND T1511 | AND= D1534 K0  =>  SET M1566 | MOV K0 D1565
-B49  LD= D1565 K3 | AND T1511 | AND<> D1534 K0  =>  INC D1567 | MOV K4 D1565
+B48  LD= D1565 K3 | AND T1511  =>  SET M1566 | MOV K0 D1565                  ; 상태(D1534)는 보지 않음(B08과 같음)
 B50  LD= D1565 K4  =>  OUT T1512 K5
 B51  LD= D1565 K4 | AND T1512 | AND< D1567 K3  =>  MOV K1 D1565
 B52  LD= D1565 K4 | AND T1512 | AND>= D1567 K3  =>  SET M1567 | MOV K0 D1565
@@ -94,9 +91,9 @@ C00  LD M1950  =>  MC N0 M1544                         ; 운전 중일 때만 �
 C01  LD= D1541 K0 | AND M1510 | AND X1510  =>  MOV K5 D1541
 C02  LD= D1541 K5  =>  OUT T1513 K5
 C03  LD= D1541 K5 | ANI T1513  =>  OUT Y1500                                   ; Emitter 투입 펄스(안)
-C04  LD= D1541 K5 | AND= D1518 K4  =>  MOV K1 D1508                           ; Small box(안)
-C05  LD= D1541 K5 | AND= D1518 K6  =>  MOV K4 D1508                           ; Large box(안)
-; C06  <A28> LD= D1541 K5  =>  MOV K<A28> D1509                               ; 받침(팔레트) 값 미정
+C04  LD<= D1541 K5 | AND= D1518 K4  =>  MOV K2 D1508                           ; 4S = Medium box(2). Small(1)은 이송 중 옆으로 밀려 RFID ② · ③이 못 읽음 → D8 변경(11-23)
+C05  LD<= D1541 K5 | AND= D1518 K6  =>  MOV K4 D1508                           ; 6S = Large box(4). D1508은 비트 값(1 Small · 2 Medium · 4 Large, 설명서)
+C06  LD<= D1541 K5  =>  MOV K2 D1509                                       ; 받침 = SquarePallet(2). C04~C06은 스텝 0(대기)부터 미리 넣음: 투입 펄스와 같은 순간에 바꾸면 Emitter가 이전 박스 종류로 내보냄(11-23)
 C07  LD= D1541 K5 | ANI X1510  =>  MOV K10 D1541
 C08  LD= D1541 K10  =>  OUT T1514 K10
 C41  LD= D1541 K10 | ANI X1511  =>  MOV K2 D1519                                ; A26 ①안(11-23 임시): 높이 센서가 가리면 Large(2)
@@ -251,7 +248,7 @@ G99  MCR N0
 ; @PROGRAM INSPECT
 J00  LD M1950  =>  MC N0 M1550                         ; 운전 중일 때만 이 파일 실행(정지 시 OUT 끔)
 J01  LD= D1750 K0 | ANI X1700  =>  OUT T1526 K10
-J02  LD= D1750 K0 | AND T1526  =>  RST M1751 | RST M1752 | MOV K10 D1750
+J02  LD= D1750 K0 | AND T1526  =>  RST M1751 | RST M1752 | MOV K0 D1559 | MOV K10 D1750
 ; --- 완료 · 실패 처리: 스텝 큰 것부터 ---
 J17  LD>= D1750 K40 | AND<= D1750 K44 | AND M1557  =>  MOV K46 D1750               ; 태그 쓰기 실패
 J28  LD= D1750 K44 | AND M1556  =>  MOV K45 D1750
@@ -260,16 +257,20 @@ J24  LD= D1750 K42 | AND M1556  =>  MOV K43 D1750
 J22  LD= D1750 K41 | AND M1556  =>  MOV K42 D1750
 J20  LD= D1750 K40 | AND M1556  =>  MOV K41 D1750
 J03  LD>= D1750 K10 | AND<= D1750 K13 | AND M1557  =>  MOV K51 D1750    ; 판독 3회 실패 → 계측 없이 분기
-J12  LD= D1750 K13 | AND M1556  =>  MOV D1525 D1714 | MOV K20 D1750
+J12  LD= D1750 K13 | AND M1556  =>  MOV D1525 D1714 | MOV D1525 D1558 | MOV K20 D1750
 J10  LD= D1750 K12 | AND M1556  =>  MOV D1525 D1527 | MOV K13 D1750
 J07  LD= D1750 K11 | AND M1556 | AND<> D1525 K0  =>  MOV D1525 D1526 | MOV K12 D1750
 J08  LD= D1750 K11 | AND M1556  =>  MOV K0 D1526 | MOV K51 D1750        ; 미등록(0)
-J05  LD= D1750 K10 | AND M1556  =>  MOV K11 D1750
+J05  LD= D1750 K10 | AND M1556 | AND<> D1525 K0 | AND<> D1525 D1558  =>  MOV D1525 D1558 | MOV K11 D1750   ; 읽은 값이 0이 아니고 레지스터에 남아 있던 값(D1558)과 다름 = 이 팩 태그를 읽음(11-23)
+J46  LD= D1750 K10 | AND M1556 | AND< D1559 K2  =>  INC D1559 | MOV K14 D1750       ; 시리얼이 맞지 않으면 1초 뒤 다시 읽기(2번까지, 11-23)
+J47  LD= D1750 K10 | AND M1556  =>  MOV K51 D1750                              ; 3번 다 못 잡음 → 판독 실패
+J48  LD= D1750 K14  =>  OUT T1552 K10
+J49  LD= D1750 K14 | AND T1552  =>  MOV K10 D1750
 J40  LD= D1750 K46 | OR= D1750 K51  =>  SET M1953                            ; RFID ② 알람(SET 한 곳)
 J41  LD= D1750 K46  =>  MOV K45 D1750                                        ; 태그 쓰기 실패 → 기록 끝으로
 J42  LD= D1750 K51  =>  SET M1752 | MOV K50 D1750                             ; 판독 실패 · 미등록 → 계측 없이 분기
 ; --- 명령 준비 · 검사 ---
-J04  LD= D1750 K10 | ANI M1555 | ANI M1556 | ANI M1557  =>  MOV K0 D1520 | MOV K0 D1521        ; 명령 0
+J04  LD= D1750 K10 | ANI M1555 | ANI M1556 | ANI M1557  =>  MOV K1 D1520 | MOV K0 D1521        ; 명령 1 시리얼(태그 확인)
 J06  LD= D1750 K11 | ANI M1555 | ANI M1556 | ANI M1557  =>  MOV K2 D1520 | MOV K0 D1521        ; idx0
 J09  LD= D1750 K12 | ANI M1555 | ANI M1556 | ANI M1557  =>  MOV K2 D1520 | MOV K4 D1521        ; idx4
 J11  LD= D1750 K13 | ANI M1555 | ANI M1556 | ANI M1557  =>  MOV K2 D1520 | MOV K9 D1521        ; idx9
@@ -336,7 +337,7 @@ L99  MCR N0
 N00  LD M1950  =>  MC N0 M1551                         ; 운전 중일 때만 이 파일 실행(정지 시 OUT 끔)
 N01  LD= D1760 K0 | ANI X1730  =>  OUT T1530 K10                                ; <A22> 정치를 두면 이 시간
 N02  LD= D1760 K0 | AND T1530 | AND> D1800 K0  =>  DEC D1800
-N03  LD= D1760 K0 | AND T1530  =>  RST M1761 | MOV K10 D1760
+N03  LD= D1760 K0 | AND T1530  =>  RST M1761 | MOV K0 D1569 | MOV K10 D1760
 ; --- 완료 · 실패 처리: 스텝 큰 것부터 ---
 N23  LD>= D1760 K41 | AND<= D1760 K44 | AND M1567  =>  MOV K46 D1760               ; 태그 쓰기 실패
 N31  LD= D1760 K44 | AND M1566  =>  MOV K45 D1760
@@ -344,17 +345,21 @@ N29  LD= D1760 K43 | AND M1566  =>  MOV K44 D1760
 N27  LD= D1760 K42 | AND M1566  =>  MOV K43 D1760
 N25  LD= D1760 K41 | AND M1566  =>  MOV K42 D1760
 N04  LD>= D1760 K10 | AND<= D1760 K14 | AND M1567  =>  MOV K51 D1760               ; 판독 3회 실패 → NG
-N15  LD= D1760 K14 | AND M1566  =>  MOV D1535 D1744 | MOV K15 D1760
+N15  LD= D1760 K14 | AND M1566  =>  MOV D1535 D1744 | MOV D1535 D1568 | MOV K15 D1760
 N13  LD= D1760 K13 | AND M1566  =>  MOV D1535 D1761 | MOV K14 D1760
 N11  LD= D1760 K12 | AND M1566  =>  MOV D1535 D1537 | MOV K13 D1760
 N08  LD= D1760 K11 | AND M1566 | AND<> D1535 K0  =>  MOV D1535 D1536 | MOV K12 D1760
 N09  LD= D1760 K11 | AND M1566  =>  MOV K0 D1536 | MOV K51 D1760                   ; 미등록(0) → NG
-N06  LD= D1760 K10 | AND M1566  =>  MOV K11 D1760
+N06  LD= D1760 K10 | AND M1566 | AND<> D1535 K0 | AND<> D1535 D1568  =>  MOV D1535 D1568 | MOV K11 D1760   ; 시리얼 확인(J05와 같음)
+N46  LD= D1760 K10 | AND M1566 | AND< D1569 K2  =>  INC D1569 | MOV K16 D1760       ; 1초 뒤 다시 읽기(2번까지, J46과 같음)
+N47  LD= D1760 K10 | AND M1566  =>  MOV K51 D1760                              ; 3번 다 못 잡음 → 판독 실패
+N48  LD= D1760 K16  =>  OUT T1553 K10
+N49  LD= D1760 K16 | AND T1553  =>  MOV K10 D1760
 N40  LD= D1760 K46 | OR= D1760 K51  =>  SET M1954                            ; RFID ③ 알람(SET 한 곳)
 N41  LD= D1760 K46  =>  MOV K45 D1760                                        ; 태그 쓰기 실패 → 기록 끝으로
 N42  LD= D1760 K51  =>  MOV K50 D1760                                        ; 판독 실패 · 미등록 · 예상 밖 판정 → NG
 ; --- 명령 준비 · 재검사 ---
-N05  LD= D1760 K10 | ANI M1565 | ANI M1566 | ANI M1567  =>  MOV K0 D1530 | MOV K0 D1531        ; 명령 0
+N05  LD= D1760 K10 | ANI M1565 | ANI M1566 | ANI M1567  =>  MOV K1 D1530 | MOV K0 D1531        ; 명령 1 시리얼(태그 확인)
 N07  LD= D1760 K11 | ANI M1565 | ANI M1566 | ANI M1567  =>  MOV K2 D1530 | MOV K0 D1531        ; idx0
 N10  LD= D1760 K12 | ANI M1565 | ANI M1566 | ANI M1567  =>  MOV K2 D1530 | MOV K4 D1531        ; idx4
 N12  LD= D1760 K13 | ANI M1565 | ANI M1566 | ANI M1567  =>  MOV K2 D1530 | MOV K5 D1531        ; idx5
