@@ -65,6 +65,10 @@ def run_vbs(body, mdb):
 
 def guard_write(mdb):
     busy = running("MXOPC.exe", "MXConfigurator.exe")
+    rt = runtime_mdb()
+    # 실행 중인 MX OPC가 쓰는 파일이 아니면 고쳐도 됨(11-23 SmST14: MXOPC.exe가 다른 권한으로 떠 있어 끌 수 없음)
+    if busy == ["MXOPC.exe"] and rt and os.path.normcase(os.path.abspath(rt)) != os.path.normcase(os.path.abspath(mdb)):
+        busy = []
     if busy:
         sys.exit(f"{', '.join(busy)} 실행 중 — 끄고 다시 실행하세요 (OPC 클라이언트 · Factory I/O · 중계 서버를 먼저 끄면 MXOPC.exe도 꺼짐).")
     os.makedirs(BACKUP_DIR, exist_ok=True)
