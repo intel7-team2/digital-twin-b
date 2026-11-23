@@ -123,14 +123,18 @@ def main():
     missing = sorted(ph_code - ph_table)
     unused = sorted(ph_table - ph_code - rack)
 
+    # GX Works2 프로그램 체크 C9300(2중 코일)과 같은 기준: OUT · MC 코일, 그리고 같은 디바이스의 SET(또는 RST)가
+    # 두 회로 이상에 나오면 이중 코일로 셈(11-23 GX Works2에서 SET/RST 48건 확인 → 한 곳으로 모음)
     outs = {}
     for name, body in uniq.items():
         if "=>" not in body:
             continue
         for ins in body.split("=>", 1)[1].split("|"):
             p = ins.split()
-            if len(p) >= 2 and p[0] == "OUT":
-                outs.setdefault(p[1], []).append(name)
+            if len(p) >= 2 and p[0] in ("OUT", "SET", "RST"):
+                outs.setdefault(p[1] if p[0] == "OUT" else f"{p[0]} {p[1]}", []).append(name)
+            elif len(p) >= 3 and p[0] == "MC":
+                outs.setdefault(p[2], []).append(name)
     double = {d: r for d, r in outs.items() if len(r) > 1}
 
     # 명령어 목록(회로 줄, 설명 제외)에 실제로 나온 번지만 따로 셈. D1610Z0 같은 인덱스 수식은 첫 번지로 셈
