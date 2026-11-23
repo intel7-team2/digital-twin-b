@@ -132,7 +132,7 @@ python hmi_mc_relay.py --backend opc               # Pro-face HMI(WinGP) 중계 
 - 실물 PLC가 필요한 확인은 Project C 환경에서 측정일을 따로 잡아 합니다(12장). 그곳에서는 쓰기 · RUN 전에 현장 담당자 확인과 기존 프로그램 백업을 먼저 합니다.
 
 ### Git
-- 기본 브랜치는 `main`입니다. 테스트 결과처럼 따로 검토할 작업은 `test/...` 브랜치로 올린 뒤 `main`에 합칩니다.
+- 기본 브랜치는 `main`입니다. 한 PC에서 같이 작업하므로 작업 브랜치 · PR 없이 `main`에 바로 커밋합니다(D24).
 - 공유 DB 파일(`*.db`), Python 캐시, 인계 JSON은 커밋하지 않습니다(`.gitignore`).
 
 ## 6. 참고
