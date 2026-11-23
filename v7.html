@@ -1198,7 +1198,7 @@
       <div class="toc-meta">
         <div><span>기준 모델</span><strong>삼성SDI 후공정</strong></div>
         <div><span>앞단 연계</span><strong>Project C (조립)</strong></div>
-        <div><span>재검사</span><strong>전용 검사기 · 정치 버퍼</strong></div>
+        <div><span>재검사</span><strong>전용 검사기 · 연속 재검사 라인</strong></div>
         <div><span>특성 계측</span><strong>ΔV · AC-IR · 온도</strong></div>
       </div>
     </aside>
@@ -1225,7 +1225,7 @@
           <div class="kpi-box">
             <div class="lbl">검사기 합류 충돌 제거</div>
             <div class="val">재검사 전용 라인</div>
-            <div class="sub">정치 버퍼 8칸 → 재검사기 → 2차 분리 · 만차 시 메인 출구 대기</div>
+            <div class="sub">재검사 라인(정치 없이 연속) → 재검사기 → 2차 분리 · 분기점까지 차면 메인 출구 대기</div>
           </div>
           <div class="kpi-box">
             <div class="lbl">현업 에이징 숙성 모델</div>
@@ -1396,13 +1396,13 @@
           <!-- Problem & Solution 4 -->
           <div style="border:1px solid var(--border-soft);border-radius:4px;padding:18px;background:#FAFBFD;border-top:3px solid var(--pass);">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-              <span style="font-family:var(--font-mono);font-size:0.72rem;font-weight:800;color:var(--pass);">BOTTLENECK 04 · 합류부 정체 및 버퍼 포화</span>
+              <span style="font-family:var(--font-mono);font-size:0.72rem;font-weight:800;color:var(--pass);">BOTTLENECK 04 · 합류부 정체 및 재검사 라인 포화</span>
               <span class="tag-adopt">재검사 전용 검사기 (v4)</span>
             </div>
             <h4 style="font-size:0.95rem;font-weight:800;margin-bottom:6px;">[현업 문제] 창고 출고 물량과 RETEST 복귀 물량의 검사기 합류 충돌</h4>
-            <p style="font-size:0.82rem;color:var(--ink-secondary);margin-bottom:10px;">재검사 물량이 메인 라인으로 복귀할 때 단순 선입선출만 사용하면 합류부 교착(Merge Jam)과 사이드 버퍼 포화로 전체 라인이 정지합니다.</p>
+            <p style="font-size:0.82rem;color:var(--ink-secondary);margin-bottom:10px;">재검사 물량이 메인 라인으로 복귀할 때 단순 선입선출만 사용하면 합류부 교착(Merge Jam)과 재검사 라인 포화(메인 라인까지 줄이 밀림)로 전체 라인이 정지합니다.</p>
             <div style="background:var(--bg-elevated);border:1px solid var(--border-soft);padding:10px 12px;border-radius:4px;font-size:0.81rem;color:var(--ink-primary);">
-              <strong>▶ Project B 해결 (v4):</strong> RETEST 팩을 메인 검사기로 되돌리지 않고 <strong>정치 버퍼 8칸 → 재검사 전용 검사기(RFID③ · OCV·IR·온도)</strong>로 보냅니다. 검사기 앞 합류가 없어져 합류부 교착이 생기지 않고, 재검사 GOOD만 검사 뒤 메인 라인에 간격 센서(<code>X1903</code>)로 합류합니다. 버퍼가 꽉 차면(<code>M1800</code>) 새 RETEST 판정은 NG로 처리합니다.
+              <strong>▶ Project B 해결 (v4):</strong> RETEST 팩을 메인 검사기로 되돌리지 않고 <strong>재검사 라인(정치 없이 연속 이송) → 재검사 전용 검사기(RFID③ · OCV·IR·온도)</strong>로 보냅니다(v6에서 정치 버퍼 삭제). 검사기 앞 합류가 없어져 합류부 교착이 생기지 않고, 재검사 GOOD만 검사 뒤 메인 라인에 간격 센서(<code>X1903</code>)로 합류합니다. 재검사 라인이 분기점까지 차면(<code>M1800</code>) RETEST·NG 팩은 메인 검사기 출구에서 기다려, 메인 라인 위에 멈춰 서는 팩이 생기지 않습니다.
             </div>
           </div>
         </div>
@@ -1418,7 +1418,7 @@
           <span class="pill-badge"><i data-lucide="play-circle" style="width:13px;height:13px;"></i> 24칸 구역 숙성 · M1690 긴급반출 · 재검사 전용 라인 시뮬레이션 (v4)</span>
         </div>
         <p class="sec-sub">
-          배터리 팩 공작물(4S 작은 박스 · 6S 큰 박스, <code>P-01</code>, <code>P-02</code>…)이 컨베이어를 따라 <strong>RFID ① 등록 → 관통형 AS/RS 24칸(4S 1~3열 · 6S 4~6열, 칸 크기 동일) → 1차 분리(발열 팩 ↓ M1690 격리 + DB ISO / 정상 직진) → 메인 검사(RFID ② → OCV·IR·온도) → 판정별 분기(PASS 개별 출하 / RETEST·NG → 정치 버퍼 8칸 → 재검사기(RFID ③, 메인 NG는 계측 생략) → 2차 분리 ↑ GOOD 합류 · ↓ NG OUT)</strong>까지 물리적으로 이동하는 과정을 실시간으로 확인하세요.
+          배터리 팩 공작물(4S 작은 박스 · 6S 큰 박스, <code>P-01</code>, <code>P-02</code>…)이 컨베이어를 따라 <strong>RFID ① 등록 → 관통형 AS/RS 24칸(4S 1~3열 · 6S 4~6열, 칸 크기 동일) → 1차 분리(발열 팩 ↓ M1690 격리 + DB ISO / 정상 직진) → 메인 검사(RFID ② → OCV·IR·온도) → 판정별 분기(PASS 개별 출하 / RETEST·NG → 재검사 라인(정치 없이 연속) → 재검사기(RFID ③, 메인 NG는 계측 생략) → 2차 분리 ↑ GOOD 합류 · ↓ NG OUT)</strong>까지 물리적으로 이동하는 과정을 실시간으로 확인하세요.
         </p>
 
         <div class="dark-workbench">
@@ -1450,7 +1450,7 @@
                 <i data-lucide="unlock" style="width:13px;height:13px;"></i> 랙 잠금해제 (0)
               </button>
               <button class="sim-btn retest-btn" onclick="triggerRetestSurge()">
-                <i data-lucide="zap" style="width:13px;height:13px;"></i> RETEST 몰림 (버퍼 만차 → 메인 출구 대기)
+                <i data-lucide="zap" style="width:13px;height:13px;"></i> RETEST 몰림 (재검사 라인 줄서기 확인)
               </button>
             </div>
 
@@ -1476,8 +1476,8 @@
               <div class="t-val" id="t-mode" style="font-size:0.86rem;color:var(--cyan);margin-top:4px;">대기</div>
             </div>
             <div class="tele-card">
-              <div class="t-lbl">RETEST 정치 버퍼 (최대 8칸)</div>
-              <div class="t-val" id="t-buf" style="color:var(--retest-bright);">0 / 8</div>
+              <div class="t-lbl">재검사 라인 (D1800 팩 수 · 대기)</div>
+              <div class="t-val" id="t-buf" style="color:var(--retest-bright);">0 EA</div>
             </div>
             <div class="tele-card">
               <div class="t-lbl">GOOD 출하 / NG 누적 (EA)</div>
@@ -1493,7 +1493,7 @@
               <!-- Top Live Status Banner -->
               <rect id="svg-mode-banner" x="16" y="12" width="1368" height="32" rx="4" fill="#0F172A" stroke="#38BDF8" stroke-width="1.3"/>
               <text id="svg-mode-text" x="700" y="33" text-anchor="middle" fill="#38BDF8" font-size="13" font-weight="700" font-family="Pretendard, sans-serif">
-                v5 정상 운전: 1차 분리(발열 ↓) → 메인 검사 → GOOD 직진 / RETEST·NG ↓ 정치 버퍼 → 재검사기 → 2차 분리
+                v6 정상 운전: 1차 분리(발열 ↓) → 메인 검사 → GOOD 직진 / RETEST·NG ↓ 재검사 라인(연속) → 재검사기 → 2차 분리
               </text>
 
               <!-- ==================== CONVEYOR TRACKS (v4) ==================== -->
@@ -1621,7 +1621,7 @@
 
               <!-- RETEST REST BUFFER (8 slots, front = east next to the retest tester) -->
               <g id="retest-slot-guides"></g>
-              <text id="retest-buf-lbl" x="885" y="346" text-anchor="middle" fill="#FBBF24" font-size="9.5" font-weight="800" font-family="Pretendard, sans-serif">정치 버퍼 8칸 (RETEST + 메인 NG) · D1800 · 만차(M1800) 시 메인 출구 대기</text>
+              <text id="retest-buf-lbl" x="885" y="346" text-anchor="middle" fill="#FBBF24" font-size="9.5" font-weight="800" font-family="Pretendard, sans-serif">재검사 라인 (RETEST + 메인 NG) · 정치 없이 연속 이송 → 재검사기 · D1800 팩 수</text>
 
               <!-- RETEST TESTER (RFID ③ + OCV·IR·Temp) -->
               <g transform="translate(1078, 248)">
@@ -1762,7 +1762,7 @@
           <div class="asset-card">
             <div class="a-tag">ASSET 04 · 판정별 기계식 분기</div>
             <h4>Pivot Arm Sorter 2기</h4>
-            <p>스토퍼 해제 직후 <code>PASS(1)</code>는 직진 GOOD OUT 개별 출하, <code>RETEST(2)</code>는 정치 버퍼(<code>M1720</code>) → 재검사기로, <code>NG-ΔV(3)</code>·<code>NG-IR(4)</code>·<code>NG-TEMP(5)</code>도 같은 <code>M1720</code>으로 정치 버퍼에 들어가 재검사기를 계측 없이 통과한 뒤 2차 분리 ↓(<code>M1732</code>)로 NG OUT에 갑니다(v5에서 <code>M1710</code> 라인 삭제). 원인은 Python이 PACK ID별로 DB에 기록합니다.</p>
+            <p>스토퍼 해제 직후 <code>PASS(1)</code>는 직진 GOOD OUT 개별 출하, <code>RETEST(2)</code>는 <code>M1720</code> → 재검사 라인 → 재검사기로, <code>NG-ΔV(3)</code>·<code>NG-IR(4)</code>·<code>NG-TEMP(5)</code>도 같은 <code>M1720</code>으로 재검사 라인에 들어가 재검사기를 계측 없이 통과한 뒤 2차 분리 ↓(<code>M1732</code>)로 NG OUT에 갑니다(v5에서 <code>M1710</code> 라인 삭제). 원인은 Python이 PACK ID별로 DB에 기록합니다.</p>
           </div>
         </div>
 
@@ -1773,7 +1773,7 @@
               <th>계측 항목 (PLC 워드)</th>
               <th>Factory I/O 물리 동기화</th>
               <th>PASS (합격)</th>
-              <th>RETEST (버퍼 정치)</th>
+              <th>RETEST (재검사 라인)</th>
               <th>NG (NG 라인 배출 · 원인 DB 기록)</th>
             </tr>
           </thead>
@@ -2003,7 +2003,7 @@
               <li><i data-lucide="arrow-right-circle" style="width:14px;height:14px;color:var(--retest);flex-shrink:0;margin-top:3px;"></i><span>팩이 검사 스토퍼에 정지하면 <strong>검사 스테이션 RFID 리더(<code>D1520~D1527</code>)</strong>가 태그 <code>idx0</code>(PACK ID)·<code>idx4</code>(재검사 횟수)·<code>idx9</code>(셀 수)를 읽어 <code>D1711</code>·<code>D1712</code>·<code>D1714</code>에 쓰고 <code>D1710=1</code>로 계측을 요청합니다. <strong>OCV·IR·온도</strong>를 모두 잽니다.</span></li>
               <li><i data-lucide="arrow-right-circle" style="width:14px;height:14px;color:var(--retest);flex-shrink:0;margin-top:3px;"></i><span><strong>Python 가상 계측 엔진</strong>이 그 PACK ID로 <code>ΔV</code>·<code>AC-IR</code>·<code>온도</code>를 난수 생성해 <code>D1701~1703</code>과 판정 <code>D1700</code>을 회신하고, 최종 판정을 <strong>PACK ID별로 DB(<code>inspection.db</code>)에 저장</strong>합니다. PLC는 판정·계측값을 태그 <code>idx4~8</code>에 다시 기록합니다.</span></li>
               <li><i data-lucide="arrow-right-circle" style="width:14px;height:14px;color:var(--retest);flex-shrink:0;margin-top:3px;"></i><span>불량은 원인과 관계없이 <strong>NG 라인 하나</strong>로 배출합니다. 원인은 판정 코드 <code>NG-ΔV(3)</code>·<code>NG-IR(4)</code>·<code>NG-TEMP(5)</code>로 구분해 DB에 남깁니다(복수 불량 시 온도 → ΔV → AC-IR 우선).</span></li>
-              <li><i data-lucide="arrow-right-circle" style="width:14px;height:14px;color:var(--retest);flex-shrink:0;margin-top:3px;"></i><span><strong>재검사 전용 검사기:</strong> RETEST 팩은 정치 버퍼(8칸)에서 쉰 뒤 <strong>RFID ③(<code>D1530~D1537</code>)</strong>으로 PACK ID를 읽고 같은 방식(OCV·IR·온도)으로 다시 잽니다. 요청은 별도 블록(<code>D1740~D1744</code>), 결과는 <code>D1730~D1733</code>이라 메인 검사기와 동시에 요청해도 충돌하지 않습니다.</span></li>
+              <li><i data-lucide="arrow-right-circle" style="width:14px;height:14px;color:var(--retest);flex-shrink:0;margin-top:3px;"></i><span><strong>재검사 전용 검사기:</strong> RETEST 팩은 재검사 라인을 따라 쉬지 않고 바로 가서 <strong>RFID ③(<code>D1530~D1537</code>)</strong>으로 PACK ID를 읽고 같은 방식(OCV·IR·온도)으로 다시 잽니다. 요청은 별도 블록(<code>D1740~D1744</code>), 결과는 <code>D1730~D1733</code>이라 메인 검사기와 동시에 요청해도 충돌하지 않습니다.</span></li>
             </ul>
           </div>
 
@@ -2013,8 +2013,8 @@
               <span>M1660 · M1661 · M1720 · M1731 · M1732 · M1800 · X1903</span>
             </div>
             <ul>
-              <li><i data-lucide="arrow-right-circle" style="width:14px;height:14px;color:var(--pass);flex-shrink:0;margin-top:3px;"></i><span><strong>개별 분류:</strong> 박스 적재 없이 팩 1개씩 <code>D1700</code> 판정에 따라 바로 분기합니다. <code>PASS(1)</code>는 직진해 GOOD OUT, <code>RETEST(2)</code>와 <code>NG(3·4·5)</code>는 모두 Sorter(<code>M1720</code>)로 남쪽 정치 버퍼에 보냅니다. 메인 NG는 태그 <code>idx5</code>에 3·4·5가 남아 재검사기에서 계측 없이 통과합니다. 1차 분리(<code>M1660</code> 직진 / <code>M1661</code> ↓ 격리)는 메인 검사기 앞에 있습니다.</span></li>
-              <li><i data-lucide="arrow-right-circle" style="width:14px;height:14px;color:var(--hold);flex-shrink:0;margin-top:3px;"></i><span><strong>재검사 라인:</strong> 정치 버퍼(<code>D1800</code> 점유 수) → 재검사기 → <strong>2차 분리(Pop-up Wheel Sorter)</strong>: GOOD은 위(<code>M1731</code>) → <code>X1903</code>으로 메인 라인 간격을 확인한 뒤 합류해 GOOD OUT, NG는 아래(<code>M1732</code>) → NG OUT. 버퍼가 꽉 차면(<code>M1800</code>) GOOD 외 판정 팩은 메인 검사기 출구에서 기다리고, 그동안 크레인 B는 새 팩을 내보내지 않습니다. 재검사는 1회까지이며 태그 <code>idx4</code>로 관리합니다.</span></li>
+              <li><i data-lucide="arrow-right-circle" style="width:14px;height:14px;color:var(--pass);flex-shrink:0;margin-top:3px;"></i><span><strong>개별 분류:</strong> 박스 적재 없이 팩 1개씩 <code>D1700</code> 판정에 따라 바로 분기합니다. <code>PASS(1)</code>는 직진해 GOOD OUT, <code>RETEST(2)</code>와 <code>NG(3·4·5)</code>는 모두 Sorter(<code>M1720</code>)로 남쪽 재검사 라인에 보냅니다. 메인 NG는 태그 <code>idx5</code>에 3·4·5가 남아 재검사기에서 계측 없이 통과합니다. 1차 분리(<code>M1660</code> 직진 / <code>M1661</code> ↓ 격리)는 메인 검사기 앞에 있습니다.</span></li>
+              <li><i data-lucide="arrow-right-circle" style="width:14px;height:14px;color:var(--hold);flex-shrink:0;margin-top:3px;"></i><span><strong>재검사 라인:</strong> 정치 없이 연속 이송(<code>D1800</code> 라인 위 팩 수) → 재검사기 → <strong>2차 분리(Pop-up Wheel Sorter)</strong>: GOOD은 위(<code>M1731</code>) → <code>X1903</code>으로 메인 라인 간격을 확인한 뒤 합류해 GOOD OUT, NG는 아래(<code>M1732</code>) → NG OUT. 재검사기가 사용 중이면 팩은 재검사기 앞에서 간격을 두고 줄을 서고, 줄이 <code>M1720</code> 분기점까지 차면(<code>M1800</code>) GOOD 외 판정 팩은 메인 검사기 출구에서 기다립니다. 그동안 크레인 B는 새 팩을 내보내지 않습니다. 재검사는 1회까지이며 태그 <code>idx4</code>로 관리합니다.</span></li>
             </ul>
           </div>
 
@@ -2050,7 +2050,7 @@
               <li>• 컨베이어, 스토퍼, 광전 센서</li>
               <li>• 관통형 AS/RS 24칸(4S·6S 구역) & 입·출고 크레인 2기</li>
               <li>• RFID 리더 3기 · 검사기 2대(메인 · 재검사) · Sorter 3기</li>
-              <li>• 정치 버퍼 8칸 · 합류 센서 & 게이트 3곳 통과 센서</li>
+              <li>• 재검사 라인(연속) · 합류 센서 & 게이트 3곳 통과 센서</li>
             </ul>
           </div>
           <div class="arch-card">
@@ -2059,7 +2059,7 @@
             <ul>
               <li>• 전체 공정 시퀀스 및 설비 인터록</li>
               <li>• 출고 순서(발열 우선 → EDD) · 재검사 GOOD 합류 간격(X1903)</li>
-              <li>• NG 1라인(2차 분리 ↓) · 정치 버퍼 만차(M1800) 시 메인 출구 대기</li>
+              <li>• NG 1라인(2차 분리 ↓) · 재검사 라인이 분기점까지 차면(M1800) 메인 출구 대기</li>
               <li>• 게이트별 누적 카운터(D1900~D1904) & HMI 리셋(M1920)</li>
             </ul>
           </div>
@@ -2067,7 +2067,7 @@
             <div class="l-num">LAYER 03 · MIDDLEWARE</div>
             <h4>Python 브릿지 서버</h4>
             <ul>
-              <li>• MC-3E / Modbus TCP 태그 동기화</li>
+              <li>• MX OPC Server(OPC DA) 태그 동기화 (Modbus TCP는 선택)</li>
               <li>• 배속 에이징 타이머 & ΔV 연산</li>
               <li>• PACK ID별 ΔV·AC-IR·온도 가상 계측값 생성</li>
               <li>• Retest_Count=1 무한루프 차단</li>
@@ -2086,7 +2086,7 @@
         </div>
 
         <!-- PLC Device Tag Map -->
-        <p class="sec-sub" style="margin-top:18px;">PLC 디바이스 번지는 <strong>1500~19FF 블록</strong>을 씁니다. M·D는 10진 <code>1500~1999</code>, X·Y는 16진 <code>1500~19FF</code>이며, 공정별로 15xx(입고·RFID) · 16xx(AS/RS) · 17xx(검사·분류) · 18xx(RETEST 버퍼) · 19xx(게이트·HMI)로 나눴습니다.</p>
+        <p class="sec-sub" style="margin-top:18px;">PLC 디바이스 번지는 <strong>1500~19FF 블록</strong>을 씁니다. M·D는 10진 <code>1500~1999</code>, X·Y는 16진 <code>1500~19FF</code>이며, 공정별로 15xx(입고·RFID) · 16xx(AS/RS) · 17xx(검사·분류) · 18xx(재검사 라인) · 19xx(게이트·HMI)로 나눴습니다.</p>
         <table class="spec-table">
           <thead>
             <tr>
@@ -2119,7 +2119,7 @@
               <td>D1513 / D1514 / D1515</td>
               <td>RFID_CMD_ID / RFID_STATUS / RFID_RD_DATA</td>
               <td>Word</td>
-              <td><code>D1513</code> 값이 <strong>바뀌고(≠)</strong> <code>D1514 = 0</code>일 때만 <code>D1515</code>를 유효값으로 사용 (오류 시 <code>D1515</code>는 직전 값 유지 · 씬 리셋 시 <code>D1513</code>은 0으로 복귀)</td>
+              <td><code>D1513</code> 값이 <strong>바뀌면</strong> 명령 완료로 보고 <code>D1515</code>를 사용. <strong><code>D1514</code>(상태)는 판정에 쓰지 않음</strong> — Factory I/O 시험(11-23)에서 박스 크기 · 리더 자세에 따라 상태가 0/1로 갈렸지만 시리얼 · 읽기 · 쓰기 값은 정상. 태그 유무는 <strong>시리얼 변화</strong>(Cmd 1로 읽은 시리얼 ≠ 0이고 직전 시리얼과 다름)로 판정 (안건 A31 · 씬 리셋 시 <code>D1513</code>은 0으로 복귀)</td>
             </tr>
             <tr>
               <td>D1516 / D1517</td>
@@ -2215,13 +2215,13 @@
               <td>M1720 / M1731 / M1732</td>
               <td>SORT_BUF / SORT2_GOOD / SORT2_NG</td>
               <td>Bit</td>
-              <td>메인 <code>D1700</code> ≠ 1 (2·3·4·5) → <code>M1720</code> 정치 버퍼. 2차 분리 Pop-up Wheel Sorter: 재검사 <code>D1730</code> = 1 → <code>M1731</code> 위(GOOD 합류), 3·4·5 또는 태그 <code>idx5</code> 3·4·5(메인 NG 통과) → <code>M1732</code> 아래(NG OUT). <code>M1710</code>은 v5에서 삭제(빈 번지)</td>
+              <td>메인 <code>D1700</code> ≠ 1 (2·3·4·5) → <code>M1720</code> 재검사 라인. 2차 분리 Pop-up Wheel Sorter: 재검사 <code>D1730</code> = 1 → <code>M1731</code> 위(GOOD 합류), 3·4·5 또는 태그 <code>idx5</code> 3·4·5(메인 NG 통과) → <code>M1732</code> 아래(NG OUT). <code>M1710</code>은 v5에서 삭제(빈 번지)</td>
             </tr>
             <tr>
               <td>M1800 / D1800</td>
               <td>BUF_FULL / BUF_CNT</td>
               <td>Bit / Word</td>
-              <td>정치 버퍼 점유 수(<code>D1800</code>, 최대 8). 8칸이 차면 <code>M1800 ON</code> → GOOD 외 판정 팩은 메인 검사기 출구 대기(스토퍼 유지), 크레인 B 출고 정지. v5 시뮬레이션에서 정상 운전 중 만차 0회</td>
+              <td>재검사 라인 위 팩 수(<code>D1800</code>). 줄이 <code>M1720</code> 분기점 근처까지 차면 <code>M1800 ON</code> → GOOD 외 판정 팩은 메인 검사기 출구 대기(스토퍼 유지), 크레인 B 출고 정지. v6 시뮬레이션 정상 운전 중 0회(v6에서 정치 버퍼 8칸 삭제)</td>
             </tr>
             <tr>
               <td>X1900 ~ X1902 / X1903</td>
@@ -2275,7 +2275,7 @@
           </table>
 
           <h3>STEP 03 검사 RFID 판독 · 계측 · DB 기록 시퀀스 (메인 검사기 · 재검사기 공통)</h3>
-          <p class="rfid-lead">검사 스테이션에 두 번째 RFID 리더(<code>D1520~D1527</code>)를 둡니다. 명령 실행 규칙은 STEP 01과 같고(<code>M1521</code> 펄스 → <code>D1523</code> 변화 &amp; <code>D1524=0</code> 확인), 판독 3회 실패 시 계측 없이 정치 버퍼 → 2차 분리 ↓ NG 라인으로 배출하고 알람을 띄웁니다. <strong>재검사기</strong>는 같은 순서로 RFID ③(<code>D1530~D1537</code>) · 요청 <code>D1740~D1744</code> · 결과 <code>D1730~D1733</code>을 씁니다.</p>
+          <p class="rfid-lead">검사 스테이션에 두 번째 RFID 리더(<code>D1520~D1527</code>)를 둡니다. 명령 실행 규칙은 STEP 01과 같고(<code>M1521</code> 펄스 → <code>D1523</code> 변화 &amp; <code>D1524=0</code> 확인), 판독 3회 실패 시 계측 없이 재검사 라인 → 2차 분리 ↓ NG 라인으로 배출하고 알람을 띄웁니다. <strong>재검사기</strong>는 같은 순서로 RFID ③(<code>D1530~D1537</code>) · 요청 <code>D1740~D1744</code> · 결과 <code>D1730~D1733</code>을 씁니다.</p>
           <table class="spec-table">
             <thead>
               <tr>
@@ -2293,7 +2293,7 @@
               <tr><td>5</td><td>PLC → Python</td><td><code>D1711 ← D1526</code>, <code>D1712 ← D1527</code>, <code>D1714 ← 셀 수</code>, <code>D1710 = 1</code></td><td>프로브 하강(<code>M1700</code>)과 동시 진행</td></tr>
               <tr><td>6</td><td>Python</td><td>PACK ID로 ΔV · AC-IR · 온도 난수 생성 → 판정 → <code>D1700~1703</code> 기록 → <strong>DB 저장</strong> → <code>D1713 = 1</code></td><td>RETEST(2)는 측정 로그에만 남기고 최종 결과는 2차 검사 때 저장</td></tr>
               <tr><td>7</td><td>Cmd 3 × 5</td><td>태그 idx4(재검사+1, RETEST일 때)·5(판정)·6·7·8(계측값) 쓰기</td><td>쓰기마다 <code>D1523</code> 변화 &amp; <code>D1524=0</code> 확인</td></tr>
-              <tr><td>8</td><td>PLC</td><td><code>D1710 = 0</code> → 스토퍼 해제 → <code>D1700</code>으로 분기</td><td>메인: 1 GOOD OUT / 2·3·4·5 <code>M1720</code> 정치 버퍼(만차 <code>M1800</code>면 출구 대기) · 재검사: 1 → 2차 분리 ↑ <code>M1731</code> → <code>X1903</code> 합류 → GOOD OUT / 3·4·5 → 2차 분리 ↓ <code>M1732</code> NG 라인</td></tr>
+              <tr><td>8</td><td>PLC</td><td><code>D1710 = 0</code> → 스토퍼 해제 → <code>D1700</code>으로 분기</td><td>메인: 1 GOOD OUT / 2·3·4·5 <code>M1720</code> 재검사 라인(분기점까지 차면 <code>M1800</code> 출구 대기) · 재검사: 1 → 2차 분리 ↑ <code>M1731</code> → <code>X1903</code> 합류 → GOOD OUT / 3·4·5 → 2차 분리 ↓ <code>M1732</code> NG 라인</td></tr>
             </tbody>
           </table>
 
@@ -2349,7 +2349,7 @@
           <div class="phase-card">
             <span class="phase-tag">PHASE 1 · 3D 씬 배치</span>
             <h4>Factory I/O 설비 레이아웃</h4>
-            <p>Infeed, 24칸 AS/RS(4S·6S 구역), 메인 검사기 + 재검사기(RFID ②·③), 정치 버퍼 8칸, NG 1라인 및 GOOD OUT 출하 라인 배치</p>
+            <p>Infeed, 24칸 AS/RS(4S·6S 구역), 메인 검사기 + 재검사기(RFID ②·③), 연속 재검사 라인, NG 1라인 및 GOOD OUT 출하 라인 배치</p>
           </div>
           <div class="phase-card">
             <span class="phase-tag">PHASE 2 · 반송/창고 PLC</span>
@@ -2364,7 +2364,7 @@
           <div class="phase-card wide">
             <span class="phase-tag">PHASE 4 · 폐루프 예외 처리</span>
             <h4>재검사 전용 라인(Max 1회) & NG 통합 배출</h4>
-            <p>1차 분리(M1660/M1661) · 정치 버퍼 → 재검사기 → 2차 분리(M1731/M1732) → X1903 합류, 만차(M1800) 시 메인 출구 대기, 태그 idx4 기반 1회 제한, NG 1라인 + DB 원인 기록, M1690 격리 DB ISO 검증</p>
+            <p>1차 분리(M1660/M1661) · 재검사 라인(연속) → 재검사기 → 2차 분리(M1731/M1732) → X1903 합류, 분기점까지 차면(M1800) 메인 출구 대기, 태그 idx4 기반 1회 제한, NG 1라인 + DB 원인 기록, M1690 격리 DB ISO 검증</p>
           </div>
           <div class="phase-card wide">
             <span class="phase-tag">PHASE 5 · 출하 카운터 & 통합 시연</span>
@@ -2389,7 +2389,7 @@
           </div>
           <div class="chk-item" onclick="toggleChk(this)">
             <div class="chk-box"><i data-lucide="check" style="width:12px;height:12px;"></i></div>
-            <span>3. RETEST·NG 팩이 정치 버퍼 → 재검사기(RFID ③)로 가고, 버퍼 8칸이 차면 M1800이 켜져 GOOD 외 판정 팩이 메인 검사기 출구에서 기다렸다가 자리가 나면 진행하는가?</span>
+            <span>3. RETEST·NG 팩이 멈추지 않고 재검사 라인 → 재검사기(RFID ③)로 가고, 줄이 분기점까지 차면 M1800이 켜져 GOOD 외 판정 팩이 메인 검사기 출구에서 기다렸다가 자리가 나면 진행하는가? (메인 라인 위에 멈춘 팩이 없어야 함)</span>
           </div>
           <div class="chk-item" onclick="toggleChk(this)">
             <div class="chk-box"><i data-lucide="check" style="width:12px;height:12px;"></i></div>
@@ -2397,7 +2397,7 @@
           </div>
           <div class="chk-item" onclick="toggleChk(this)">
             <div class="chk-box"><i data-lucide="check" style="width:12px;height:12px;"></i></div>
-            <span>5. NG 판정(Temp &gt; 38.0°C, 4S 팩 ΔV &gt; 0.60V · 6S &gt; 0.90V, 팩 IR 4S &gt; 12.8mΩ · 6S &gt; 19.2mΩ)이 정치 버퍼 → 재검사기(계측 생략) → 2차 분리 ↓로 NG 라인 하나에 배출되고, DB에 PACK ID와 불량 원인이 기록되는가?</span>
+            <span>5. NG 판정(Temp &gt; 38.0°C, 4S 팩 ΔV &gt; 0.60V · 6S &gt; 0.90V, 팩 IR 4S &gt; 12.8mΩ · 6S &gt; 19.2mΩ)이 재검사 라인 → 재검사기(계측 생략) → 2차 분리 ↓로 NG 라인 하나에 배출되고, DB에 PACK ID와 불량 원인이 기록되는가?</span>
           </div>
           <div class="chk-item" onclick="toggleChk(this)">
             <div class="chk-box"><i data-lucide="check" style="width:12px;height:12px;"></i></div>
@@ -2506,7 +2506,7 @@
             ? { code: VERDICT.NG_DV, reason: `재검사 후 ΔV 경계 지속 (${fmtDv(m.dv)})` }
             : { code: VERDICT.NG_IR, reason: `재검사 후 AC-IR 경계 지속 (${fmtIr(m.ir)})` };
         }
-        return { code: VERDICT.RETEST, reason: dvWarn ? `ΔV 경계 (${fmtDv(m.dv)}) → 버퍼` : `AC-IR 경계 (${fmtIr(m.ir)}) → 버퍼` };
+        return { code: VERDICT.RETEST, reason: dvWarn ? `ΔV 경계 (${fmtDv(m.dv)}) → 재검사 라인` : `AC-IR 경계 (${fmtIr(m.ir)}) → 재검사 라인` };
       }
       return { code: VERDICT.PASS, reason: '3대 전기·열 스펙 모두 정상' };
     }
@@ -2541,12 +2541,32 @@
     // v5 2D geometry: main line y=148 · 1차 분리 x=545 (↓ isolation y=270) · retest zone y=300
     // (rest buffer 8 slots → retest tester → 2차 분리 x=1210: ↑ GOOD merge / ↓ NG line y=410). No M1710 line.
     const V4 = {
-      BUF_N: 8, RET_Y: 300, bufX: i => 1046 - i * 46,            // slot 0 = front (east, next to the retest tester)
+      RET_Y: 300,                                               // retest line level (v6: no rest buffer)
       RT_X: 1124, SORT1_X: 545, ISO_Y: 270, SORT2_X: 1210, MERGE_X: 1210, NG_Y: 410, GATE_X: 1300,
+      RT_GAP: 52,                                                // v6: pack spacing on the continuous retest line (px, 6S box width)
       zoneOf: r => (r.col < 3 ? 4 : 6),                         // bays 1~3 = 4S zone, 4~6 = 6S zone (equal cells)
       LOCK_RELEASE_S: 20                                        // LOCK cell auto release after inspection time (sim s)
     };
     const OUT_WP = [[448, ASRS.outRailY], [510, ASRS.outRailY], [510, 148]];   // crane B east drop → main line
+    // v6 retest line: main tester exit → M1720 (x=695) ↓ → y=300 → retest tester. No rest buffer: packs run straight
+    // to the retester and only queue (with spacing) while the retester is busy.
+    const RT_PATH = [[627, 148], [695, 148], [695, 300], [1124, 300]];
+    const RT_SEG = RT_PATH.slice(1).map((q, k) => Math.hypot(q[0] - RT_PATH[k][0], q[1] - RT_PATH[k][1]));
+    const RT_LEN = RT_SEG.reduce((a, b) => a + b, 0);
+    const RT_MAIN_LEN = RT_SEG[0];                       // first segment is still on the main line (y = 148)
+    // a new RETEST/NG pack may leave the main tester only if it can stop past the M1720 branch (off the main line)
+    const RT_ENTRY_CLEAR = RT_MAIN_LEN + 2 * 52;
+    function rtPathAt(sp) {
+      let d = Math.max(0, Math.min(sp, RT_LEN));
+      for (let k = 0; k < RT_SEG.length; k++) {
+        if (d <= RT_SEG[k] || k === RT_SEG.length - 1) {
+          const f = RT_SEG[k] ? Math.min(1, d / RT_SEG[k]) : 0;
+          return [RT_PATH[k][0] + (RT_PATH[k + 1][0] - RT_PATH[k][0]) * f, RT_PATH[k][1] + (RT_PATH[k + 1][1] - RT_PATH[k][1]) * f];
+        }
+        d -= RT_SEG[k];
+      }
+      return RT_PATH[RT_PATH.length - 1];
+    }
     function flashWheel(id, color) {
       const el = document.getElementById(id);
       if (!el) return;
@@ -2860,9 +2880,10 @@
         lockT: 0,          // seconds since the hot pack left the cell (auto release at V4.LOCK_RELEASE_S)
         progress: 0
       })),
-      retestSlots: Array(8).fill(null), // v4 rest buffer (8 slots) in front of the retest tester
-      bufFull: false,                   // M1800: buffer full → non-GOOD pack waits at the main tester exit
-      bufHolds: 0, bufHoldT: 0,         // v5 validation: how often / how long the main tester was held by M1800
+      bufFull: false,                   // M1800: retest line entry blocked → non-GOOD pack waits at the main tester exit
+      bufHolds: 0, bufHoldT: 0,         // how often / how long the main tester was held by M1800
+      // v6 validation counters (retest line without rest buffer)
+      rtStat: { maxOnLine: 0, queued: 0, queueT: 0, spillMain: 0, spillT: 0, nearMain: 0, mergeWaits: 0, mergeT: 0 },
       tokens: []
     };
 
@@ -2931,35 +2952,10 @@
       }
     }
 
-    // Build 8 rest-buffer slot guides (v4: y = 300, slot 0 = front next to the retest tester)
+    // v6: the rest buffer was removed, no slot guides
     function initRetestSlotGuides() {
       const g = document.getElementById('retest-slot-guides');
-      g.innerHTML = '';
-      for (let i = 0; i < V4.BUF_N; i++) {
-        const x = V4.bufX(i);
-        const rect = document.createElementNS(SVG_NS, 'rect');
-        rect.setAttribute('id', `rslot-box-${i}`);
-        rect.setAttribute('x', x - 21);
-        rect.setAttribute('y', V4.RET_Y - 22);
-        rect.setAttribute('width', 42);
-        rect.setAttribute('height', 44);
-        rect.setAttribute('rx', 3);
-        rect.setAttribute('fill', '#0B1120');
-        rect.setAttribute('stroke', '#78350F');
-        rect.setAttribute('stroke-width', '1');
-        const lbl = document.createElementNS(SVG_NS, 'text');
-        lbl.setAttribute('x', x);
-        lbl.setAttribute('y', V4.RET_Y + 32);
-        lbl.setAttribute('text-anchor', 'middle');
-        lbl.setAttribute('fill', '#92400E');
-        lbl.setAttribute('font-size', '7.5');
-        lbl.setAttribute('font-weight', '700');
-        lbl.setAttribute('class', 'svg-mono');
-        lbl.setAttribute('font-family', 'JetBrains Mono, monospace');
-        lbl.textContent = `${i + 1}`;
-        g.appendChild(rect);
-        g.appendChild(lbl);
-      }
+      if (g) g.innerHTML = '';
     }
 
     function addPipeLog(msg, color = '#CBD5E1') {
@@ -3039,8 +3035,6 @@
         state: 'to_scan',
         timer: 0,
         rackIdx: -1,
-        bufSlot: -1,
-        restProgress: 0,
         waypoints: [],
         el
       };
@@ -3052,69 +3046,64 @@
     }
 
     function triggerRetestSurge() {
-      addPipeLog('[TEST] RETEST 몰림 시나리오: 정치 버퍼 8칸을 채워 만차(M1800) 시 메인 검사기 출구 대기(크레인 B 출고 정지)를 확인합니다', '#FBBF24');
+      addPipeLog('[TEST] RETEST 몰림 시나리오: 재검사 라인에 RETEST 팩 8개를 줄 세워, 재검사기 앞 대기와 메인 라인 영향을 확인합니다', '#FBBF24');
+      const onLine = pipe.tokens.filter(t => t.state === 'on_retest_line');
+      let tail = onLine.length ? Math.min(...onLine.map(t => t.s)) : RT_LEN + V4.RT_GAP;
       let added = 0;
-      for (let slot = 0; slot < V4.BUF_N; slot++) {
-        if (pipe.retestSlots[slot] !== null) continue;
+      for (let k = 0; k < 8; k++) {
+        const sp = tail - V4.RT_GAP;
+        if (sp < RT_MAIN_LEN + V4.RT_GAP) break;          // keep the main-line part free
+        tail = sp;
         pipe.seq++;
         pipe.infeedTotal++;
         const shortId = `P-${String(pipe.seq).padStart(2, '0')}`;
         const fullId = `PACK-${String(pipe.seq).padStart(4, '0')}`;
         const handoff = registerHandoff(makeHandoff(pipe.seq));
         const el = createTokenEl(shortId, '#F59E0B', '#FEF3C7', handoff.cellCount);
+        const [x, y] = rtPathAt(sp);
         const tok = {
-          id: fullId,
-          shortId,
-          verdict: 'normal',
-          force: null,
-          meas: null,
-          packId: pipe.seq,
-          handoff,
-          // Already registered at STEP 01 and judged RETEST once: idx0 = PACK ID, idx4 = 1, idx5 = 2, idx9 = cells
+          id: fullId, shortId, verdict: 'normal', force: null, meas: null, packId: pipe.seq, handoff,
+          // Already judged RETEST once: idx0 = PACK ID, idx4 = 1, idx5 = 2, idx9 = cells
           tag: [pipe.seq, handoff.packMv, 0, 0, 1, VERDICT.RETEST, 0, 0, 0, handoff.cellCount],
-          serial: pipe.rfidSerial++,
-          x: V4.bufX(slot),
-          y: V4.RET_Y,
-          state: 'in_retest_buffer',
-          timer: 0,
-          rackIdx: -1,
-          bufSlot: slot,
-          restProgress: 20 + added * 6,
-          waypoints: [],
-          el
+          serial: pipe.rfidSerial++, x, y, s: sp, state: 'on_retest_line', timer: 0, rackIdx: -1, waypoints: [], el
         };
-        tok.el.g.setAttribute('transform', `translate(${tok.x}, ${tok.y})`);
-        pipe.retestSlots[slot] = tok;
+        tok.el.g.setAttribute('transform', `translate(${x}, ${y})`);
         pipe.tokens.push(tok);
         added++;
       }
       document.getElementById('t-infeed').textContent = `${pipe.infeedTotal} EA`;
+      addPipeLog(`[TEST] 재검사 라인에 ${added}개 추가`, '#FBBF24');
       evaluateSchedulerPriority();
+    }
+
+    // M1800 (v6): the retest line is backed up to the M1720 branch (a stopped pack inside the entry zone)
+    function retestEntryBlocked() {
+      return pipe.tokens.some(t => t.state === 'on_retest_line' && t.s < RT_ENTRY_CLEAR && t.rtStopped);
     }
 
     // v4 status: no merge arbiter. Shows rest-buffer load, retest tester state and AS/RS occupancy.
     function evaluateSchedulerPriority() {
-      const used = pipe.retestSlots.filter(s => s !== null).length;
-      const inbound = pipe.tokens.filter(t => t.state === 'to_retest_branch').length;
-      document.getElementById('t-buf').textContent = `${used} / ${V4.BUF_N}${inbound ? ` (+${inbound} 이동 중)` : ''}`;
+      const line = pipe.tokens.filter(t => t.state === 'on_retest_line');
+      const waiting = line.filter(t => t.rtStopped).length;
+      document.getElementById('t-buf').textContent = `${line.length} EA${waiting ? ` (대기 ${waiting})` : ''}`;
 
       const bannerBox = document.getElementById('svg-mode-banner');
       const bannerTxt = document.getElementById('svg-mode-text');
       const modeCard = document.getElementById('t-mode');
       const asrsCard = document.getElementById('t-asrs');
-      const full = used + inbound >= V4.BUF_N;
+      const full = retestEntryBlocked();
       if (full !== pipe.bufFull) {
         pipe.bufFull = full;
-        addPipeLog(full ? `[M1800 ON] 정치 버퍼 ${V4.BUF_N}/${V4.BUF_N} 만차 → GOOD 외 판정 팩은 메인 검사기 출구 대기` : `[M1800 OFF] 정치 버퍼 여유 생김 → M1720 정상 분기`, full ? '#FCA5A5' : '#38BDF8');
+        addPipeLog(full ? `[M1800 ON] 재검사 라인 입구 막힘 → GOOD 외 판정 팩은 메인 검사기 출구 대기` : `[M1800 OFF] 재검사 라인 입구 여유 → M1720 정상 분기`, full ? '#FCA5A5' : '#38BDF8');
       }
       if (full) {
         bannerBox.setAttribute('stroke', '#EF4444');
         bannerTxt.setAttribute('fill', '#FCA5A5');
-        bannerTxt.textContent = `M1800 정치 버퍼 만차 (${V4.BUF_N}/${V4.BUF_N}): GOOD 외 판정 팩은 메인 검사기 출구 대기 · 크레인 B 출고 정지`;
+        bannerTxt.textContent = `M1800 재검사 라인 입구 막힘: GOOD 외 판정 팩은 메인 검사기 출구 대기 · 크레인 B 출고 정지`;
       } else {
         bannerBox.setAttribute('stroke', '#38BDF8');
         bannerTxt.setAttribute('fill', '#38BDF8');
-        bannerTxt.textContent = 'v5 정상 운전: 1차 분리(발열 ↓) → 메인 검사 → GOOD 직진 / RETEST·NG ↓ 정치 버퍼 → 재검사기 → 2차 분리';
+        bannerTxt.textContent = 'v6 정상 운전: 1차 분리(발열 ↓) → 메인 검사 → GOOD 직진 / RETEST·NG ↓ 재검사 라인(연속) → 재검사기 → 2차 분리';
       }
       const rt = pipe.tokens.find(t => t.state === 'retesting' || t.state === 'to_retester');
       modeCard.textContent = rt ? `검사 중 ${rt.shortId}` : '대기';
@@ -3229,6 +3218,45 @@
       let inspectingToken = null;
       let retestingToken = null;
       let mergeWaiting = false;
+
+      // v6 continuous retest line: move with spacing, the front enters the retester as soon as it is free
+      if (dt > 0) {
+        const line = pipe.tokens.filter(t => t.state === 'on_retest_line').sort((a, b) => b.s - a.s);
+        const st = pipe.rtStat;
+        st.maxOnLine = Math.max(st.maxOnLine, line.length);
+        line.forEach((t, k) => {
+          const limit = k === 0 ? RT_LEN : line[k - 1].s - V4.RT_GAP;
+          const before = t.s;
+          t.s = Math.max(t.s, Math.min(t.s + convSpd * 1.1 * dt, limit));
+          const stopped = t.s - before < convSpd * 1.1 * dt * 0.5 && !(k === 0 && t.s >= RT_LEN - 1e-6 && !rtBusy);
+          if (stopped && !t.rtStopped) st.queued++;
+          if (stopped) st.queueT += dt;
+          t.rtStopped = stopped;
+          // a stopped pack whose body still sits on the main line (y = 148 part) blocks the GOOD lane
+          if (stopped && t.s < RT_MAIN_LEN + 20) {
+            if (!t.spillCounted) { t.spillCounted = true; st.spillMain++; }
+            st.spillT += dt;
+          }
+          [t.x, t.y] = rtPathAt(t.s);
+        });
+        const front = line[0];
+        if (front && front.s >= RT_LEN - 1e-6 && !rtBusy) {
+          front.state = 'retesting';
+          front.timer = 0;
+          front.meas = null;
+          front.rfidRead = null;
+          front.rtStopped = false;
+          rtBusy = true;
+          if (front.preNg) addPipeLog(`[재검사 라인] ${front.id} 메인 NG → 재검사기 통과`, '#FCA5A5');
+        }
+        // collision check on the shared main-line segment (x 627~695, y 148): GOOD packs vs retest-line packs
+        for (const r of line) {
+          if (r.state !== 'on_retest_line' || r.s >= RT_MAIN_LEN) continue;
+          for (const g of pipe.tokens) {
+            if (g.state === 'to_good' && Math.abs(g.y - 148) < 1 && Math.abs(g.x - r.x) < 30) { st.nearMain++; break; }
+          }
+        }
+      }
 
       for (let i = pipe.tokens.length - 1; i >= 0; i--) {
         const t = pipe.tokens[i];
@@ -3365,14 +3393,14 @@
           if (t.meas && t.timer >= 1.35) {
             const rc = t.rfidRead.retest;
             const j = judgeMetrics(t.meas, rc, t.rfidRead.cells);
-            // Rest buffer full (M1800): RETEST and NG both need the buffer → the pack waits at the tester exit
+            // Retest line entrance occupied (M1800): RETEST/NG cannot enter → the pack waits at the tester exit
             // (back-pressure; crane B releases nothing while the main tester is occupied)
-            const bufUsed = pipe.retestSlots.filter(s => s !== null).length + pipe.tokens.filter(x => x.state === 'to_retest_branch').length;
-            if (j.code !== VERDICT.PASS && bufUsed >= V4.BUF_N) {
+            const entryBusy = pipe.tokens.some(x => x !== t && x.state === 'on_retest_line' && x.s < RT_ENTRY_CLEAR);
+            if (j.code !== VERDICT.PASS && entryBusy) {
               if (!t.bufHold) {
                 t.bufHold = true;
                 pipe.bufHolds++;
-                addPipeLog(`[M1800] ${t.id} 판정 ${j.code} · 정치 버퍼 만차 → 메인 검사기 출구 대기`, '#FCA5A5');
+                addPipeLog(`[M1800] ${t.id} 판정 ${j.code} · 재검사 라인 입구 막힘 → 메인 검사기 출구 대기`, '#FCA5A5');
               }
               pipe.bufHoldT += dt;
               continue;
@@ -3399,19 +3427,19 @@
               setTokenColor(t, '#F59E0B', '#FEF3C7');
               vLbl.textContent = `${t.shortId}: RETEST`;
               vLbl.setAttribute('fill', '#F59E0B');
-              t.state = 'to_retest_branch';
-              t.waypoints = [[695, 148], [695, V4.RET_Y], [V4.bufX(V4.BUF_N - 1) - 30, V4.RET_Y]];
-              showSortResult(t, 'retest', 'RETEST → 정치 버퍼 (M1720)');
-              addPipeLog(`[메인 검사] ${t.id} ${mTxt} → RETEST(2): ${j.reason} → M1720 → 정치 버퍼 (태그 idx4=${t.tag[4]})`, '#F59E0B');
+              t.state = 'on_retest_line';
+              t.s = 0;
+              showSortResult(t, 'retest', 'RETEST → M1720 → 재검사기');
+              addPipeLog(`[메인 검사] ${t.id} ${mTxt} → RETEST(2): ${j.reason} → M1720 → 재검사 라인 (태그 idx4=${t.tag[4]})`, '#F59E0B');
             } else {
               // v5: no M1710 line. Main NG takes the same M1720 branch, passes the retester unmeasured, 2차 분리 ↓ NG OUT
               const cause = NG_CAUSE[j.code];
               setTokenColor(t, '#EF4444', '#FECACA', '#FFFFFF');
               vLbl.textContent = `${t.shortId}: NG(${cause.label})`;
               vLbl.setAttribute('fill', '#EF4444');
-              t.state = 'to_retest_branch';
+              t.state = 'on_retest_line';
+              t.s = 0;
               t.preNg = true;
-              t.waypoints = [[695, 148], [695, V4.RET_Y], [V4.bufX(V4.BUF_N - 1) - 30, V4.RET_Y]];
               showSortResult(t, 'ng', `NG(${cause.label}) → M1720 → 재검사기 통과 → NG OUT`);
               addPipeLog(`[메인 검사] ${t.id} ${mTxt} → NG(${j.code}): ${j.reason} → DB(원인 ${cause.key}) → M1720 ↓ (재검사기 통과 후 2차 분리 ↓)`, cause.color);
             }
@@ -3422,33 +3450,6 @@
             bumpCounter('ng');
             finishToken(t, i);
             continue;
-          }
-        } else if (t.state === 'to_retest_branch') {
-          if (followWaypoints(t, convSpd * 1.1, dt)) {
-            const emptySlot = pipe.retestSlots.findIndex(s => s === null);
-            if (emptySlot !== -1) {
-              pipe.retestSlots[emptySlot] = t;
-              t.bufSlot = emptySlot;
-              t.restProgress = t.preNg ? 100 : 0;   // main NG needs no rest time
-              t.state = 'in_retest_buffer';
-            }
-          }
-        } else if (t.state === 'in_retest_buffer') {
-          // move forward (east) when the slot ahead becomes free
-          if (t.bufSlot > 0 && pipe.retestSlots[t.bufSlot - 1] === null) {
-            pipe.retestSlots[t.bufSlot - 1] = t;
-            pipe.retestSlots[t.bufSlot] = null;
-            t.bufSlot--;
-          }
-          const atSlot = moveTowards(t, V4.bufX(t.bufSlot), V4.RET_Y, 120, dt);
-          t.restProgress = Math.min(100, t.restProgress + dt * 26);
-          if (t.bufSlot === 0 && atSlot && t.restProgress >= 100 && !rtBusy) {
-            pipe.retestSlots[0] = null;
-            t.bufSlot = -1;
-            t.state = 'to_retester';
-            rtBusy = true;
-            t.waypoints = [[V4.RT_X, V4.RET_Y]];
-            addPipeLog(`[정치 버퍼] ${t.id} ${t.preNg ? '메인 NG → 재검사기 통과' : '정치 완료 → 재검사기(RFID③) 진입'}`, t.preNg ? '#FCA5A5' : '#FCD34D');
           }
         } else if (t.state === 'to_retester') {
           retestingToken = t;
@@ -3504,8 +3505,11 @@
           if (followWaypoints(t, convSpd, dt)) t.state = 'rt_merge_wait';
         } else if (t.state === 'rt_merge_wait') {
           // X1903: join the main line only when no main-line pack is passing the merge point
-          const busy = pipe.tokens.some(o => o !== t && o.state === 'to_good' && Math.abs(o.y - 148) < 1 && Math.abs(o.x - V4.MERGE_X) < 46);
+          // X1903 gap check: upstream window covers the 24 px climb onto the main line (a pack from behind must not catch up)
+          const busy = pipe.tokens.some(o => o !== t && o.state === 'to_good' && Math.abs(o.y - 148) < 1 && o.x > V4.MERGE_X - 90 && o.x < V4.MERGE_X + 46);
           mergeWaiting = true;
+          if (busy && !t.mergeCounted) { t.mergeCounted = true; pipe.rtStat.mergeWaits++; }
+          if (busy) pipe.rtStat.mergeT += dt;
           if (!busy) {
             t.state = 'to_good';
             t.waypoints = [[V4.MERGE_X, 148], [V4.GATE_X, 148]];
@@ -3733,7 +3737,7 @@
         boxSvg.setAttribute('stroke', '#F59E0B');
         codeSvg.setAttribute('fill', '#FBBF24');
         codeSvg.textContent = 'RETEST (2)';
-        routeSvg.textContent = 'M1720 → 정치 버퍼 → 재검사기';
+        routeSvg.textContent = 'M1720 → 재검사 라인 → 재검사기';
       } else {
         boxSvg.setAttribute('fill', '#450A0A');
         boxSvg.setAttribute('stroke', '#EF4444');
@@ -3772,7 +3776,7 @@
         bg: 'rgba(5, 150, 105, 0.12)'
       },
       retest_ok: {
-        label: 'RETEST → PASS: 초기 강하 후 버퍼 추가 정치 안정화 (팩 ΔV = 0.304V)',
+        label: 'RETEST → PASS: 재검사기에서 기준 안으로 들어옴 (팩 ΔV = 0.304V)',
         data: [14.800, 14.688, 14.608, 14.552, 14.520, 14.504, 14.496],
         color: '#D97706',
         bg: 'rgba(217, 119, 6, 0.12)'

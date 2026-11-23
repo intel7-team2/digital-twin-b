@@ -1,0 +1,29 @@
+명령 1074줄 · 회로 258개 → C:\Users\user\Desktop\digital-twin-b-main\test_results\B_v6_ladder.csv
+ - 뺀 회로 A02: A02  LD X1501 | ANI M1500  =>  SET M#60               ; 시작(안) → 운전 중 <A24>  [출력 SET M#60 뺌]
+ - 뺀 회로 A03: A03  LD X1502 | OR M1500  =>  RST M#60                ; 정지(안) 또는 비상정지  [출력 RST M#60 뺌]
+ - 고친 회로 A05: M#60→SM400
+ - 뺀 회로 A08: A08  LD M#68  =>  RST M#61 | RST M#62 | RST M#63 | RST M#64 | RST M#65 | RST M#66 | RST M#67   ; 알람 확인 <A24>  [직렬 접점 LD M#68(OFF로 봄); 출력 RST M#61 뺌; 출력 RST M#62 뺌; 출력 RST M#63 뺌; 출력 RST M#64 뺌; 출력 RST M#65 뺌; 출력 RST M#66 뺌; 출력 RST M#67 뺌]
+ - 넣지 않음(주석 회로): A09  <A27> 첫 스캔(SM402)에 랙 표 ④ D1870~D1893 에 R01~R24의 크레인 목표 칸 24개를 MOV로 넣는 회로 (값 미정)
+ - 뺀 회로 S10: S10  LD M#69 | AND> D1840Z0 K0 | AND= D1660Z0 K0  =>  MOV K0 D1840Z0 | MOV K0 D1610Z0               ; LOCK 일괄 해제 <A24>  [직렬 접점 LD M#69(OFF로 봄)]
+ - 고친 회로 A10: M#60→SM400
+ - 넣지 않음(주석 회로): C06  <A28> LD= D1541 K5  =>  MOV K<A28> D1509                               ; 받침(팔레트) 값 미정
+ - 넣지 않음(주석 회로): C09  <A26> 박스 크기 판별(D1519 계산)과 D1518 대조 → 일치하면 OUT M1543    (방법 · D1519 값 뜻 미정. ①안이면 X1511(안) 사용)
+ - 고친 회로 C11: 출력 SET M#61 뺌
+ - 뺀 회로 C12: C12  LD= D1541 K15 | AND M#68  =>  MOV K10 D1541                               ; 알람 확인 뒤 다시 대조  [직렬 접점 AND M#68(OFF로 봄)]
+ - 고친 회로 C13: 출력 SET M#62 뺌
+ - 고친 회로 C50: 출력 SET M#62 뺌
+ - 고친 회로 C20: 출력 SET M#62 뺌
+ - 고친 회로 C35: 출력 SET M#62 뺌
+ - 뺀 회로 G04: G04  LD= D1654 K10 | AND T1525  =>  SET M#67                                   ; Python 응답 없음 <A24>  [출력 SET M#67 뺌]
+ - 고친 회로 J03: 출력 SET M#63 뺌
+ - 고친 회로 J50: 출력 SET M#63 뺌
+ - 고친 회로 J08: 출력 SET M#63 뺌
+ - 뺀 회로 J15: J15  LD= D1750 K30 | AND T1527  =>  SET M#65                                   ; Python 응답 없음 <A24>  [출력 SET M#65 뺌]
+ - 고친 회로 J17: 출력 SET M#63 뺌
+ - 고친 회로 N04: 출력 SET M#64 뺌
+ - 고친 회로 N50: 출력 SET M#64 뺌
+ - 고친 회로 N09: 출력 SET M#64 뺌
+ - 뺀 회로 N16: N16  LD= D1760 K15 | AND< D1761 K2  =>  SET M#64                               ; 태그 판정 0 · 1 = 예상 밖  [출력 SET M#64 뺌]
+ - 뺀 회로 N21: N21  LD= D1760 K30 | AND T1531  =>  SET M#66                                   ; Python 응답 없음 <A24>  [출력 SET M#66 뺌]
+ - 고친 회로 N23: 출력 SET M#64 뺌
+ - 고친 회로 W03: M#60→SM400

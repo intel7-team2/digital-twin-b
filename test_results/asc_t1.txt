@@ -1,0 +1,3 @@
+LD X0
+OUT Y0
+END

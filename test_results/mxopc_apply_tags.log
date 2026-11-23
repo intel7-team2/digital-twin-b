@@ -1,0 +1,9 @@
+﻿== 2026-11-23T15:48:14 device=QSIM
+Stopped
+[諛깆뾽] C:\Users\user\Desktop\digital-twin-b-main\test_results\mdb_backup\MXConfigurator_20261123_154818.mdb
+異붽? 0媛?쨌 ?대? ?덉쓬 159媛?
+# C:\MELSEC\MX OPC Server 6.10\MXConfigurator.mdb
+?μ튂 ychoi (ID 2) Simulate=False | PcIf=49 PlcIf=0 CpuType=154 UnitType=48 ProtocolType=0 Host=0.0.0.0:1 | ?쒓렇 37媛?(?쒓렇 Simulate 0媛? | 
+
+?μ튂 QSIM (ID 3) Simulate=False | PcIf=49 PlcIf=0 CpuType=154 UnitType=48 ProtocolType=0 Host=0.0.0.0:1 | ?쒓렇 355媛?(?쒓렇 Simulate 0媛? |
+Running

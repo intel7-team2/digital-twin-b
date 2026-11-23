@@ -1,5 +1,5 @@
 """
-Project B · 배터리 팩 후공정 v4 (4S 2×2 / 6S 2×3, 18650 3.7V) · Python 가상 계측 엔진(검사기 2대) + 공유 DB
+Project B · 배터리 팩 후공정 v5 (4S 2×2 / 6S 2×3, 18650 3.7V) · Python 가상 계측 엔진(검사기 2대) + 공유 DB
 
 전처리(Project C)와 Project B는 **같은 DB(공유 DB)**를 씁니다.
   Project C 가 기록  : packs (팩 종류 · 팩 전압 · Σ셀 · C 판정), cells (셀 ID · 슬롯 · 극성 · 셀 전압)
@@ -27,7 +27,7 @@ Project B · 배터리 팩 후공정 v4 (4S 2×2 / 6S 2×3, 18650 3.7V) · Pytho
   6S          ≤ 0.480 / ≤ 0.900 / > 0.900 V     ≤ 15.00 / ≤ 19.20 / > 19.20 mΩ
   온도        PASS ≤ 38.0 °C / NG > 38.0 °C (공통)
 판정 코드: 1 PASS / 2 RETEST / 3 NG-ΔV / 4 NG-IR / 5 NG-TEMP (우선순위 Temp → ΔV → AC-IR)
-  메인 검사의 2·3·4·5는 모두 M1720으로 아래 라인(정치 버퍼 → 재검사기)에 갑니다(v5: M1710 삭제).
+  메인 검사의 2·3·4·5는 모두 M1720으로 아래 재검사 라인(정치 없이 연속 → 재검사기)에 갑니다(v5: M1710 삭제, v6: 정치 버퍼 삭제).
   재검사기는 RETEST(2)만 다시 재고, 이미 NG(3·4·5)인 팩은 재지 않고 2차 분리에서 NG OUT으로 보냅니다.
   원인은 DB의 ng_cause 로만 구분합니다.
 
@@ -49,14 +49,20 @@ Project B · 배터리 팩 후공정 v4 (4S 2×2 / 6S 2×3, 18650 3.7V) · Pytho
   python measurement_engine.py report                 # 양품 · 원인별 불량 · 발열 격리 · 팩 종류별
   python measurement_engine.py isolate --pack 9 --temp 412   # 발열 격리 기록 모사 (PLC 알림 대신)
   python measurement_engine.py stats --count 10000 --cells 6
-  python measurement_engine.py serve --host 127.0.0.1 --port 502   # Modbus TCP 핸드셰이크 + DB 저장
+  python3.12-32 measurement_engine.py serve           # PLC 핸드셰이크 + DB 저장 (기본: MX OPC Server, 장치 QSIM)
+  python measurement_engine.py serve --link modbus --host 192.168.0.XXX   # Modbus TCP 직접 (시연 PC 주소 미정)
+
+PLC 통신 (plc_link.py, 결정 D17)
+  기본은 MX OPC Server(OPC DA) 경유입니다. GX Simulator2(또는 실물 PLC) ↔ MX OPC Server ↔ 이 엔진.
+  OPC DA 가 32비트 COM 이라 serve 만 **32비트 Python + pywin32** 로 실행합니다(나머지 명령은 64비트도 됨).
+  MX OPC Configurator 에 디바이스 이름 그대로의 태그(D1700 …)가 등록돼 있어야 합니다 → tools/mxopc_tags.py
 
 serve 모드 핸드셰이크 (검사기마다 같은 순서, 번지는 STATIONS 에서 PLC 매핑에 맞게 수정)
   0) PLC: 검사기 RFID로 idx0(PACK ID) · idx4(재검사) · idx9(셀 수) 판독
   1) PLC: 요청 블록 +1 ← PACK ID, +2 ← 재검사, +4 ← 셀 수(4/6) 기록 후 +0 (MEAS_REQ) = 1
   2) 엔진: 공유 DB에서 팩 종류 확인 → 결과 블록(판정 · ΔV · IR · 온도) 기록 → DB 저장 → +3 (MEAS_DONE) = 1
   3) PLC: 값 읽고 태그 idx4~8 기록, MEAS_REQ = 0, 판정으로 분기
-       메인: 1 GOOD 직진 / 2·3·4·5 → M1720 → 정치 버퍼 (만차 M1800이면 메인 검사기 출구에서 대기)
+       메인: 1 GOOD 직진 / 2·3·4·5 → M1720 → 재검사 라인 (줄이 분기점까지 차면 M1800 → 메인 검사기 출구에서 대기)
        재검사: 2차 분리 Pop-up Wheel Sorter — 1 GOOD 위(M1731) → X1903 간격 확인 후 메인 라인 합류 / 3·4·5 아래(M1732) → NG OUT
   4) 엔진: MEAS_DONE = 0
   발열 격리 알림: PLC D1651 ← PACK ID, D1652 ← 온도(0.1 °C), D1650 = 1 → 엔진 DB 기록 → D1653 = 1 → PLC D1650 = 0 → 엔진 D1653 = 0
@@ -101,7 +107,7 @@ CAUSE_LABEL = {"DV": "ΔV", "IR": "AC-IR", "TEMP": "온도"}
 DEFAULT_DB = os.environ.get("PROJECT_DB", "inspection.db")
 SCHEMA_VERSION = 5  # 1 셀 단위, 2 4S 팩, 3 4S/6S, 4 측정 스테이션, 5 보관 중 발열 격리(ISO · station 0)
 
-# PLC 레지스터 매핑 (Modbus holding register 주소, 0-based). PLC 기종에 맞게 수정.
+# PLC 디바이스 매핑 (D 번호). plc_link.py 가 OPC 태그(QSIM.D1700) 또는 Modbus 주소(1700)로 바꿉니다.
 # 디바이스 번지: 1500~19FF 블록 사용 (M·D는 10진 1500~1999, X·Y는 16진 1500~19FF)
 # 검사기별 블록: result = 판정·ΔV·IR·온도 4워드 시작, req = 요청·PACK ID·재검사·완료·셀 수 5워드 시작
 STATIONS = {
@@ -394,9 +400,9 @@ def run_pack(pid, mode, conn=None, out=print):
         if v == PASS:
             route = "GOOD OUT" if rc == 0 else "2차 분리 위 → 합류 → GOOD OUT"
         elif v == RETEST:
-            route = "M1720 → 정치 버퍼 → 재검사기"
+            route = "M1720 → 재검사 라인 → 재검사기"
         else:
-            route = (f"M1720 → 정치 버퍼 → 재검사기 통과 → 2차 분리 아래 → NG OUT (원인 {NG_CAUSE.get(v)})" if rc == 0
+            route = (f"M1720 → 재검사 라인 → 재검사기 통과 → 2차 분리 아래 → NG OUT (원인 {NG_CAUSE.get(v)})" if rc == 0
                      else f"2차 분리 아래 → NG OUT (원인 {NG_CAUSE.get(v)})")
         out(f"PACK-{pid:04d} {PACK_TYPES[n]['name']} {rc:>2}  {m['dv']:>6} {m['ir']:>10} {m['temp']:>8}  "
             f"{VERDICT_NAME[v]}({v}) [{STATIONS[station]['name']}] → {route}")
@@ -521,39 +527,19 @@ def cmd_stats(args):
         print(f"  {name:<8} {counts[code]:>6}  {counts[code] / total * 100:5.1f}%")
 
 
-def _client_call(fn, *a, unit, **kw):
-    """pymodbus 버전별 unit 인자명 차이(slave / device_id / unit) 흡수."""
-    for key in ("device_id", "slave", "unit"):
-        try:
-            return fn(*a, **{key: unit}, **kw)
-        except TypeError:
-            continue
-    return fn(*a, **kw)
-
-
 def cmd_serve(args):
-    try:
-        from pymodbus.client import ModbusTcpClient
-    except ImportError:
-        sys.exit("pymodbus 가 필요합니다: pip install pymodbus")
+    from plc_link import LinkError, open_link
 
-    client = ModbusTcpClient(args.host, port=args.port)
-    if not client.connect():
-        sys.exit(f"Modbus 연결 실패: {args.host}:{args.port}")
+    link = open_link(args)
     conn = open_db(args.db)
-    print(f"[ENGINE] {args.host}:{args.port} 연결, {args.interval * 1000:.0f}ms 주기로 검사기 2대(D1710 · D1740) · 발열 격리(D1650) 요청 감시"
+    print(f"[ENGINE] {link.label} 연결, {args.interval * 1000:.0f}ms 주기로 검사기 2대(D1710 · D1740) · 발열 격리(D1650) 요청 감시"
           f" · 난수 모드 {args.mode} · 공유 DB {args.db}")
 
     def read(addr, count=1):
-        rr = _client_call(client.read_holding_registers, addr, count=count, unit=args.unit)
-        if rr.isError():
-            raise IOError(rr)
-        return rr.registers
+        return link.read_words(f"D{addr}", count)
 
     def write(addr, values):
-        rr = _client_call(client.write_registers, addr, values, unit=args.unit)
-        if rr.isError():
-            raise IOError(rr)
+        link.write_words(f"D{addr}", values)
 
     def handle(st_no):
         st = STATIONS[st_no]
@@ -603,8 +589,10 @@ def cmd_serve(args):
             time.sleep(args.interval)
     except KeyboardInterrupt:
         print("\n[ENGINE] 종료")
+    except LinkError as e:
+        print(f"[ENGINE] 통신 오류: {e}")
     finally:
-        client.close()
+        link.close()
         conn.close()
 
 
@@ -650,10 +638,9 @@ def main():
     s.add_argument("--cells", type=int, choices=tuple(PACK_TYPES), default=4)
     s.set_defaults(func=cmd_stats)
 
-    v = sub.add_parser("serve", help="Modbus TCP로 PLC와 핸드셰이크")
-    v.add_argument("--host", default="127.0.0.1")
-    v.add_argument("--port", type=int, default=502)
-    v.add_argument("--unit", type=int, default=1)
+    v = sub.add_parser("serve", help="PLC와 핸드셰이크 (기본 MX OPC Server, --link modbus 선택)")
+    from plc_link import add_link_args
+    add_link_args(v)
     v.add_argument("--interval", type=float, default=0.1)
     v.add_argument("--mode", choices=("id", "random"), default="id",
                    help="id: PACK ID 시드 난수(재현 가능, 시뮬레이터와 일치) / random: 매번 새 난수")

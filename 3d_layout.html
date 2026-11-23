@@ -120,8 +120,8 @@
       <li data-view="outbound"><b>STEP 02 출고면(남쪽)</b>: 크레인 B(M1601)가 같은 칸을 반대 면에서 꺼내 모두 동쪽 출구로 — 발열 팩 우선, 그다음 숙성 완료 팩(EDD)</li>
       <li data-view="sort1"><b>1차 분리 · M1690 발열 격리</b>: 보관 중 가상 온도 초과 팩은 라인을 따라와 Pop-up Wheel(M1661)로 ↓ 격리 → DB ISO 기록. 칸은 LOCK(빨강) 후 20초 뒤 자동 해제</li>
       <li data-view="inspect"><b>STEP 03 메인 검사</b>: RFID②(D1520~D1527) → OCV·IR·온도 → D1700~D1703 → 공유 DB</li>
-      <li data-view="sort"><b>STEP 04 분류</b>: GOOD 직진 · RETEST와 NG 모두 M1720 → 남쪽 정치 버퍼 (M1710 라인 없음)</li>
-      <li data-view="retest"><b>재검사 구역</b>: 정치 버퍼 8칸(D1800, 만차 M1800이면 메인 출구 대기) → RFID③ → RETEST만 재측정(D1730~D1733), 메인 NG는 통과</li>
+      <li data-view="sort"><b>STEP 04 분류</b>: GOOD 직진 · RETEST와 NG 모두 M1720 → 남쪽 재검사 라인 (M1710 라인 없음)</li>
+      <li data-view="retest"><b>재검사 라인</b>: 정치 버퍼 없이 연속 이송 → RFID③ → RETEST만 재측정(D1730~D1733), 메인 NG는 통과. 재검사기 사용 중이면 앞에서 줄 서고, 줄이 M1720 분기점까지 차면(M1800) 메인 출구 대기</li>
       <li data-view="merge"><b>2차 분리 (Pop-up Wheel)</b>: GOOD ↑ M1731 → X1903 간격 확인 후 합류 → GOOD OUT / NG ↓ M1732 → NG OUT</li>
       <li data-view="gates"><b>STEP 05 게이트</b>: X1900 GOOD · X1901 NG · X1902 격리 → D1900~D1902, 합계 D1903 · 수율 D1904</li>
     </ol>
@@ -232,14 +232,14 @@
     const INSP_X = 4.5;              // main tester (RFID② + OCV·IR·Temp)
     const RETEST_X = 6.5;            // M1720 RETEST diverter (south)
     const RET_Z = 2.0;               // RETEST loop level (south of the main line)
-    const BUF = { n: 8, frontX: 10.7, pitch: 0.5 };               // rest buffer, front = east (next to the retest tester)
-    const bufX = i => BUF.frontX - i * BUF.pitch;
-    const BUF_TAIL_X = bufX(BUF.n - 1) - 0.4;
+    // v6: no rest buffer. The retest line runs straight from the M1720 branch to the retest tester.
+    const RT_MAIN_LEN = RETEST_X - INSP_X;            // first part of the retest lane is still on the main line
+    const RT_ENTRY_CLEAR = RT_MAIN_LEN + 2 * 0.55;    // a RETEST/NG pack leaves the main tester only if it can stop past the branch
     const RT_X = 12.6;               // retest tester (RFID③ + OCV·IR·Temp)
     const SORT2_X = 14.5;            // 2차 분리 Pop-up Wheel Sorter: GOOD → north (merge, X1903) / NG → south (NG OUT)
     const NG_Z = 3.6;
     const GATE_X = 22;
-    const T = { rfid: 1.2, aging: 16, inspect: 1.6, rest: 6, spawn: 3.2, thermalAt: 0.45, lockRelease: 20 };
+    const T = { rfid: 1.2, aging: 16, inspect: 1.6, spawn: 3.2, thermalAt: 0.45, lockRelease: 20 };
     const SPEED = { belt: 1.6, craneX: 3.2, craneY: 1.6, slide: 1.4 };
 
     const COLORS = {
@@ -388,8 +388,7 @@
       toMain:  new Lane('toMain',  [[SORT1_X, 0], [INSP_X, 0]]),
       iso:     new Lane('iso',     [[SORT1_X, 0], [SORT1_X, CHAMBER.z - 0.6]]),
       good:    new Lane('good',    [[INSP_X, 0], [GATE_X, 0]]),
-      retest:  new Lane('retest',  [[INSP_X, 0], [RETEST_X, 0], [RETEST_X, RET_Z], [BUF_TAIL_X, RET_Z]]),
-      toRt:    new Lane('toRt',    [[BUF.frontX, RET_Z], [RT_X, RET_Z]]),
+      retest:  new Lane('retest',  [[INSP_X, 0], [RETEST_X, 0], [RETEST_X, RET_Z], [RT_X, RET_Z]]),
       rtGood:  new Lane('rtGood',  [[RT_X, RET_Z], [SORT2_X, RET_Z], [SORT2_X, 0], [GATE_X, 0]]),
       rtNg:    new Lane('rtNg',    [[RT_X, RET_Z], [SORT2_X, RET_Z], [SORT2_X, NG_Z], [GATE_X, NG_Z]])
     };
@@ -401,7 +400,7 @@
     drawBelt([[DROP_X, RAIL_OUT_Z], [1.6, RAIL_OUT_Z], [1.6, 0]], 0x334155, 0x38BDF8);                  // outbound (all packs)
     drawBelt([[1.6, 0], [GATE_X, 0]], 0x334155, 0x38BDF8);                                              // main line → GOOD
     drawBelt([[SORT1_X, 0.35], [SORT1_X, CHAMBER.z - 0.6]], 0x334155, 0xEF4444);                        // 1차 분리 → isolation
-    drawBelt([[RETEST_X, 0.35], [RETEST_X, RET_Z], [SORT2_X, RET_Z]], 0x334155, 0xF59E0B);              // M1720 branch + rest buffer + retest
+    drawBelt([[RETEST_X, 0.35], [RETEST_X, RET_Z], [SORT2_X, RET_Z]], 0x334155, 0xF59E0B);              // M1720 branch → retest line (continuous) → retest
     drawBelt([[SORT2_X, RET_Z], [SORT2_X, 0.35]], 0x334155, 0xF59E0B);                                  // 2차 분리 ↑ GOOD → merge
     drawBelt([[SORT2_X, RET_Z + 0.35], [SORT2_X, NG_Z], [GATE_X, NG_Z]], 0x334155, 0xEF4444);           // 2차 분리 ↓ NG OUT
 
@@ -473,7 +472,7 @@
     const mainT = buildTester(INSP_X, 0, 'STEP 03 · 메인 검사', 'RFID② → OCV·IR·온도 → D1700~D1703', 'RFID ②<span class="dv">D1520~D1527</span>');
     const rtT = buildTester(RT_X, RET_Z, '재검사', 'RFID③ → OCV·IR·온도 → D1730~D1733', 'RFID ③<span class="dv">D1530~D1537</span>');
 
-    // M1720 pivot arm: everything that is not GOOD (RETEST 2 / NG 3·4·5) goes south to the rest buffer
+    // M1720 pivot arm: everything that is not GOOD (RETEST 2 / NG 3·4·5) goes south to the retest line
     const arms = {};
     {
       box(0.12, 0.5, 0.12, 0x475569, RETEST_X, 0.25, -0.42);
@@ -494,13 +493,9 @@
     popUpWheel('s1', SORT1_X, 0, '1차 분리 (Pop-up Wheel)', '직진 M1660 → 메인 검사 / ↓ M1661 → 발열 격리');
     popUpWheel('s2', SORT2_X, RET_Z, '2차 분리 (Pop-up Wheel)', '↑ M1731 → GOOD 합류 / ↓ M1732 → NG OUT');
     function fireWheel(key, dir) { const w = wheelSorters[key]; w.t = 0.8; w.dir = dir; }
-    label('STEP 04 · 분류<span class="dv">M1720: GOOD 외 모두 ↓ 정치 버퍼 (M1710 라인 없음)</span>', RETEST_X + 1.5, 0.9, -1.3, '#34D399');
+    label('STEP 04 · 분류<span class="dv">M1720: GOOD 외 모두 ↓ 재검사 라인 (M1710 라인 없음)</span>', RETEST_X + 1.5, 0.9, -1.3, '#34D399');
 
-    // RETEST rest buffer (8 slots, front = east next to the retest tester)
-    for (let i = 0; i < BUF.n; i++) {
-      box(0.04, 0.02, 0.6, 0x64748B, bufX(i) - BUF.pitch / 2, BELT_Y + 0.01, RET_Z);
-    }
-    label('정치 버퍼 8칸<span class="dv">RETEST + 메인 NG · D1800 · 만차(M1800) 시 메인 출구 대기</span>', (bufX(0) + bufX(BUF.n - 1)) / 2, 0.9, RET_Z + 0.95, '#FBBF24');
+    label('재검사 라인<span class="dv">정치 없이 연속 이송 · D1800 팩 수 · 분기점까지 차면 M1800</span>', (RETEST_X + RT_X) / 2, 0.9, RET_Z + 0.95, '#FBBF24');
 
     // retest GOOD merge gap sensor
     const mergeBeam = box(0.02, 0.02, 0.9, 0xFFFFFF, SORT2_X - 0.6, ITEM_Y, 0, { emissive: 0xF59E0B, emissiveIntensity: 0.5 });
@@ -575,7 +570,7 @@
     // =====================================================================
     const sim = {
       running: true, speed: 1, t: 0, seq: 0, serial: 6174, spawnT: 1,
-      items: [], buffer: Array(BUF.n).fill(null), bufHolds: 0, bufHoldT: 0,
+      items: [], bufHolds: 0, bufHoldT: 0, rtStat: { maxOnLine: 0, spillMain: 0, mergeWaits: 0 },
       main: { item: null, t: 0 }, rt: { item: null, t: 0 }, enRoute: 0, thermalJobs: []
     };
     const counts = { good: 0, ng: 0, m290: 0 };      // PLC gate counters D1900~D1902 (D1903 합계 / D1904 수율)
@@ -590,7 +585,7 @@
       sim.seq++;
       const it = {
         packId: sim.seq, id: `PACK-${String(sim.seq).padStart(4, '0')}`, serial: sim.serial++,
-        thermal, state: 'infeed', cell: null, age: 0, rest: 0,
+        thermal, state: 'infeed', cell: null, age: 0,
         cells: packCellsOf(sim.seq),  // 4 = 4S 2×2 Small box / 6 = 6S 2×3 Large box
         tag: new Array(10).fill(0)  // RFID tag memory idx0..9 (written at STEP 01, read at STEP 03 / retest)
       };
@@ -629,11 +624,16 @@
       renderHmi();
     }
     // hold an item at a merge point until the other lane has a gap around (x, z)
-    function holdForGap(item, s, otherLane, x, z) {
+    function holdForGap(item, s, otherLane, x, z, upstream = 0.9) {
       item.holdS = s;
       item.holdDone = false;
       item.onHold = it => {
-        const busy = otherLane.items.some(o => Math.hypot(o.mesh.position.x - x, o.mesh.position.z - z) < 0.9);
+        // X1903: no pack within 0.9 m downstream or `upstream` m upstream (covers the climb onto the main line)
+        const busy = otherLane.items.some(o => {
+          const p = o.mesh.position;
+          return Math.abs(p.z - z) < 0.45 && p.x > x - upstream && p.x < x + 0.9;
+        });
+        if (busy && !it.mergeCounted) { it.mergeCounted = true; sim.rtStat.mergeWaits++; }
         if (!busy) it.holdDone = true;
       };
     }
@@ -785,13 +785,12 @@
       it.state = 'inspecting';
     }
     function mainVerdict(it, v) {
-      // GOOD goes straight; RETEST and NG both go south through M1720 into the rest buffer (no M1710 line).
-      // Buffer full (M1800): the pack waits at the main tester exit and crane B stops releasing new packs.
+      // GOOD goes straight; RETEST and NG both go south through M1720 onto the retest line (no M1710 line, no rest buffer).
+      // Retest line backed up to the branch (M1800): the pack waits at the main tester exit, crane B stops releasing.
       if (v !== VERDICT.PASS) {
-        const used = sim.buffer.filter(Boolean).length + lanes.retest.items.length;
-        if (used >= BUF.n) {
+        if (lanes.retest.items.some(o => o.s < RT_ENTRY_CLEAR)) {
           sim.main.item = it;
-          if (!it.bufHold) { it.bufHold = true; sim.bufHolds++; log(`[M1800] 정치 버퍼 만차 → ${it.id} 메인 검사기 출구 대기`, '#FCA5A5'); }
+          if (!it.bufHold) { it.bufHold = true; sim.bufHolds++; log(`[M1800] 재검사 라인 분기점까지 참 → ${it.id} 메인 검사기 출구 대기`, '#FCA5A5'); }
           return;
         }
       }
@@ -813,34 +812,7 @@
         setColor(it, COLORS.ng);
       }
       swing('retest');
-      lanes.retest.add(it, enterBuffer);
-    }
-
-    // --- RETEST rest buffer (8 slots) → retest tester ---
-    function enterBuffer(it) {
-      const slot = sim.buffer.findIndex(s => !s);
-      if (slot === -1) return;               // wait at the buffer tail (should not happen: full is caught at the main tester)
-      lanes.retest.remove(it);
-      sim.buffer[slot] = it;
-      it.state = 'buffer'; it.rest = 0;
-    }
-    function updateBuffer(dt) {
-      for (let i = 1; i < BUF.n; i++) {
-        if (sim.buffer[i] && !sim.buffer[i - 1]) { sim.buffer[i - 1] = sim.buffer[i]; sim.buffer[i] = null; }
-      }
-      sim.buffer.forEach((it, i) => {
-        if (!it) return;
-        it.rest += dt;
-        const p = it.mesh.position, tx = bufX(i);
-        const d = tx - p.x, step = 1.2 * dt;
-        p.set(Math.abs(d) <= step ? tx : p.x + Math.sign(d) * step, ITEM_Y, RET_Z);
-      });
-      const front = sim.buffer[0];
-      if (front && (front.rest >= T.rest || front.preNg) && !sim.rt.item && !lanes.toRt.items.length && Math.abs(front.mesh.position.x - bufX(0)) < 0.01) {
-        sim.buffer[0] = null;
-        front.state = 'toRetest';
-        lanes.toRt.add(front, arriveRetest);
-      }
+      lanes.retest.add(it, arriveRetest);
     }
 
     // --- retest tester (RFID③ · OCV·IR·Temp) ---
@@ -862,7 +834,7 @@
         setColor(it, COLORS.pass);
         fireWheel('s2', -1);
         lanes.rtGood.add(it, i => { count('good'); destroy(i); });
-        holdForGap(it, MERGE_RT_GOOD_S, lanes.good, SORT2_X, 0);
+        holdForGap(it, MERGE_RT_GOOD_S, lanes.good, SORT2_X, 0, 1.6);
       } else {
         setColor(it, COLORS.ng);
         fireWheel('s2', 1);
@@ -901,7 +873,7 @@
       { key: 'm290', l: 'M1690 격리', d: 'D1902', c: '#F87171' },
       { key: 'total', l: '합계', d: 'D1903', c: '#E2E8F0' },
       { key: 'yield', l: '수율', d: 'D1904', c: '#38BDF8' },
-      { key: 'buf', l: '정치 버퍼', d: 'D1800', c: '#F59E0B' },
+      { key: 'buf', l: '재검사 라인', d: 'D1800', c: '#F59E0B' },
       { key: 'dbDV', l: 'DB · ΔV 불량', d: "cause='DV'", c: '#EF4444' },
       { key: 'dbIR', l: 'DB · AC-IR 불량', d: "cause='IR'", c: '#C084FC' },
       { key: 'dbTEMP', l: 'DB · 온도 불량', d: "cause='TEMP'", c: '#FB7185' },
@@ -929,7 +901,7 @@
       }
       document.getElementById('h-total').innerHTML = `${total}<small>EA</small>`;
       document.getElementById('h-yield').innerHTML = `${(yieldX10 / 10).toFixed(1)}<small>%</small>`;
-      document.getElementById('h-buf').innerHTML = `${sim.buffer.filter(Boolean).length}<small>/${BUF.n}</small>`;
+      document.getElementById('h-buf').innerHTML = `${lanes.retest.items.length}<small>EA</small>`;
       const dbc = { DV: 0, IR: 0, TEMP: 0, RT: 0, ISO: 0 };
       db.rows.forEach(r => { if (r.cause) dbc[r.cause]++; if (r.station === 2) dbc.RT++; if (r.result === 'ISO') dbc.ISO++; });
       for (const k of Object.keys(dbc)) document.getElementById(`h-db${k}`).innerHTML = `${dbc[k]}<small>EA</small>`;
@@ -939,10 +911,10 @@
       const occ4 = cells.filter(c => c.item && c.zone === 4).length;
       const locked = cells.filter(c => c.locked).length;
       const ready = cells.filter(c => c.item && c.item.state === 'aging' && c.item.age >= T.aging).length;
-      document.getElementById('h-buf').innerHTML = `${sim.buffer.filter(Boolean).length}<small>/${BUF.n}</small>`;
+      document.getElementById('h-buf').innerHTML = `${lanes.retest.items.length}<small>EA</small>`;
       document.getElementById('status').innerHTML =
         `랙 점유 <b>${occ}/24</b> (4S구역 ${occ4}/12 · 6S구역 ${occ - occ4}/12) · 숙성완료 대기 <b>${ready}</b> · LOCK <b>${locked}</b><br>` +
-        `정치 버퍼 <b>${sim.buffer.filter(Boolean).length}/${BUF.n}</b> · 만차 대기 <b>${sim.bufHolds}</b>회 · 투입 <b>${sim.seq}</b> · 크레인 A <b>${craneA.idle ? '대기' : '동작'}</b> / B <b>${craneB.idle ? '대기' : '동작'}</b>`;
+        `재검사 라인 <b>${lanes.retest.items.length}</b>EA · 출구 대기(M1800) <b>${sim.bufHolds}</b>회 · 투입 <b>${sim.seq}</b> · 크레인 A <b>${craneA.idle ? '대기' : '동작'}</b> / B <b>${craneB.idle ? '대기' : '동작'}</b>`;
     }
     renderHmi();
 
@@ -967,7 +939,16 @@
           log(`[LOCK 자동 해제] R${String(c.idx + 1).padStart(2, '0')} 점검 시간 ${T.lockRelease}s 경과 → 입고 가능`, '#34D399');
         }
       }
-      updateBuffer(dt);
+      {
+        const n = lanes.retest.items.length;
+        sim.rtStat.maxOnLine = Math.max(sim.rtStat.maxOnLine, n);
+        // a pack standing still on the shared main-line part of the retest lane would block GOOD packs
+        lanes.retest.items.forEach(o => {
+          const still = o.lastS !== undefined && o.s - o.lastS < 1e-4;
+          if (still && o.s < RT_MAIN_LEN + 0.3 && !o.spillCounted) { o.spillCounted = true; sim.rtStat.spillMain++; }
+          o.lastS = o.s;
+        });
+      }
       scheduleOutbound();
       runTester(sim.main, mainT, 1, dt, mainVerdict);
       runTester(sim.rt, rtT, 2, dt, retestVerdict);
