@@ -41,6 +41,7 @@ def addr(tok):
 def val(tok):
     if tok.startswith("K"): return int(tok[1:])
     if tok.startswith("Z"): return Z[tok]
+    if tok.startswith("T"): return int(T.get(tok, [0.0, False])[0] * 10 + 1e-6)   # 타이머 현재값(100 ms 단위, GX와 같음)
     return W.get(addr(tok), 0)
 def setw(tok, v):
     v = ((int(v) + 32768) % 65536) - 32768
@@ -174,7 +175,7 @@ def io_out():
 # ---------------- 바깥(투입 · 검사 엔진) 대신 ----------------
 import os
 TSCALE = float(os.environ.get("TSCALE", "1"))   # Factory I/O 툴바 Time Scale과 같은 값(2 · 3 · 4). 타이머만 그만큼 빨리 감
-STOPAT = (lambda v: (v.split("=")[0], int(v.split("=")[1])) if v else None)(os.environ.get("STOPAT", ""))   # 예: STOPAT=D1760=10 (그 순간 멈춰 화면 확인)
+STOPAT = [(x.split("=")[0], int(x.split("=")[1])) for x in os.environ.get("STOPAT", "").split("|") if x]   # 예: STOPAT=D1760=10 (그 순간 멈춰 화면 확인)
 FORCE = {k: v == "1" for k, v in (x.split("=") for x in os.environ.get("FORCE", "").split(",") if x)}   # 예: FORCE=X1511=1 (씬에 없는 센서 대신)
 T0 = time.time()
 def log(m): print(f"{time.time()-T0:6.1f}s {m}", flush=True)
@@ -202,6 +203,29 @@ def outside():
         if pid in pack_ids and plan[pack_ids.index(pid)].rstrip("L") == "H" and W.get(f"D{1810+k}", 0) > 0 and pid not in judged:
             judged[pid] = 1; W["D1697"] = k + 1; W["D1698"] = 410; B["M1672"] = True; log(f"발열 접수: 칸 {k+1} PACK {pid}")
 
+# ---------------- 후보 리더 동시 판독 (11-24, 씬 V6_plc_16_RP 전용) ----------------
+# 씬에 D2000~(②) · D2100~(③) 후보 리더가 있으면, 본 검사 스텝이 0 → 10(팔레트 정지)이 된 뒤 1.2초에
+# 후보 모두에 명령 1(시리얼 읽기)을 내고 1.5초 뒤 결과를 한 줄로 남김. 래더는 이 번지를 쓰지 않음.
+PROBE = {st: sorted({int(n[1:]) // 10 * 10 for n, ar, a in outs_ if re.match(rf"^D{p}\d\d$", n)})
+         for st, p in (("②", "20"), ("③", "21"))}
+PROBE = {k: v for k, v in PROBE.items() if v and os.environ.get("PROBE", "0") == "1"}   # 동시 명령은 리더를 멈추게 함(11-24) → 기본 끔
+_pr = {st: {"prev": 0, "t10": None, "fired": None, "cid": {}} for st in PROBE}
+def probe():
+    for st, bases in PROBE.items():
+        s = _pr[st]; step = W.get("D1750" if st == "②" else "D1760", 0); now = time.time()
+        if s["prev"] == 0 and step == 10: s["t10"] = now
+        s["prev"] = step
+        if s["t10"] and s["fired"] is None and now - s["t10"] >= 1.2:
+            for b in bases:
+                W[f"D{b}"] = 1; s["cid"][b] = W.get(f"D{b+3}", 0); B[f"M{b+1}"] = True
+            s["fired"] = now
+        if s["fired"] and now - s["fired"] >= 1.5:
+            res = []
+            for b in bases:
+                B[f"M{b+1}"] = False
+                res.append(f"{b}:{W.get(f'D{b+5}', 0) if W.get(f'D{b+3}', 0) != s['cid'][b] else '-'}")
+            log(f"후보 {st} " + " ".join(res)); s["t10"] = None; s["fired"] = None
+
 # ---------------- 자동 화면 저장 (11-23) ----------------
 # SHOTS=<폴더>를 주면 SHOT_EVERY초(기본 2)마다 화면을 JPEG로 저장하고 index.csv에 시각 · 주요 스텝 · 알람을 남김.
 # 스캔을 늦추지 않도록 별도 스레드에서 찍음. Factory I/O 창을 최대화해 맨 앞에 두고 돌릴 것(가려진 창은 안 찍힘).
@@ -224,6 +248,27 @@ def _shooter():
         if not h or ctypes.windll.user32.IsIconic(h): return None
         r = wintypes.RECT(); ctypes.windll.user32.GetWindowRect(h, ctypes.byref(r))
         return (r.left, r.top, r.right, r.bottom) if r.right - r.left > 100 else None
+    from PIL import Image
+    def grab_fio(box):
+        """Factory IO 창 내용만 PrintWindow(PW_RENDERFULLCONTENT)로 찍음 — 다른 창이 위에 있어도 가려진 부분까지(11-24).
+        실패하면(검은 화면 등) 화면 영역 캡처로 대신함"""
+        h = ctypes.windll.user32.FindWindowW(None, "Factory IO"); w, ht = box[2] - box[0], box[3] - box[1]
+        u, g = ctypes.windll.user32, ctypes.windll.gdi32
+        hdc = u.GetWindowDC(h); mdc = g.CreateCompatibleDC(hdc); bmp = g.CreateCompatibleBitmap(hdc, w, ht); g.SelectObject(mdc, bmp)
+        ok = u.PrintWindow(h, mdc, 2)
+        class BIH(ctypes.Structure):
+            _fields_ = [("biSize", ctypes.c_uint32), ("biWidth", ctypes.c_int32), ("biHeight", ctypes.c_int32), ("biPlanes", ctypes.c_uint16),
+                        ("biBitCount", ctypes.c_uint16), ("biCompression", ctypes.c_uint32), ("biSizeImage", ctypes.c_uint32),
+                        ("biXPelsPerMeter", ctypes.c_int32), ("biYPelsPerMeter", ctypes.c_int32), ("biClrUsed", ctypes.c_uint32), ("biClrImportant", ctypes.c_uint32)]
+        bi = BIH(ctypes.sizeof(BIH), w, -ht, 1, 32, 0, 0, 0, 0, 0, 0); buf = ctypes.create_string_buffer(w * ht * 4)
+        g.GetDIBits(mdc, bmp, 0, ht, buf, ctypes.byref(bi), 0)
+        g.DeleteObject(bmp); g.DeleteDC(mdc); u.ReleaseDC(h, hdc)
+        im = Image.frombuffer("RGB", (w, ht), buf, "raw", "BGRX", 0, 1)
+        if not ok or im.convert("L").getextrema()[1] < 10: return ImageGrab.grab(bbox=box, all_screens=True)
+        return im
+    h0 = ctypes.windll.user32.FindWindowW(None, "Factory IO")
+    if h0:                                                   # 시작할 때 Factory IO 창을 최대화하고 앞으로(가려지면 안 찍힘)
+        ctypes.windll.user32.ShowWindow(h0, 3); ctypes.windll.user32.SetForegroundWindow(h0); time.sleep(0.5)
     def run():
         n = 0
         while not stop.is_set():
@@ -232,7 +277,7 @@ def _shooter():
                 box = fio_rect()
                 if box is None:
                     print("화면 저장: Factory IO 창을 못 찾음(최소화?) — 건너뜀", flush=True); stop.wait(SHOT_EVERY); continue
-                im = ImageGrab.grab(bbox=box, all_screens=True)
+                im = grab_fio(box)
                 if im.width > SHOT_W: im = im.resize((SHOT_W, int(im.height * SHOT_W / im.width)))
                 fn = f"{n:04d}_{t:06.1f}s.jpg"; im.save(os.path.join(SHOTS, fn), quality=70)
                 al = " ".join(a for a in ("M1951", "M1952", "M1953", "M1954", "M1955", "M1956", "M1957") if B.get(a))
@@ -255,7 +300,7 @@ try:
     end_need = len(plan)
     while time.time() - T0 < LIMIT:
         now = time.time(); dt = (now - last) * TSCALE; last = now   # Factory I/O 배속(Time Scale)과 맞춤
-        io_in(); outside(); scan(dt); io_out()
+        io_in(); outside(); probe(); scan(dt); io_out()
         for w in watch:
             v = W.get(w, 0)
             if prev.get(w) != v: prev[w] = v; log(f"  {w} = {v}")
@@ -265,7 +310,8 @@ try:
         done = W.get("D1900", 0) + W.get("D1901", 0) + W.get("D1902", 0)
         if prev.get("cnt") != done: prev["cnt"] = done; log(f"카운터 GOOD {W.get('D1900',0)} · NG {W.get('D1901',0)} · 격리 {W.get('D1902',0)}")
         if done >= end_need: log("모든 팩 배출"); break
-        if STOPAT and (B.get(STOPAT[0]) if STOPAT[0][0] in "MXY" else W.get(STOPAT[0], 0)) == STOPAT[1]: log(f"멈춤 조건 {STOPAT}"); break
+        hit = [s_ for s_ in STOPAT if (B.get(s_[0]) if s_[0][0] in "MXY" else W.get(s_[0], 0)) == s_[1]]
+        if hit: log(f"멈춤 조건 {hit}"); break
         time.sleep(0.005)
     print(f"결과: GOOD {W.get('D1900',0)} · NG {W.get('D1901',0)} · 격리 {W.get('D1902',0)} / 계획 {plan}", flush=True)
 finally:

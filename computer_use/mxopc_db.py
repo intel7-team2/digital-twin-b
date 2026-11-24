@@ -29,7 +29,9 @@ ROOT = os.path.dirname(HERE)
 CSCRIPT = r"C:\Windows\SysWOW64\cscript.exe"
 BACKUP_DIR = os.path.join(ROOT, "test_results", "mdb_backup")
 TAG_COLS = ("ID, ParentID, Name, Sequence, Description, Enable, StartingAddress, RegisterName, BasicDataType, "
-            "AccessRights, Simulate, SimulationSignal, PollRateDefinition, DataLength, VectorNumElements")
+            "AccessRights, Simulate, SimulationSignal, PollRateDefinition, DataLength, VectorNumElements, AddressBase, AddressDatatype")
+# AddressBase: X · Y는 1(16진 번지), 그 밖은 0. 빠지면 X1513이 10진 X5395로 잡혀 쓰기가 실패함(11-24)
+# AddressDatatype: D(워드 디바이스)는 1, 비트 디바이스는 0. 빠지면 D가 비트로 읽혀 1480이 1이 됨(11-24, 크레인 A가 셀 수를 못 봄)
 
 
 def runtime_mdb():
@@ -138,7 +140,7 @@ def cmd_add_io(mdb, device):
             f'Set c = cn.Execute("SELECT COUNT(*) AS k FROM MX_DataTagsRoot WHERE ParentID=" & did & " AND Name=\'{dev}\'")\r\n'
             'If c("k") = 0 Then\r\n'
             '  nid = nid + 1\r\n  seq = seq + 1\r\n'
-            f'  cn.Execute "INSERT INTO MX_DataTagsRoot ({TAG_COLS}) VALUES (" & nid & ", " & did & ", \'{dev}\', " & seq & ", \'{desc}\', True, {num}, \'{kind}\', {btype}, 3, False, {sig}, 1, 1, 1)"\r\n'
+            f'  cn.Execute "INSERT INTO MX_DataTagsRoot ({TAG_COLS}) VALUES (" & nid & ", " & did & ", \'{dev}\', " & seq & ", \'{desc}\', True, {num}, \'{kind}\', {btype}, 3, False, {sig}, 1, 1, 1, {1 if kind in "XY" else 0}, {1 if word else 0})"\r\n'
             '  If Err.Number <> 0 Then\r\n'
             f'    WScript.Echo "ERR {dev} " & Err.Description\r\n'
             '    Err.Clear\r\n'
