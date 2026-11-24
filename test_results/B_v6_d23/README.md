@@ -81,6 +81,9 @@ SHOTS=D:/seojung/fio_shots/run1 SHOT_EVERY=2 PYTHONIOENCODING=utf-8 python softp
 |---|---|
 | `opc_outside.py` · `opc_reset.py` · `opc_shots.py` | 실제 PLC 시험(위). 중계는 입력 쓰기 · 출력 읽기 스레드 분리, 바뀐 출력만 씀 |
 | `make_timescale.py` | 느린 재생용 타이머 N배 사본(명령어 목록 · GX CSV) |
+| `softplc.py` `OUT_DELAY` · `OUT_ONLY` | 출력을 N초 늦게 써서 실제 PLC 경로 지연 흉내(`OUT_DELAY=1.0`이면 메인 라인 회전 재현), `OUT_ONLY=Y1662,...`는 그 출력만 늦춤 |
+| `mb_watch.py` | Factory I/O 쪽 코일 · 입력 비트를 Modbus로 읽어 바뀔 때만 CSV(소프트 PLC ↔ 중계 비교) |
+| `../a28_1123/move_sensor.py` | 씬의 센서 하나를 격자 위치로 옮김(시험용) |
 | `../a28_1123/patch_entry_analog.py` | 입고 진입 롤러를 `Y1504` → 아날로그 `D1506`으로 씬 패치 |
 | `build_reader_variant.py` | 리더 ② · ③ 위치만 바꾼 씬(`V6_plc_16_<이름>`). 리더 배치 비교는 씬마다 하나씩(같은 태그가 리더 두 개 범위에 있으면 응답 안 함) |
 | `build_reader_probe.py` · `rfid_clash.py` · `rfid_seq.py` | 후보 리더를 옆에 같이 다는 비교 · 동시 명령 시험(위 이유로 실패한 방식, 기록용) |

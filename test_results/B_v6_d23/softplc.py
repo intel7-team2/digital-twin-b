@@ -161,12 +161,27 @@ def io_in():
         if ar == "di": B[n] = bool(d[a])
         else: W[n] = ((r[a] + 32768) % 65536) - 32768
     for k, v in FORCE.items(): B[k] = v
+import collections, os
+OUT_DELAY = float(os.environ.get('OUT_DELAY', '0')); _q = collections.deque(); OUT_ONLY = set(filter(None, os.environ.get('OUT_ONLY', '').split(',')))
 def io_out():
     co = {}; hr = {}
     for n, ar, a in outs_:
         if ar == "coil": co[a] = B.get(n, False)
         else: hr[a] = W.get(n, 0) & 0xFFFF
     co[run] = True                      # 같은 범위에 Run 코일이 있으면 꺼지지 않게
+    if OUT_DELAY > 0:                   # 11-24: 실제 PLC 경로 지연 흉내(출력만 OUT_DELAY초 늦게 씀)
+        _q.append((time.time(), co, hr))
+        while len(_q) > 1 and time.time() - _q[1][0] >= OUT_DELAY: _q.popleft()
+        if time.time() - _q[0][0] < OUT_DELAY: return
+        _, co0, hr0 = _q[0]
+        if OUT_ONLY:                    # 지정한 출력만 늦추고 나머지는 지금 값
+            co = dict(co); hr = dict(hr)
+            for n, ar, a in outs_:
+                if n in OUT_ONLY:
+                    if ar == "coil": co[a] = co0.get(a, False)
+                    else: hr[a] = hr0.get(a, 0)
+        else:
+            co, hr = co0, hr0
     if co:
         lo, hi = min(co), max(co); c.write_multiple_coils(lo, [co.get(i, False) for i in range(lo, hi + 1)])
     if hr:
