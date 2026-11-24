@@ -42,10 +42,10 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="0" Y="0" Z="1" />
     </Proxy>
-    <ComponentIO Index="1" CurrentOperatingMode="0" />
-    <OperatingMode Description="$C_RollerConveyor_OM_SingleBinary_NAME">
+    <ComponentIO Index="1" CurrentOperatingMode="2" />
+    <OperatingMode Description="$C_RollerConveyor_OM_Analogue_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1504" Address="0" Key="ab64a17e-4f1b-4865-a39e-e7857c612312" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
+        <AnalogueOutput Name="D1506" Address="0" Key="0bd768df-7d9d-4b47-9708-df24174cf741" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
@@ -1626,7 +1626,7 @@
       <Properties ReadCoils="False" ReadHoldingRegisters="False" ScaleFactor="100" />
     </ModbusTCPClient>
     <ModbusTCPServer>
-      <PointIOCount BitInputCount="37" BitOutputCount="68" FloatInputCount="0" FloatOutputCount="0" IntInputCount="0" IntOutputCount="0" NumericInputCount="9" NumericOutputCount="14" />
+      <PointIOCount BitInputCount="37" BitOutputCount="68" FloatInputCount="0" FloatOutputCount="0" IntInputCount="0" IntOutputCount="0" NumericInputCount="9" NumericOutputCount="15" />
       <PointIOOffset BitInputOffset="0" BitOutputOffset="0" FloatInputOffset="0" FloatOutputOffset="0" IntInputOffset="0" IntOutputOffset="0" NumericInputOffset="0" NumericOutputOffset="0" />
       <BitInput0 PointIOKey="04e2df95-16ec-4fe3-90cb-ee19bbf2d277" />
       <BitInput1 PointIOKey="b85ff5ee-225c-4f1c-abfd-c565ca339640" />
@@ -1756,6 +1756,7 @@
       <NumericOutput11 PointIOKey="9557a2db-bd7e-444b-bf86-076e722039ec" />
       <NumericOutput12 PointIOKey="c18285a5-ba13-4389-9cb4-2d864b878cb5" />
       <NumericOutput13 PointIOKey="b80be7b5-2dc8-4c33-a0a5-d8d78580f76b" />
+      <NumericOutput14 PointIOKey="0bd768df-7d9d-4b47-9708-df24174cf741" />
       <Properties ReadInputDiscretes="False" WriteCoils="False" ReadInputRegisters="False" WriteHoldingRegisters="False" ScaleFactor="100" />
     </ModbusTCPServer>
     <OPCClientDA>

@@ -87,6 +87,39 @@ if "--bridge" in sys.argv:                                  # Factory I/O(Modbus
         lo, hi = min(co), max(co); MB.write_multiple_coils(lo, [co.get(i, False) for i in range(lo, hi + 1)])
         if hr: lo, hi = min(hr), max(hr); MB.write_multiple_registers(lo, [hr.get(i, 0) for i in range(lo, hi + 1)])
     bridge(); log(f"중계 시작: 입력 {len(BR['in'])} · 출력 {len(BR['out'])}")
+    # 11-24: MX OPC 쓰기(SyncIO Write)는 한 번에 약 0.6초 걸려, 한 루프에서 하면 그동안 출력 갱신 · 바깥 처리도 멈춤
+    # → 입력 쓰기 · 출력 읽기를 각자 스레드(각자 OPC 연결 · Modbus 연결)로 나눠 PLC → Factory I/O 쪽 지연을 0.02초 수준으로
+    import threading
+    BR["stop"] = False
+    def _in_loop():
+        Lw = Link(device=DEV, source=P.OPC_DS_CACHE); Mw = ModbusClient("127.0.0.1", 502)
+        while not BR["stop"]:
+            d = Mw.read_discrete_inputs(0, BR["di_n"]); r = Mw.read_input_registers(0, BR["ir_n"])
+            if not d or r is None: time.sleep(0.02); continue
+            ch = []
+            for n, ar, a in BR["in"]:
+                v = bool(d[a]) if ar == "di" else ((r[a] + 32768) % 65536) - 32768
+                if BR["sent"].get(n) != v: ch.append((n, v))
+            if not ch: time.sleep(0.01); continue
+            bad = Lw.write_many(ch)
+            for n, v in ch:
+                if n not in bad: BR["sent"][n] = v
+            if bad: log(f"  중계 쓰기 실패 {len(bad)}개: {bad[:8]}")
+    def _out_loop():
+        Lr = Link(device=DEV, source=P.OPC_DS_CACHE); Mr = ModbusClient("127.0.0.1", 502); last_co = {}; last_hr = {}
+        while not BR["stop"]:
+            O = Lr.read_many(BR["outnames"]); co = {BR["run"]: True}; hr = {}
+            for n, ar, a in BR["out"]:
+                if ar == "coil": co[a] = bool(O.get(n))
+                else: hr[a] = (O.get(n) or 0) & 0xFFFF
+            # 11-24: 바뀐 출력만 씀(같은 값을 초당 50번 다시 쓰면 Factory I/O 롤러가 떨려 팔레트가 메인 라인에서 돌아가는지 확인)
+            cw = [(a, v) for a, v in co.items() if last_co.get(a) != v]
+            for a, v in cw: Mr.write_single_coil(a, v); last_co[a] = v
+            hw = [(a, v) for a, v in hr.items() if last_hr.get(a) != v]
+            for a, v in hw: Mr.write_single_register(a, v); last_hr[a] = v
+            time.sleep(0.02)
+    for f in (_in_loop, _out_loop): threading.Thread(target=f, daemon=True).start()
+    log("중계 스레드 시작(입력 쓰기 · 출력 읽기 따로)")
 def log(m): print(f"{time.time()-T0:6.1f}s {m}", flush=True)
 WATCH = ["M1950", "D1541", "D1750", "D1760", "D1525", "D1535", "D1558", "D1568", "D1900", "D1901", "D1902"] + [f"M{1951+i}" for i in range(7)]
 HS = ["M1510", "D1710", "D1711", "D1713", "D1740", "D1741", "D1743", "D1650", "D1651", "D1652", "D1653"]
@@ -101,7 +134,6 @@ pend = {"C": False, "main": False, "re": False, "iso": False}   # OPC 캐시 지
 t_start = time.time()
 while time.time() - T0 < LIMIT:
     t = time.time()
-    if BR: bridge()
     V = L.read_many(ALL)
     for w in WATCH:
         if V.get(w) != prev.get(w):
@@ -143,7 +175,9 @@ while time.time() - T0 < LIMIT:
     done = sum(V[d] or 0 for d in ("D1900", "D1901", "D1902"))
     if done >= len(plan): log("모든 팩 배출"); break
     prev["주기"] = max(prev.get("주기", 0), time.time() - t)
+    time.sleep(0.05)
 if BR:
+    BR["stop"] = True; time.sleep(0.3)
     try: MB.write_multiple_coils(min(a for _, ar, a in BR["out"] if ar == "coil"), [False] * 1)
     except Exception: pass
 print(f"결과: GOOD {V['D1900']} · NG {V['D1901']} · 격리 {V['D1902']} / 계획 {plan} · 가장 긴 주기 {prev['주기']:.2f}s", flush=True)

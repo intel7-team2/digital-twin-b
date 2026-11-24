@@ -70,6 +70,7 @@ for o in F.OBJ_RE.findall(t2):
     O.append(o)
 O.append(place("LoadingConveyor", 246, 2, 184, "W", names={"Unload Conveyor": "Y1610"}, src="Automated Warehouse"))   # 247이면 크레인 B 몸체와 부딪힘(11-23 시험)
 retro(243, 184, "X", "X1610")
+# 11-24: 입고점 Roller Stop 시도 → 포크가 팔레트 옆면을 밀어 뒤집힘(막대가 팔레트를 안쪽에 세움). 되돌림
 # ---- 입고(Z=184, −X) ----
 EMIT_IO = """<ComponentIO Index="0" CurrentOperatingMode="1" />
     <OperatingMode Description="$C_Emitter_OM_Controller_NAME">

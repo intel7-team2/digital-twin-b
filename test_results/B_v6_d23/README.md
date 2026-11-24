@@ -59,24 +59,29 @@ SHOTS=D:/seojung/fio_shots/run1 SHOT_EVERY=2 PYTHONIOENCODING=utf-8 python softp
 | `D1750` · `D1760` | 메인 검사 · 재검사 스텝(14 · 16 = RFID 다시 읽기 대기, 51 = 판독 실패) |
 | `D1558` · `D1568` | RFID ② · ③ 레지스터에 마지막으로 남은 읽기 값 |
 
-## 실제 PLC 시험 (GX Simulator2 + MX OPC + Factory I/O, 11-24 · 논의 문서 15-10)
+## 실제 PLC 시험 (GX Simulator2 + MX OPC + Factory I/O, 11-24 · 논의 문서 15-10 · 15-11)
 
-1. MX OPC 실행 프로젝트를 `test_results/MXOPC_B_v6_d24d.mdb`(태그 359)로: 관리자 명령 프롬프트에서
-   `reg add "HKLM\SOFTWARE\WOW6432Node\Mitsubishi\MXOPCServer\Configuration" /v FileName /t REG_SZ /d "D:\seojung\digital-twin-b\test_results\MXOPC_B_v6_d24d.mdb" /f` 후 `net stop "MXOPC and MXOPC" & net start "MXOPC and MXOPC"`
-2. GX Works2에서 `B_v6_d23.gxw` → [디버그] 시뮬레이션 시작. **래더를 바꿨으면**: 시뮬레이터 창 STOP → [온라인] PLC 쓰기(파라미터 + 프로그램, 모두 예) → RESET → RUN
-3. `py -3.12 opc_reset.py` (이전 회차 M · D를 0으로)
-4. Factory I/O에 `factoryio_test/V6_plc_17_opc.factoryio`를 열고 **F5**(실행 모드). 드라이버 창(F4)에 빨간 느낌표가 없어야 함
-5. `py -3.12 opc_outside.py 1,2L,3,H,1L,2 1440 > 로그` — C 인계 · 검사 응답 · 발열 접수를 OPC로 대행, 운전 비트 `M1950`을 직접 SET(시작 버튼 `X1501`은 Factory I/O가 덮어씀)
+1. MX OPC 실행 프로젝트를 `test_results/MXOPC_B_v6_d24f.mdb`(태그 360, `D1506` INT 포함)로: 관리자 명령 프롬프트에서
+   `reg add "HKLM\SOFTWARE\Mitsubishi\MXOPCServer\Configuration" /v FileName /t REG_SZ /d "D:\seojung\digital-twin-b\test_results\MXOPC_B_v6_d24f.mdb" /f /reg:32` 후 `net stop "MXOPC and MXOPC"` · `net start "MXOPC and MXOPC"`
+2. GX Works2에서 `B_v6_d23.gxw` → [디버그] 시뮬레이션 시작. **래더를 바꿨으면**: 시뮬레이터 창 STOP → [온라인] PLC 쓰기(파라미터 + 프로그램, 모두 예) → RESET → RUN.
+   다른 이름의 프로젝트로 시뮬레이션을 시작하면 시뮬레이터가 하나 더(B) 떠 MX OPC(1번 = A)와 어긋남 → 시뮬레이터 · `SimManager`를 끄고 다시 시작
+3. `py -3.12 opc_reset.py ../MXOPC_B_v6_d24f.mdb` (이전 회차 M · D를 0으로, 크레인 변환표 상수는 남김)
+4. Factory I/O에 **Modbus 씬** `factoryio_test/V6_plc_17.factoryio`를 엶(`a28_1123/open_scene.sh V6_plc_17.factoryio`)
+5. `py -3.12 opc_outside.py 1,2L,3,H,1L,2 1200 --bridge "D:/seojung/digital-twin-b/factoryio_test/V6_plc_17.factoryio" > 로그` — Factory I/O(Modbus) ↔ PLC(OPC) 중계 + C 인계 · 검사 응답 · 발열 접수 대행. 운전 비트 `M1950`을 직접 SET
+6. 기록: `py -3.12 opc_shots.py img <폴더> <초> [간격]`(화면) · `py -3.12 opc_shots.py sig <폴더> <초>`(크레인 · 출고 신호 `signals.csv`)
 
-- 중지할 때는 `opc_outside.py` 프로세스가 남지 않게 확인(두 개가 같이 돌면 C 인계가 섞임).
-- 11-24 결과: 투입 ~ 크레인 A 입고 · 발열 접수까지 됨, **크레인 B가 팩을 떨어뜨림**(진행 중). 팩 1개 투입 약 50초.
-- `--bridge <Modbus 씬>`: Factory I/O OPC 씬이 안 될 때 Factory I/O(Modbus) ↔ PLC(OPC)를 이 스크립트가 중계(예비).
+- **지연(측정)**: MX OPC 쓰기 한 번 약 0.6 s, 왕복 0.8 ~ 1.3 s. OPC Client 씬(`V6_plc_17_opc`) 직결은 수 초라 위치 맞춤이 안 돼 중계 방식만 씀.
+- 11-24 결과: 투입 ~ 크레인 A · B 6팩 정상. **CT1 다음 메인 라인 1에서 팔레트가 돌아 메인 판독 실패(미해결, 소프트 PLC는 정상)**.
+- 느린 재생 시험: `py make_timescale.py 2`(타이머 2배 사본 → `x2/` CSV) + Factory I/O 콘솔(`\`) `scene.time_scale = 0.5` + 툴바 Time Scale. 사본은 시험용이라 커밋하지 않음.
+- 중지할 때는 `opc_outside.py` · `opc_shots.py` 프로세스가 남지 않게 확인(두 개가 같이 돌면 C 인계가 섞임).
 
 ## 11-24 시험 도구
 
 | 파일 | 뜻 |
 |---|---|
-| `opc_outside.py` · `opc_reset.py` | 실제 PLC 시험(위) |
+| `opc_outside.py` · `opc_reset.py` · `opc_shots.py` | 실제 PLC 시험(위). 중계는 입력 쓰기 · 출력 읽기 스레드 분리, 바뀐 출력만 씀 |
+| `make_timescale.py` | 느린 재생용 타이머 N배 사본(명령어 목록 · GX CSV) |
+| `../a28_1123/patch_entry_analog.py` | 입고 진입 롤러를 `Y1504` → 아날로그 `D1506`으로 씬 패치 |
 | `build_reader_variant.py` | 리더 ② · ③ 위치만 바꾼 씬(`V6_plc_16_<이름>`). 리더 배치 비교는 씬마다 하나씩(같은 태그가 리더 두 개 범위에 있으면 응답 안 함) |
 | `build_reader_probe.py` · `rfid_clash.py` · `rfid_seq.py` | 후보 리더를 옆에 같이 다는 비교 · 동시 명령 시험(위 이유로 실패한 방식, 기록용) |
 | `softplc.py` 추가 | 타이머 현재값 비교(`AND>= T1513 K5`), `STOPAT` 여러 개(`D1750=14\|D1760=16`), 화면 저장은 PrintWindow로 Factory IO 창만(가려져도 찍힘) |

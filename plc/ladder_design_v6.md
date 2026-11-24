@@ -101,7 +101,7 @@ J13  LD= D#13 K20 | AND= D1713 K0  =>  MOV D1526 D1711 | MOV D1527 D1712 | MOV K
 |---|---|---|---|
 | 15 | `X1500` · `X1501` · `X1502` · `X1503` | 비상정지(NC) · 시작 · 정지(NC) · 리셋 버튼 | A · R |
 | 15 | `Y1500` · `D1508` · `D1509` | Emitter Emit · Part(1 Small · 4 Large) · Base(`<A28>`) | C |
-| 15 | `Y1501` · `Y1504` · `D1505` · `X1513` | 입고 롤러(2개) · 입고 진입 롤러 · 크레인 A 입고점 로딩 컨베이어 속도(아날로그, 0.01 V) · 로딩 컨베이어 입구 센서 | V · D(I) |
+| 15 | `Y1501` · `D1506` · `D1505` · `X1513` | 입고 롤러(2개) · 입고 진입 롤러 속도(아날로그, 0.01 V, 11-24 켜짐/꺼짐 롤러에서 바꿈) · 크레인 A 입고점 로딩 컨베이어 속도(아날로그, 0.01 V) · 로딩 컨베이어 입구 센서 | V · D(I) |
 | 15 | `X1510` · `Y1502` | RFID ① 정위치 센서 · 스토퍼 | C |
 | 15 | `X1511` | 박스 높이 센서: RFID ① 정지 위치, 높이 Y=8(1 m). 가림 = Large(BoxS는 Y=7까지, BoxL은 Y=8까지 가림, 11-23 실측) | C |
 | 15 | `X1512` | 크레인 A 입고점 도착 | D · V |
@@ -445,7 +445,7 @@ J13  LD= D#13 K20 | AND= D1713 K0  =>  MOV D1526 D1711 | MOV D1527 D1712 | MOV K
 |---|---|
 | `Y1611` · `Y1690` · `Y1702` · `Y1731` · `Y1732` · `Y1900` · `Y1901` | 운전 중 계속 (정지 위치는 Roller Stop · CT) |
 | `Y1501` 입고 롤러 | STEP 01 스텝 10~30(RFID ① 정지 위치에 팩이 있음) 동안 멈춤 — 롤러가 계속 밀면 팔레트가 Roller Stop을 넘어감 |
-| `Y1504` 입고 진입 롤러 · `D1505` 입고 로딩 컨베이어 속도 | 입고 로딩 컨베이어 스텝 `D#43`(4-3) |
+| `D1506` 입고 진입 롤러 속도 · `D1505` 입고 로딩 컨베이어 속도 | 입고 로딩 컨베이어 스텝 `D#43`(4-3) |
 | `Y1610` 크레인 B 출고점 로딩 컨베이어 | 크레인 B가 내려놓는 동안(스텝 41~43)만 정지 |
 | `Y1700` 메인 라인 1 | 메인 검사 중(`M#51`)이 아닐 때 |
 | `Y1800` 재검사 라인 | 재검사 중(`M#54`)이 아닐 때 |
@@ -529,7 +529,7 @@ B13  LD M#12 | OR M#13  =>  RST M#11                       ; 완료 · 실패면
 ### B2. RFID ② 실행기
 
 ```
-B21  LD= D#23 K0 | AND M#21  =>  MOV K0 D#25 | MOV K1 D#23
+B21  LD= D#23 K0 | AND M#21 | AND= D#26 K0  =>  MOV K0 D#25 | MOV K1 D#23   ; RFID ③ 실행 중이면 기다림(11-24 실제 PLC 시험: ② · ③에 명령이 겹치면 리더가 응답하지 않음 M1954)
 B22  LD= D#23 K1  =>  OUT T#05 K10
 B23  LD= D#23 K1 | AND T#05  =>  MOV D1523 D#24 | MOV K2 D#23
 B24  LD= D#23 K2  =>  OUT M1521 | OUT T#06 K50
@@ -546,7 +546,7 @@ B33  LD M#22 | OR M#23  =>  RST M#21                       ; 완료 · 실패면
 ### B3. RFID ③ 실행기
 
 ```
-B41  LD= D#26 K0 | AND M#31  =>  MOV K0 D#28 | MOV K1 D#26
+B41  LD= D#26 K0 | AND M#31 | AND= D#23 K0 | ANI M#21  =>  MOV K0 D#28 | MOV K1 D#26   ; RFID ② 실행 중 · 요청 중이면 기다림(② 우선, B21과 짝)
 B42  LD= D#26 K1  =>  OUT T#09 K10
 B43  LD= D#26 K1 | AND T#09  =>  MOV D1533 D#27 | MOV K2 D#26
 B44  LD= D#26 K2  =>  OUT M1531 | OUT T#10 K50
@@ -567,15 +567,15 @@ B59  MCR N0
 ; @PROGRAM INFEED
 C00  LD M#60  =>  MC N0 M#71                         ; 운전 중일 때만 이 파일 실행(정지 시 OUT 끔)
 C01  LD= D#10 K0 | AND M1510 | AND X1510  =>  MOV K5 D#10
-C02  LD= D#10 K5  =>  OUT T#13 K10
-C03  LD= D#10 K5 | AND>= T#13 K5 | ANI T#13  =>  OUT Y1500                   ; Emitter 투입 펄스(안): 스텝 5 들어간 뒤 0.5초 기다렸다 0.5초 ON. 박스 종류(D1508)를 바꾼 같은 순간에 펄스를 내면 Emitter가 이전 박스로 내보냄(6S가 Medium으로 나와 M1951, 11-24 화면 확인)
+C02  LD= D#10 K5  =>  OUT T#13 K25
+C03  LD= D#10 K5 | AND>= T#13 K15 | ANI T#13  =>  OUT Y1500                  ; Emitter 투입 펄스(안): 스텝 5 들어간 뒤 1.5초 기다렸다 1.0초 ON(11-24 실제 PLC + OPC에서 0.5초로는 6S가 Medium으로 나옴). 박스 종류(D1508)를 바꾼 같은 순간에 펄스를 내면 Emitter가 이전 박스로 내보냄(6S가 Medium으로 나와 M1951, 11-24 화면 확인)
 C04  LD<= D#10 K5 | AND= D1518 K4  =>  MOV K2 D1508                           ; 4S = Medium box(2). Small(1)은 이송 중 옆으로 밀려 RFID ② · ③이 못 읽음 → D8 변경(11-23)
 C05  LD<= D#10 K5 | AND= D1518 K6  =>  MOV K4 D1508                           ; 6S = Large box(4). D1508은 비트 값(1 Small · 2 Medium · 4 Large, 설명서)
 C06  LD<= D#10 K5  =>  MOV K2 D1509                                       ; 받침 = SquarePallet(2). C04~C06은 스텝 0(대기)부터 미리 넣음: 투입 펄스와 같은 순간에 바꾸면 Emitter가 이전 박스 종류로 내보냄(11-23)
 C07  LD= D#10 K5 | ANI X1510  =>  MOV K10 D#10
-C08  LD= D#10 K10  =>  OUT T#14 K10
+C08  LD= D#10 K10  =>  OUT T#14 K30                                    ; 높이 판정 3 s(11-24 실제 PLC + OPC: 센서가 1 s 넘게 늦음). 입고 롤러는 C39에서 현재값 1 s로
 C41  LD= D#10 K10 | ANI X1511  =>  MOV K2 D1519                                ; A26 ①안(11-23 임시): 높이 센서가 가리면 Large(2)
-C42  LD= D#10 K10 | AND X1511  =>  MOV K1 D1519                                ; 안 가리면 Small(1)
+C42  LD= D#10 K5  =>  MOV K1 D1519                                          ; 투입 전 기본 Small(1). 스텝 10에서 한 번이라도 가리면 C41이 Large(2)로 고정(11-24: 순간값 판정은 OPC 지연에 틀림)
 C43  LD= D#10 K10  =>  RST M#03
 C44  LD= D#10 K10 | LD= D1519 K1 | AND= D1518 K4 | LD= D1519 K2 | AND= D1518 K6 | ORB | ANB  =>  SET M#03   ; Small = 4S 또는 Large = 6S (SET 한 곳)
 C10  LD= D#10 K10 | AND T#14 | AND M#03  =>  MOV K20 D#10
@@ -612,7 +612,7 @@ C48  LD M#12 | OR M#13  =>  RST M#12 | RST M#13                           ; 완�
 C36  LD= D#10 K30 | ANI M#02  =>  MOV D1516 D#31 | MOV D1518 D#32 | SET M#02 | RST M1510 | MOV K31 D#10
 C37  LD= D#10 K31 | AND X1510  =>  MOV K0 D#10
 C38  LD>= D#10 K5 | AND<= D#10 K30  =>  OUT Y1502                            ; 스토퍼(안) 올림
-C39  LD< D#10 K10 | OR> D#10 K30 | LD= D#10 K10 | ANI T#14 | ORB  =>  OUT Y1501   ; 입고 롤러: 팩이 X1510에 온 뒤 1초 더 돌려 Roller Stop에 닿게 하고 멈춤(계속 밀면 1~2초 뒤 넘어감, 일찍 멈추면 RFID ①이 태그를 못 읽음. 11-23 확인)
+C39  LD< D#10 K10 | OR> D#10 K30 | LD= D#10 K10 | AND< T#14 K10 | ORB  =>  OUT Y1501   ; 입고 롤러: 팩이 X1510에 온 뒤 1초 더 돌려 Roller Stop에 닿게 하고 멈춤(계속 밀면 1~2초 뒤 넘어감, 일찍 멈추면 RFID ①이 태그를 못 읽음. 11-23 확인)
 C99  MCR N0
 ```
 
@@ -623,17 +623,19 @@ C99  MCR N0
 D00  LD M#60  =>  MC N0 M#72                         ; 운전 중일 때만 이 파일 실행(정지 시 OUT 끔)
 ; --- 입고 로딩 컨베이어(아날로그 D1505, 0.01 V) : 4 V로 받다가 2초 뒤 감속, 입고점에서 짧게 역회전 제동 ---
 I01  LD= D#43 K0 | ANI X1513  =>  MOV K10 D#43                               ; 로딩 컨베이어 입구에 팩
-I02  LD= D#43 K10  =>  OUT T#37 K20
-I03  LD= D#43 K10 | AND T#37  =>  MOV K20 D#43                               ; 팩이 다 올라감 → 감속
+I02  LD= D#43 K10 | AND X1513  =>  OUT T#37 K2                                 ; 팩 뒤끝이 입구 센서를 지남(반사형 ON = 비어 있음). 0.2초 연속 확인(센서 떨림 방지)
+I03  LD= D#43 K10 | AND T#37  =>  MOV K20 D#43                               ; 팩이 다 올라감 → 감속. 11-24: 2초 고정 대기를 센서 기준으로(타이머가 바뀌면 4 V로 너무 오래 가 입고점을 지나쳐 크레인 A가 떨어뜨림)
 I04  LD>= D#43 K10 | AND<= D#43 K20 | ANI X1512  =>  MOV K30 D#43             ; 입고점 도착
-I05  LD= D#43 K30  =>  OUTH T#38 K15                                 ; 고속 타이머(10 ms): 역회전 0.15초
-I06  LD= D#43 K30 | AND T#38  =>  MOV K40 D#43                               ; 제동 끝 → 크레인 A 대기
+I05  LD= D#43 K30  =>  OUTH T#38 K15                                 ; 고속 타이머(10 ms): 정지 확인 0.15초
+I06  LD= D#43 K30 | AND T#38  =>  MOV K40 D#43                               ; 정지 → 크레인 A 대기
 I07  LD= D#43 K40 | AND X1512  =>  MOV K0 D#43                                ; 크레인 A가 집어 감(입고점 비워짐)
 I08  LD< D#43 K20  =>  MOV K400 D1505
-I09  LD= D#43 K20  =>  MOV K400 D1505                                  ; 감속 안 함(11-23 시험: 1.5 V로 줄이면 8칸 중 2칸만 통과, 4 V 유지 6/6)
-I10  LD= D#43 K30  =>  MOV K-200 D1505
+I09  LD= D#43 K20  =>  MOV K50 D1505                                   ; 입고점 직전 1.5 V(11-24: 실제 PLC 경로는 정지 신호가 늦어 4 V면 팔레트가 컨베이어 끝을 넘어 크레인 A가 못 집음. 느리게 와서 센서에서 멈추면 덜 밀림) → 0.5 V(11-24 중계 시험: 1.5 V도 지연만큼 밀려 포크 중심을 벗어남. 밀리는 거리 = 속도 × 지연)
+I10  LD= D#43 K30  =>  MOV K0 D1505                                    ; 센서에서 바로 정지(역회전 안 함: 11-24 뒤로 돌리면 Large 박스가 팔레트에서 미끄러져 빠짐)
 I11  LD= D#43 K40  =>  MOV K0 D1505
-I12  LD< D#43 K30  =>  OUT Y1504                                             ; 입고 진입 롤러
+I12  LD< D#43 K20  =>  MOV K1000 D1506                                     ; 입고 진입 롤러 속도(아날로그, 11-24 켜짐/꺼짐 롤러에서 바꿈). 대기 · 진입은 10 V
+I13  LD= D#43 K20  =>  MOV K50 D1506                                       ; 감속 중에는 로딩 컨베이어(I09)와 같은 1.5 V. 11-24 실제 PLC 시험: 앞만 느려지고 진입 롤러가 뒤에서 밀어 팔레트가 돌아가 박스가 빠짐(팔레트 길이 ≈ 로딩 컨베이어라 뒤쪽은 늘 진입 롤러 위)
+I14  LD>= D#43 K30  =>  MOV K0 D1506                                       ; 입고점 도착 · 크레인 대기 중 정지
 ; --- 크레인 A ---
 D01  LD= D#11 K0 | AND= D#43 K40 | AND M#02 | AND= D#32 K4 | AND<> D#50 K0  =>  MOV D#50 D#33 | MOV K1 D#11                 ; 4S → 4S 구역
 D02  LD= D#11 K0 | AND= D#43 K40 | AND M#02 | AND= D#32 K4 | AND= D#50 K0 | AND<> D#51 K0  =>  MOV D#51 D#33 | MOV K1 D#11   ; 4S 구역 만차 → 6S 구역
@@ -641,8 +643,8 @@ D03  LD= D#11 K0 | AND= D#43 K40 | AND M#02 | AND= D#32 K6 | AND<> D#51 K0  =>  
 D04  LD= D#11 K0 | AND= D#43 K40 | AND M#02 | AND= D#32 K6 | AND= D#51 K0 | AND<> D#50 K0  =>  MOV D#50 D#33 | MOV K1 D#11   ; 6S 구역 만차 → 4S 구역
 D05  LD= D#11 K1  =>  MOV D#33 Z2 | DEC Z2 | MOV D#31 D#100Z2 | MOV K0 D#130Z2 | MOV D#33 D1600 | MOV K10 D#11
 D07  LD= D#11 K10 | AND X1602  =>  MOV K11 D#11                             ; 포크 입고점 쪽(왼쪽) 끝
-D08  LD= D#11 K11  =>  OUT T#15 K15                                         ; 들어 올림 1.5초(리프트 끝 센서 없음)
-D09  LD= D#11 K11 | AND T#15  =>  MOV K12 D#11
+D08  LD= D#11 K11  =>  OUT T#15 K50                                         ; 들어 올림 5초 + 승강 끝(D09). 11-24 실제 PLC + OPC: 리프트 출력 → 승강 중 신호가 약 2.3 s 늦게 들어와 1.5 · 3초로는 다 들기 전에 포크를 빼 팔레트가 떨어짐
+D09  LD= D#11 K11 | AND T#15 | ANI X1601  =>  MOV K12 D#11
 D10  LD= D#11 K12 | AND X1603  =>  MOV K20 D#11
 D11  LD= D#11 K20  =>  MOV D#190Z2 D1601 | OUT T#16 K30                     ; 목표 칸(변환표). 3초 안에 안 움직이면 이미 그 자리
 D12  LD= D#11 K20 | LD X1600 | OR X1601 | ANB  =>  MOV K21 D#11              ; 이동 시작 확인
@@ -650,8 +652,8 @@ D23  LD= D#11 K20 | AND T#16  =>  MOV K21 D#11
 D24  LD= D#11 K21 | ANI X1600 | ANI X1601  =>  OUT T#39 K5
 D25  LD= D#11 K21 | AND T#39  =>  MOV K30 D#11                              ; 0.5초 동안 멈춰 있음 = 도착
 D14  LD= D#11 K30 | AND X1604  =>  MOV K31 D#11                             ; 포크 랙 쪽(오른쪽) 끝
-D15  LD= D#11 K31  =>  OUT T#17 K15                                         ; 내려놓음 1.5초
-D16  LD= D#11 K31 | AND T#17  =>  MOV K32 D#11
+D15  LD= D#11 K31  =>  OUT T#17 K50                                         ; 내려놓음 5초 + 승강 끝(D16, D08과 같은 이유)
+D16  LD= D#11 K31 | AND T#17 | ANI X1601  =>  MOV K32 D#11
 D17  LD= D#11 K32 | AND X1603  =>  MOV D#01 D#130Z2 | RST M#02 | MOV K40 D#11    ; 입고 시각 = 숙성 시작
 D18  LD= D#11 K40  =>  MOV K55 D1601 | OUT T#18 K30                           ; 대기 위치 55(입고점)
 D19  LD= D#11 K40 | LD X1600 | OR X1601 | ANB  =>  MOV K41 D#11
@@ -678,8 +680,8 @@ E23  LD= D#12 K10 | AND T#19  =>  MOV K11 D#12
 E24  LD= D#12 K11 | ANI X1608 | ANI X1609  =>  OUT T#41 K5
 E25  LD= D#12 K11 | AND T#41  =>  MOV K20 D#12
 E09  LD= D#12 K20 | AND X160A  =>  MOV K21 D#12                             ; 포크 랙 쪽(왼쪽) 끝
-E10  LD= D#12 K21  =>  OUT T#20 K15
-E11  LD= D#12 K21 | AND T#20  =>  MOV K22 D#12
+E10  LD= D#12 K21  =>  OUT T#20 K50                                         ; 들어 올림 5초 + 승강 끝(E11, D08과 같은 이유)
+E11  LD= D#12 K21 | AND T#20 | ANI X1609  =>  MOV K22 D#12
 E12  LD= D#12 K22 | AND X160B  =>  MOV K0 D#100Z3 | MOV K0 D#130Z3 | MOV K0 D1610Z3 | MOV K30 D#12   ; 칸 비움 (온도는 남겨 LOCK)
 E13  LD= D#12 K30  =>  MOV K55 D1602 | OUT T#21 K30
 E14  LD= D#12 K30 | LD X1608 | OR X1609 | ANB  =>  MOV K31 D#12
@@ -687,8 +689,8 @@ E26  LD= D#12 K30 | AND T#21  =>  MOV K31 D#12
 E27  LD= D#12 K31 | ANI X1608 | ANI X1609 | AND X1610 | ANI M#40  =>  OUT T#42 K5   ; 대기 위치에 멈춤 · 출고점 비어 있음(반사형 ON = 비어 있음)
 E28  LD= D#12 K31 | AND T#42  =>  MOV K41 D#12
 E16  LD= D#12 K41 | AND X160C  =>  MOV K42 D#12                             ; 포크 출고점 쪽(오른쪽) 끝
-E17  LD= D#12 K42  =>  OUT T#22 K15
-E18  LD= D#12 K42 | AND T#22  =>  MOV K43 D#12
+E17  LD= D#12 K42  =>  OUT T#22 K50                                         ; 내려놓음 5초 + 승강 끝(E18)
+E18  LD= D#12 K42 | AND T#22 | ANI X1609  =>  MOV K43 D#12
 E19  LD= D#12 K43 | AND X160B  =>  MOV D#35 D#37 | MOV D#36 D#38 | SET M#40 | MOV K0 D#12
 E08  LD>= D#12 K20 | AND<= D#12 K21  =>  OUT Y1608                           ; 포크 왼쪽(랙): 들어 올리는 동안 유지
 E15  LD>= D#12 K41 | AND<= D#12 K42  =>  OUT Y1609                           ; 포크 오른쪽(출고점): 내려놓는 동안 유지

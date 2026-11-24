@@ -18,7 +18,7 @@
 15 입고·RFID①,D1515,W,FIO→PLC,RFID Reader ①,Read Data,읽은 데이터,기존
 15 입고·RFID①,X1511,B,FIO→PLC,Diffuse Sensor (높이),Detect,박스 높이 센서: Large box만 가림 → PLC가 D1519 = 2(Large) / 1(Small),신규(안)
 15 입고·RFID①,D1519,W,PLC 내부,(Vision Sensor 대신),–,박스 크기. Factory I/O 비전 센서는 박스를 못 알아봄(설명서) → X1511로 PLC가 계산 (A26),기존(뜻 변경 안)
-15 입고·RFID①,Y1504,B,PLC→FIO,Roller Conveyor,Run,입고 컨베이어 2 (→ 크레인 A 입고점),신규(안)
+15 입고·RFID①,D1506,W,PLC→FIO,Roller Conveyor (Analog),D1506,"입고 진입 롤러 속도 0.01 V 단위(1000 = 10 V, 감속 150 = 로딩 컨베이어와 같게). 11-24 Y1504(켜짐/꺼짐)에서 바꿈. OPC는 INT",신규(안) D24
 15 입고·RFID①,X1512,B,FIO→PLC,Diffuse Sensor,Detect,크레인 A 입고점 도착,신규(안)
 16 AS/RS,D1601,W,PLC→FIO,Stacker Crane A,Target Position,목표 칸 1~54 (0 = 정지 · 55 = 대기 위치) ← D1600 랙 번호를 변환표로,신규(안)
 16 AS/RS,Y1600,B,PLC→FIO,Stacker Crane A,Forks Left,포크 왼쪽,신규(안)
