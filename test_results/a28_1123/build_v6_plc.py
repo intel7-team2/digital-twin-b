@@ -94,10 +94,10 @@ def emit_ctrl(o):   # Emitter Controller 모드: D1508 박스(1 Small · 4 Large
 O.append(place("Emitter", 334, 6, 184, "W", src="Automated Warehouse", extra=emit_ctrl))
 roller(2, 330, 184, "W", "Y1501")
 roller(2, 314, 184, "W", "Y1501")
-rstop(318, 184, "W", "Y1502")
+rstop(318, 184, "W", "Y1502", 3)   # 11-25: Y2는 팔레트를 못 막음(②③과 같음) → Y3, 리더 ① · 높이 센서도 새 정지 위치에 맞춤
 retro(322, 184, "X", "X1510")
-O.append(place("RetroreflectivePhotoelectricSensor", 321, 8, 189, "E", names={"Sensor": "X1511"}, extra=FPR)); O.append(place("RetroreflectiveMirror", 321, 8, 179, "E", extra=FP))   # 높이 센서: 가림 = Large. 11-23 실측: Large는 X320~322에서 Y8 가림, Medium은 Y7까지 → 가운데 X321
-rfid(319, 189, "N", 1510)          # 막대 +1 · 라인 +Z 5칸 · Y4 · 라인 쪽(11-23 실측). 다른 씬 자세(−Z 4칸 Y5)는 이 씬(−X 흐름)에서 태그를 못 봄(11-23)
+O.append(place("RetroreflectivePhotoelectricSensor", 322, 8, 189, "E", names={"Sensor": "X1511"}, extra=FPR)); O.append(place("RetroreflectiveMirror", 322, 8, 179, "E", extra=FP))   # 높이 센서: 가림 = Large. 11-23 실측: Large는 X320~322에서 Y8 가림, Medium은 Y7까지 → 가운데 X321
+rfid(321, 189, "N", 1510)          # 막대 +1 · 라인 +Z 5칸 · Y4 · 라인 쪽(11-23 실측). 다른 씬 자세(−Z 4칸 Y5)는 이 씬(−X 흐름)에서 태그를 못 봄(11-23)
 # ---- 출고 → CT1(1차 분리) ----
 roller(2, 234, 184, "W", "Y1611")
 retro(229, 184, "X", "X1660")

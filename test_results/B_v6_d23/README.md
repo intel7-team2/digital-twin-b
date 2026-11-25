@@ -8,8 +8,8 @@ C 인계(투입)와 Python 검사 엔진(`serve`) 응답은 이 스크립트가 
 
 ```bash
 cd /d/seojung/digital-twin-b/test_results/a28_1123
-python build_v6_plc.py ../../factoryio_test/V6_plc_18.factoryio     # 씬을 바꿨을 때만 (최종 씬: V6_plc_18, 11-25)
-bash open_scene.sh V6_plc_18.factoryio                               # Factory I/O를 새로 띄워 씬 열기 (매 시험 전 새로)
+python build_v6_plc.py ../../factoryio_test/V6_plc_19_base.factoryio && python add_factory_look.py ../../factoryio_test/V6_plc_19_base.factoryio ../../factoryio_test/V6_plc_19.factoryio     # 씬을 바꿨을 때만 (최종 씬: V6_plc_19, 11-25)
+bash open_scene.sh V6_plc_19.factoryio                               # Factory I/O를 새로 띄워 씬 열기 (매 시험 전 새로)
 ```
 
 - Factory I/O 창은 **최대화해서 맨 앞**에 두세요(자동 화면 저장은 Factory IO 창 영역만 찍습니다).
@@ -19,7 +19,7 @@ bash open_scene.sh V6_plc_18.factoryio                               # Factory I
 
 ```bash
 cd /d/seojung/digital-twin-b/test_results/B_v6_d23
-PYTHONIOENCODING=utf-8 python softplc.py "D:/seojung/digital-twin-b/factoryio_test/V6_plc_18.factoryio" 1,2L,3,H,1L,2 720
+PYTHONIOENCODING=utf-8 python softplc.py "D:/seojung/digital-twin-b/factoryio_test/V6_plc_19.factoryio" 1,2L,3,H,1L,2 720
 ```
 
 - 둘째 인자 = 팩 계획(쉼표로): `1` GOOD · `2` 재검사 → GOOD · `3` 메인 NG → 재검사 라인 → NG OUT · `H` 랙에 들어간 뒤 발열 접수 → 격리. 뒤에 `L`을 붙이면 6S(Large 박스), 없으면 4S(Medium 박스).
@@ -40,7 +40,7 @@ PYTHONIOENCODING=utf-8 python softplc.py "D:/seojung/digital-twin-b/factoryio_te
 자동 화면 저장 예 (내일 시험용):
 
 ```bash
-SHOTS=D:/seojung/fio_shots/run1 SHOT_EVERY=2 PYTHONIOENCODING=utf-8 python softplc.py "D:/seojung/digital-twin-b/factoryio_test/V6_plc_18.factoryio" 1,2L,3,H,1L,2 720
+SHOTS=D:/seojung/fio_shots/run1 SHOT_EVERY=2 PYTHONIOENCODING=utf-8 python softplc.py "D:/seojung/digital-twin-b/factoryio_test/V6_plc_19.factoryio" 1,2L,3,H,1L,2 720
 ```
 
 - 저장 폴더는 **저장소 밖**(`D:/seojung/fio_shots/…`)에 두세요(사진이 많아 커밋 대상이 아님). 6팩 약 150장 · 회차당 수십 MB.
@@ -66,8 +66,8 @@ SHOTS=D:/seojung/fio_shots/run1 SHOT_EVERY=2 PYTHONIOENCODING=utf-8 python softp
 2. GX Works2에서 `B_v6_d23.gxw` → [디버그] 시뮬레이션 시작. **래더를 바꿨으면**: 시뮬레이터 창 STOP → [온라인] PLC 쓰기(파라미터 + 프로그램, 모두 예) → RESET → RUN.
    다른 이름의 프로젝트로 시뮬레이션을 시작하면 시뮬레이터가 하나 더(B) 떠 MX OPC(1번 = A)와 어긋남 → 시뮬레이터 · `SimManager`를 끄고 다시 시작
 3. `py -3.12 opc_reset.py ../MXOPC_B_v6_d24f.mdb` (이전 회차 M · D를 0으로, 크레인 변환표 상수는 남김)
-4. Factory I/O에 **Modbus 씬** `factoryio_test/V6_plc_18.factoryio`를 엶(`a28_1123/open_scene.sh V6_plc_18.factoryio`)
-5. `py -3.12 opc_outside.py 1,2L,3,H,1L,2 1200 --bridge "D:/seojung/digital-twin-b/factoryio_test/V6_plc_18.factoryio" > 로그` — Factory I/O(Modbus) ↔ PLC(OPC) 중계 + C 인계 · 검사 응답 · 발열 접수 대행. 운전 비트 `M1950`을 직접 SET
+4. Factory I/O에 **Modbus 씬** `factoryio_test/V6_plc_19.factoryio`를 엶(`a28_1123/open_scene.sh V6_plc_19.factoryio`)
+5. `py -3.12 opc_outside.py 1,2L,3,H,1L,2 1200 --bridge "D:/seojung/digital-twin-b/factoryio_test/V6_plc_19.factoryio" > 로그` — Factory I/O(Modbus) ↔ PLC(OPC) 중계 + C 인계 · 검사 응답 · 발열 접수 대행. 운전 비트 `M1950`을 직접 SET
 6. 기록: `py -3.12 opc_shots.py img <폴더> <초> [간격]`(화면) · `py -3.12 opc_shots.py sig <폴더> <초>`(크레인 · 출고 신호 `signals.csv`)
 
 - **지연(측정)**: MX OPC 쓰기 한 번 약 0.6 s, 왕복 0.8 ~ 1.3 s. OPC Client 씬(`V6_plc_17_opc`) 직결은 수 초라 위치 맞춤이 안 돼 중계 방식만 씀.
