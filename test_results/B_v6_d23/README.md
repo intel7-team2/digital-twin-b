@@ -73,6 +73,8 @@ SHOTS=D:/seojung/fio_shots/run1 SHOT_EVERY=2 PYTHONIOENCODING=utf-8 python softp
 - **지연(측정)**: MX OPC 쓰기 한 번 약 0.6 s, 왕복 0.8 ~ 1.3 s. OPC Client 씬(`V6_plc_17_opc`) 직결은 수 초라 위치 맞춤이 안 돼 중계 방식만 씀.
 - 11-24 결과: 투입 ~ 크레인 A · B 6팩 정상. **CT1 다음 메인 라인 1에서 팔레트가 돌아 메인 판독 실패(미해결, 소프트 PLC는 정상)**.
 - **11-25 결과: `V6_plc_18` + 래더 386회로로 실제 PLC 경로 6팩 2회 모두 GOOD 4 · NG 1 · 격리 1, 알람 0**(논의 문서 15-12). `opc_outside.py`는 여러 값을 한 번에 씀.
+- **11-25 최종: `V6_plc_19` + 래더 387회로 6팩 1회 GOOD 4 · NG 1 · 격리 1, 알람 0(약 13분).** 남은 한계는 논의 문서 15-12.
+- 비상정지 · 정지 시험: `opc_outside.py … --estop "X1500@D1640=11|X1502@D1750=12"`(실제 PLC) · `ESTOP="…" python softplc.py …`(소프트 PLC). 번지가 그 값이 되면 버튼을 6초 누르고 떼었다가 시작 버튼을 누름.
 - 시험 중에는 `bash watch_run.sh <로그> 45`: 끝 · 알람 · 라이선스 오류 · 정체(로그가 45초 안 늘어남)면 바로 돌아옴. Factory I/O가 `(Unlicensed)`가 되면 라이선스 서버 응답 초과이니 다시 실행.
 - 느린 재생 시험: `py make_timescale.py 2`(타이머 2배 사본 → `x2/` CSV) + Factory I/O 콘솔(`\`) `scene.time_scale = 0.5` + 툴바 Time Scale. 사본은 시험용이라 커밋하지 않음.
 - 중지할 때는 `opc_outside.py` · `opc_shots.py` 프로세스가 남지 않게 확인(두 개가 같이 돌면 C 인계가 섞임).
