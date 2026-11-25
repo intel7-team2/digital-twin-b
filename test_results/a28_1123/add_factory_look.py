@@ -14,12 +14,12 @@ for x in (299, 282, 265, 248): A("SafeguardL", x, 10, 91, "E")
 for x in (282, 265, 248): A("SafeguardL", x, 10, 211, "W")
 A("LightCurtainEmitter", 293, 9, 211, "N"); A("LightCurtainReceiver", 303, 9, 211, "N")
 # ---- 2. 메인 검사 · 재검사 구역 펜스 ----
-for x in (206, 189):
-    A("SafeguardL", x, 10, 171, "W"); A("SafeguardL", x, 10, 147, "E")
-for x in (156, 173): A("SafeguardL", x, 10, 122, "E")
-A("SafeguardL", 182, 10, 131, "N")
+for x in (202, 185):
+    A("SafeguardL", x, 10, 166, "W"); A("SafeguardL", x, 10, 140, "E")
+for x in (145, 162): A("SafeguardL", x, 10, 107, "E")
+A("SafeguardL", 171, 10, 116, "N")
 # ---- 3. 발열 격리 구역(위험 구역) ----
-A("SafeguardL", 231, 10, 200, "N"); A("SafeguardL", 213, 10, 200, "S"); A("SafeguardL", 222, 10, 209, "W")
+A("SafeguardL", 229, 10, 204, "N"); A("SafeguardL", 209, 10, 204, "S"); A("SafeguardL", 219, 10, 213, "W")
 # ---- 4. 전체 둘레 낮은 펜스 (출입구 2곳: 남쪽 x=186(통로 계단 앞), 동쪽 z=143) ----
 for k in range(16):
     x = 84 + 17 * k
@@ -41,9 +41,9 @@ A("Stairs", 185, 10, 207, "N")
 for x in (181, 188): A("StairsHandrail", x, 11, 214, "N")
 A("CornerHandrail", 184, 16, 201, "W")
 # ---- 6. 구역별 제어반 + 표시기 + 경광등 기둥 ----
-for x, z in ((196, 176), (160, 117), (206, 203), (314, 205)):
+for x, z in ((194, 178), (150, 101), (202, 206), (314, 205)):
     A("Column", x, 8, z, "S"); A("ElectricSwitchboard", x + 1, 12, z, "S"); A("DigitalDisplay", x + 3, 12, z, "S")
-for x, z in ((235, 212), (311, 214), (184, 175), (185, 121)):
+for x, z in ((235, 212), (311, 214), (184, 175), (176, 122)):
     A("Column", x, 8, z, "S"); A("WarningLight", x, 17, z, "S")
 # ---- 7. 둘레 설비 · 예비 랙 ----
 for z in (110, 137, 164): A("Rack", 400, 25, z, "S")

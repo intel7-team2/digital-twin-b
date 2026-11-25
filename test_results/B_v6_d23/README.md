@@ -8,8 +8,8 @@ C 인계(투입)와 Python 검사 엔진(`serve`) 응답은 이 스크립트가 
 
 ```bash
 cd /d/seojung/digital-twin-b/test_results/a28_1123
-python build_v6_plc.py ../../factoryio_test/V6_plc_19_base.factoryio && python add_factory_look.py ../../factoryio_test/V6_plc_19_base.factoryio ../../factoryio_test/V6_plc_19.factoryio     # 씬을 바꿨을 때만 (최종 씬: V6_plc_19, 11-25)
-bash open_scene.sh V6_plc_19.factoryio                               # Factory I/O를 새로 띄워 씬 열기 (매 시험 전 새로)
+python build_v6_turntable.py ../../factoryio_test/V6_plc_19_base.factoryio ../../factoryio_test/V6_plc_21_base.factoryio && python add_factory_look.py ../../factoryio_test/V6_plc_21_base.factoryio ../../factoryio_test/V6_plc_21.factoryio     # 씬을 바꿨을 때만 (최종 씬: V6_plc_21, 11-25)
+bash open_scene.sh V6_plc_21.factoryio                               # Factory I/O를 새로 띄워 씬 열기 (매 시험 전 새로)
 ```
 
 - Factory I/O 창은 **최대화해서 맨 앞**에 두세요(자동 화면 저장은 Factory IO 창 영역만 찍습니다).
@@ -19,7 +19,7 @@ bash open_scene.sh V6_plc_19.factoryio                               # Factory I
 
 ```bash
 cd /d/seojung/digital-twin-b/test_results/B_v6_d23
-PYTHONIOENCODING=utf-8 python softplc.py "D:/seojung/digital-twin-b/factoryio_test/V6_plc_19.factoryio" 1,2L,3,H,1L,2 720
+PYTHONIOENCODING=utf-8 python softplc.py "D:/seojung/digital-twin-b/factoryio_test/V6_plc_21.factoryio" 1,2L,3,H,1L,2 720
 ```
 
 - 둘째 인자 = 팩 계획(쉼표로): `1` GOOD · `2` 재검사 → GOOD · `3` 메인 NG → 재검사 라인 → NG OUT · `H` 랙에 들어간 뒤 발열 접수 → 격리. 뒤에 `L`을 붙이면 6S(Large 박스), 없으면 4S(Medium 박스).
@@ -40,7 +40,7 @@ PYTHONIOENCODING=utf-8 python softplc.py "D:/seojung/digital-twin-b/factoryio_te
 자동 화면 저장 예 (내일 시험용):
 
 ```bash
-SHOTS=D:/seojung/fio_shots/run1 SHOT_EVERY=2 PYTHONIOENCODING=utf-8 python softplc.py "D:/seojung/digital-twin-b/factoryio_test/V6_plc_19.factoryio" 1,2L,3,H,1L,2 720
+SHOTS=D:/seojung/fio_shots/run1 SHOT_EVERY=2 PYTHONIOENCODING=utf-8 python softplc.py "D:/seojung/digital-twin-b/factoryio_test/V6_plc_21.factoryio" 1,2L,3,H,1L,2 720
 ```
 
 - 저장 폴더는 **저장소 밖**(`D:/seojung/fio_shots/…`)에 두세요(사진이 많아 커밋 대상이 아님). 6팩 약 150장 · 회차당 수십 MB.
@@ -61,19 +61,20 @@ SHOTS=D:/seojung/fio_shots/run1 SHOT_EVERY=2 PYTHONIOENCODING=utf-8 python softp
 
 ## 실제 PLC 시험 (GX Simulator2 + MX OPC + Factory I/O, 11-24 · 논의 문서 15-10 · 15-11)
 
-1. MX OPC 실행 프로젝트를 `test_results/MXOPC_B_v6_d24f.mdb`(태그 360, `D1506` INT 포함)로: 관리자 명령 프롬프트에서
-   `reg add "HKLM\SOFTWARE\Mitsubishi\MXOPCServer\Configuration" /v FileName /t REG_SZ /d "D:\seojung\digital-twin-b\test_results\MXOPC_B_v6_d24f.mdb" /f /reg:32` 후 `net stop "MXOPC and MXOPC"` · `net start "MXOPC and MXOPC"`
+1. MX OPC 실행 프로젝트를 `test_results/MXOPC_B_v6_d25.mdb`(태그 377)로: 관리자 명령 프롬프트에서
+   `reg add "HKLM\SOFTWARE\Mitsubishi\MXOPCServer\Configuration" /v FileName /t REG_SZ /d "D:\seojung\digital-twin-b\test_results\MXOPC_B_v6_d25.mdb" /f /reg:32` 후 `net stop "MXOPC and MXOPC"` · `net start "MXOPC and MXOPC"`
 2. GX Works2에서 `B_v6_d23.gxw` → [디버그] 시뮬레이션 시작. **래더를 바꿨으면**: 시뮬레이터 창 STOP → [온라인] PLC 쓰기(파라미터 + 프로그램, 모두 예) → RESET → RUN.
    다른 이름의 프로젝트로 시뮬레이션을 시작하면 시뮬레이터가 하나 더(B) 떠 MX OPC(1번 = A)와 어긋남 → 시뮬레이터 · `SimManager`를 끄고 다시 시작
-3. `py -3.12 opc_reset.py ../MXOPC_B_v6_d24f.mdb` (이전 회차 M · D를 0으로, 크레인 변환표 상수는 남김)
-4. Factory I/O에 **Modbus 씬** `factoryio_test/V6_plc_19.factoryio`를 엶(`a28_1123/open_scene.sh V6_plc_19.factoryio`)
-5. `py -3.12 opc_outside.py 1,2L,3,H,1L,2 1200 --bridge "D:/seojung/digital-twin-b/factoryio_test/V6_plc_19.factoryio" > 로그` — Factory I/O(Modbus) ↔ PLC(OPC) 중계 + C 인계 · 검사 응답 · 발열 접수 대행. 운전 비트 `M1950`을 직접 SET
+3. `py -3.12 opc_reset.py ../MXOPC_B_v6_d25.mdb` (이전 회차 M · D를 0으로, 크레인 변환표 상수는 남김)
+4. Factory I/O에 **Modbus 씬** `factoryio_test/V6_plc_21.factoryio`를 엶(`a28_1123/open_scene.sh V6_plc_21.factoryio`)
+5. `py -3.12 opc_outside.py 1,2L,3,H,1L,2 1200 --bridge "D:/seojung/digital-twin-b/factoryio_test/V6_plc_21.factoryio" > 로그` — Factory I/O(Modbus) ↔ PLC(OPC) 중계 + C 인계 · 검사 응답 · 발열 접수 대행. 운전 비트 `M1950`을 직접 SET
 6. 기록: `py -3.12 opc_shots.py img <폴더> <초> [간격]`(화면) · `py -3.12 opc_shots.py sig <폴더> <초>`(크레인 · 출고 신호 `signals.csv`)
 
 - **지연(측정)**: MX OPC 쓰기 한 번 약 0.6 s, 왕복 0.8 ~ 1.3 s. OPC Client 씬(`V6_plc_17_opc`) 직결은 수 초라 위치 맞춤이 안 돼 중계 방식만 씀.
 - 11-24 결과: 투입 ~ 크레인 A · B 6팩 정상. **CT1 다음 메인 라인 1에서 팔레트가 돌아 메인 판독 실패(미해결, 소프트 PLC는 정상)**.
 - **11-25 결과: `V6_plc_18` + 래더 386회로로 실제 PLC 경로 6팩 2회 모두 GOOD 4 · NG 1 · 격리 1, 알람 0**(논의 문서 15-12). `opc_outside.py`는 여러 값을 한 번에 씀.
 - **11-25 최종: `V6_plc_19` + 래더 387회로 6팩 1회 GOOD 4 · NG 1 · 격리 1, 알람 0(약 13분).** 남은 한계는 논의 문서 15-12.
+- **11-25 턴테이블: `V6_plc_21` + 래더 405회로 6팩 1회 GOOD 4 · NG 1 · 격리 1, 알람 0(13분 30초).** 논의 문서 15-13.
 - 비상정지 · 정지 시험: `opc_outside.py … --estop "X1500@D1640=11|X1502@D1750=12"`(실제 PLC) · `ESTOP="…" python softplc.py …`(소프트 PLC). 번지가 그 값이 되면 버튼을 6초 누르고 떼었다가 시작 버튼을 누름.
 - 시험 중에는 `bash watch_run.sh <로그> 45`: 끝 · 알람 · 라이선스 오류 · 정체(로그가 45초 안 늘어남)면 바로 돌아옴. Factory I/O가 `(Unlicensed)`가 되면 라이선스 서버 응답 초과이니 다시 실행.
 - 느린 재생 시험: `py make_timescale.py 2`(타이머 2배 사본 → `x2/` CSV) + Factory I/O 콘솔(`\`) `scene.time_scale = 0.5` + 툴바 Time Scale. 사본은 시험용이라 커밋하지 않음.

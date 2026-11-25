@@ -87,30 +87,41 @@
 19 게이트·HMI,D1904,W,PLC→FIO,Digital Display,Value,수율(0.1 %) 표시,기존
 15 입고·RFID①,X1513,B,FIO→PLC,Retroreflective Sensor,X1513,입고 로딩 컨베이어 입구 (반사형: 가리면 OFF),신규(안) D23
 15 입고·RFID①,D1505,W,PLC→FIO,Loading Conveyor (Analog),D1505,"입고 로딩 컨베이어 속도 0.01 V 단위(400 = 4 V, 음수 = 역회전 제동). OPC는 배율 0.01 필요",신규(안) D23
-16 AS/RS,X1662,B,FIO→PLC,Chain Transfer · Capacitive Sensor,X1662,CT1 도착 (정전용량: ON = 있음),신규(안) D23
-16 AS/RS,Y1662,B,PLC→FIO,Chain Transfer,Y1662,CT1 롤러(load),신규(안) D23
-16 AS/RS,Y1663,B,PLC→FIO,Chain Transfer,Y1663,CT1 체인 왼쪽 = 메인,신규(안) D23
-16 AS/RS,Y1664,B,PLC→FIO,Chain Transfer,Y1664,CT1 체인 오른쪽 = 발열 격리,신규(안) D23
-17 검사·분류,X1723,B,FIO→PLC,Chain Transfer · Capacitive Sensor,X1723,CT2 도착,신규(안) D23
-17 검사·분류,Y1722,B,PLC→FIO,Chain Transfer,Y1722,CT2 롤러(load),신규(안) D23
-17 검사·분류,Y1723,B,PLC→FIO,Chain Transfer,Y1723,CT2 체인 왼쪽 = GOOD,신규(안) D23
-17 검사·분류,Y1724,B,PLC→FIO,Chain Transfer,Y1724,CT2 체인 오른쪽 = 재검사 (옛 M1720),신규(안) D23
+16 AS/RS,X1662,B,FIO→PLC,Turntable,X1662,TT1 앞 센서,신규(안) 11-25
+16 AS/RS,Y1662,B,PLC→FIO,Turntable,Y1662,TT1 롤(+) 메인,신규(안) 11-25
+16 AS/RS,Y1663,B,PLC→FIO,Turntable,Y1663,TT1 롤(−) 격리,신규(안) 11-25
+16 AS/RS,Y1664,B,PLC→FIO,Turntable,Y1664,TT1 회전,신규(안) 11-25
+17 검사·분류,X1723,B,FIO→PLC,Turntable,X1723,TT2 앞 센서,신규(안) 11-25
+17 검사·분류,Y1722,B,PLC→FIO,Turntable,Y1722,TT2 롤(+) 재검사,신규(안) 11-25
+17 검사·분류,Y1723,B,PLC→FIO,Turntable,Y1723,TT2 롤(−) GOOD,신규(안) 11-25
+17 검사·분류,Y1724,B,PLC→FIO,Turntable,Y1724,TT2 회전,신규(안) 11-25
 17 검사·분류,Y1703,B,PLC→FIO,Roller Conveyor ×2 · Curved Roller,Y1703,"메인 GOOD 구간(CT2 ~ CT5), 합류 받는 동안 멈춤",신규(안) D23
-17 검사·분류,X1733,B,FIO→PLC,Chain Transfer · Capacitive Sensor,X1733,CT3 도착,신규(안) D23
-17 검사·분류,Y1733,B,PLC→FIO,Chain Transfer,Y1733,CT3 롤러(load),신규(안) D23
-17 검사·분류,Y1734,B,PLC→FIO,Chain Transfer,Y1734,CT3 체인 왼쪽 = GOOD → CT4 (옛 M1731),신규(안) D23
-17 검사·분류,Y1735,B,PLC→FIO,Chain Transfer,Y1735,CT3 체인 오른쪽 = NG (옛 M1732),신규(안) D23
-17 검사·분류,X1736,B,FIO→PLC,Chain Transfer · Capacitive Sensor,X1736,CT4 합류 대기 도착,신규(안) D23
-17 검사·분류,Y1736,B,PLC→FIO,Chain Transfer,Y1736,CT4 체인 왼쪽 (받기 · 보내기),신규(안) D23
-19 게이트,X1904,B,FIO→PLC,Chain Transfer · Capacitive Sensor,X1904,CT5 합류 도착,신규(안) D23
-19 게이트,Y1904,B,PLC→FIO,Chain Transfer,Y1904,CT5 롤러(load),신규(안) D23
-19 게이트,Y1905,B,PLC→FIO,Chain Transfer,Y1905,CT5 체인 오른쪽 = GOOD OUT 방향(평소 ON),신규(안) D23
-16 AS/RS,X1665,B,FIO→PLC,Chain Transfer · Capacitive Sensor,X1665,코너 CTM 도착,신규(안) D23
-16 AS/RS,Y1665,B,PLC→FIO,Chain Transfer,Y1665,코너 CTM 롤러(load),신규(안) D23
-16 AS/RS,Y1666,B,PLC→FIO,Chain Transfer,Y1666,코너 CTM 체인 −X,신규(안) D23
-17 검사·분류,X1706,B,FIO→PLC,Chain Transfer · Capacitive Sensor,X1706,코너 CTG 도착,신규(안) D23
-17 검사·분류,Y1706,B,PLC→FIO,Chain Transfer,Y1706,코너 CTG 롤러(load),신규(안) D23
-17 검사·분류,Y1707,B,PLC→FIO,Chain Transfer,Y1707,코너 CTG 체인 −X,신규(안) D23
-18 재검사,X1806,B,FIO→PLC,Chain Transfer · Capacitive Sensor,X1806,코너 CTR 도착,신규(안) D23
-18 재검사,Y1806,B,PLC→FIO,Chain Transfer,Y1806,코너 CTR 롤러(load),신규(안) D23
-18 재검사,Y1807,B,PLC→FIO,Chain Transfer,Y1807,코너 CTR 체인 −X,신규(안) D23
+17 검사·분류,X1733,B,FIO→PLC,Turntable,X1733,TT3 앞 센서,신규(안) 11-25
+17 검사·분류,Y1733,B,PLC→FIO,Turntable,Y1733,TT3 롤(+) NG,신규(안) 11-25
+17 검사·분류,Y1734,B,PLC→FIO,Turntable,Y1734,TT3 롤(−) GOOD,신규(안) 11-25
+17 검사·분류,Y1735,B,PLC→FIO,Turntable,Y1735,TT3 회전,신규(안) 11-25
+17 검사·분류,X1736,B,FIO→PLC,Diffuse Sensor,X1736,합류 대기 레일(확산 반사: ON이 있음),신규(안) 11-25
+17 검사·분류,Y1736,B,PLC→FIO,Roller Conveyor,Y1736,합류 대기 레일,신규(안) 11-25
+19 게이트,X1904,B,FIO→PLC,Turntable,X1904,TT5 앞 센서,신규(안) 11-25
+19 게이트,Y1904,B,PLC→FIO,Turntable,Y1904,TT5 롤(+),신규(안) 11-25
+19 게이트,Y1905,B,PLC→FIO,Turntable,Y1905,TT5 회전,신규(안) 11-25
+16 AS/RS,X1665,B,FIO→PLC,Turntable,X1665,TTM 앞 센서,신규(안) 11-25
+16 AS/RS,Y1665,B,PLC→FIO,Turntable,Y1665,TTM 롤(+),신규(안) 11-25
+16 AS/RS,Y1666,B,PLC→FIO,Turntable,Y1666,TTM 회전,신규(안) 11-25
+16 AS/RS,X1663,B,FIO→PLC,Turntable,X1663,TT1 뒤 센서,신규(안) 11-25
+16 AS/RS,X1664,B,FIO→PLC,Turntable,X1664,TT1 0°,신규(안) 11-25
+16 AS/RS,X1668,B,FIO→PLC,Turntable,X1668,TT1 90°,신규(안) 11-25
+16 AS/RS,X1666,B,FIO→PLC,Retroreflective Sensor,X1666,TTM 입구 빔,신규(안) 11-25
+16 AS/RS,X1667,B,FIO→PLC,Turntable,X1667,TTM 0°,신규(안) 11-25
+16 AS/RS,X1669,B,FIO→PLC,Turntable,X1669,TTM 90°,신규(안) 11-25
+17 검사·분류,X1724,B,FIO→PLC,Turntable,X1724,TT2 뒤 센서,신규(안) 11-25
+17 검사·분류,X1725,B,FIO→PLC,Turntable,X1725,TT2 0°,신규(안) 11-25
+17 검사·분류,X1726,B,FIO→PLC,Turntable,X1726,TT2 90°,신규(안) 11-25
+17 검사·분류,X1734,B,FIO→PLC,Turntable,X1734,TT3 뒤 센서,신규(안) 11-25
+17 검사·분류,X1735,B,FIO→PLC,Turntable,X1735,TT3 0°,신규(안) 11-25
+17 검사·분류,X1737,B,FIO→PLC,Turntable,X1737,TT3 90°,신규(안) 11-25
+19 게이트,X1905,B,FIO→PLC,Turntable,X1905,TT5 뒤 센서,신규(안) 11-25
+19 게이트,X1906,B,FIO→PLC,Retroreflective Sensor,X1906,TT5 재검사 입구 빔,신규(안) 11-25
+19 게이트,X1907,B,FIO→PLC,Turntable,X1907,TT5 0°,신규(안) 11-25
+19 게이트,X1908,B,FIO→PLC,Turntable,X1908,TT5 90°,신규(안) 11-25
+19 게이트,Y1906,B,PLC→FIO,Turntable,Y1906,TT5 롤(−),신규(안) 11-25

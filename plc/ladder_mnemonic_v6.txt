@@ -221,24 +221,33 @@ E20  LD>= D1641 K21 | AND<= D1641 K41  =>  OUT Y160A                           ;
 ; ===== F. 1차 분리 =====
 ; @PROGRAM SORT1
 F00  LD M1950  =>  MC N0 M1549                         ; 운전 중일 때만 이 파일 실행(정지 시 OUT 끔)
-F01  LD= D1656 K0 | ANI X1660  =>  MOV K10 D1656                               ; CT1 앞에 팩(반사형 OFF = 가림)
-F02  LD= D1656 K10 | AND X1662  =>  MOV K20 D1656                              ; CT1 도착(정전용량, ON = 있음)
-F03  LD= D1656 K20  =>  OUT T1523 K30                                          ; 끝막이에 붙이기 1.2초 + 롤러가 선 뒤 쉬기 1.8초(실제 PLC 출력 지연 약 1초보다 길게)
-F04  LD= D1656 K20 | AND T1523 | AND= D1647 K0 | ANI M1753 | AND= D1549 K0  =>  MOV K30 D1656      ; 정상 → 왼쪽(메인). 메인 라인 1이 멈춰 있으면 CT1 위에서 대기
-F05  LD= D1656 K20 | AND T1523 | AND<> D1647 K0  =>  MOV D1646 D1648 | MOV D1647 D1649 | MOV K40 D1656   ; 발열 → 오른쪽(격리)
-F06  LD>= D1656 K30 | AND<= D1656 K40 | ANI X1662  =>  OUT T1524 K10
-F07  LD>= D1656 K30 | AND<= D1656 K40 | AND T1524  =>  MOV K0 D1656 | RST M1670    ; CT1 비움 → 출고 구간 비움(RST 한 곳)
-F08  LD>= D1656 K10 | AND<= D1656 K20 | AND< T1523 K12  =>  OUT Y1662           ; CT1 롤러(load): 도착 뒤 1.2초 더 돌려 끝막이에 붙임(서는 자리가 지연과 무관)
-F09  LD= D1656 K30  =>  OUT Y1663                                             ; CT1 체인 왼쪽
-F10  LD= D1656 K40  =>  OUT Y1664                                             ; CT1 체인 오른쪽
-; --- 코너 CTM (메인: −Z → −X, 팔레트 방향 유지) ---
-F11  LD= D1549 K0 | AND X1665  =>  MOV K20 D1549                               ; CTM 도착(정전용량)
-F12  LD= D1549 K20  =>  OUT T1546 K30
-F13  LD= D1549 K20 | AND T1546 | ANI M1753  =>  MOV K30 D1549                 ; 메인 라인 1이 멈춰 있으면(검사 중) 대기
-F14  LD= D1549 K30 | ANI X1665  =>  OUT T1547 K10
-F15  LD= D1549 K30 | AND T1547  =>  MOV K0 D1549
-F16  LD<= D1549 K20 | AND< T1546 K12  =>  OUT Y1665                                             ; CTM 롤러: 쉴 때 켜 두어 팩을 받음
-F17  LD= D1549 K30  =>  OUT Y1666                                            ; CTM 체인 → −X
+F01  LD= D1656 K0 | ANI X1660 | AND X1664  =>  MOV K10 D1656                    ; TT1 입구 빔 가림(0°일 때만)
+F02  LD= D1656 K10 | AND X1660  =>  OUT T1523 K5                            ; 입구 빔이 다시 트임 = 다 올라옴. 0.5초 더 굴려 가운데로
+F27  LD= D1656 K10 | AND T1523  =>  MOV K20 D1656
+F03  LD= D1656 K20  =>  OUT T1549 K15                                          ; 롤러가 선 뒤 쉬기(출력 지연 약 1초보다 길게). 앞뒤 4칸 여유라 자리가 조금 달라도 됨
+F04  LD= D1656 K20 | AND T1549 | AND= D1647 K0 | ANI M1753 | AND= D1549 K0  =>  MOV K30 D1656   ; 정상 → 메인. 메인 라인 1이 멈췄거나 TTM이 바쁘면 TT1 위에서 대기
+F05  LD= D1656 K20 | AND T1549 | AND<> D1647 K0  =>  MOV D1646 D1648 | MOV D1647 D1649 | MOV K40 D1656   ; 발열 → 격리
+F06  LD= D1656 K30 | AND X1668  =>  MOV K31 D1656                               ; 90° 도착
+F07  LD= D1656 K31 | AND X1662  =>  MOV K32 D1656                               ; 앞 센서 지나는 중
+F08  LD= D1656 K40 | AND X1668  =>  MOV K41 D1656
+F09  LD= D1656 K41 | AND X1663  =>  MOV K42 D1656                               ; 뒤 센서 지나는 중
+F10  LD= D1656 K32 | ANI X1662 | LD= D1656 K42 | ANI X1663 | ORB  =>  OUT T1524 K15    ; 센서를 지난 뒤 1.5초 더 굴려 완전히 내보냄
+F11  LD>= D1656 K32 | AND<= D1656 K42 | AND T1524  =>  MOV K50 D1656 | RST M1670    ; 비움 → 출고 구간 비움(RST 한 곳)
+F12  LD= D1656 K50 | AND X1664  =>  MOV K0 D1656                                ; 0° 복귀
+F13  LD<= D1656 K10 | ANI X1662 | LD>= D1656 K31 | AND<= D1656 K32 | ANI M1753 | ORB  =>  OUT Y1662   ; 롤(+): 쉴 때 · 받을 때 · 메인으로 내보낼 때
+F14  LD>= D1656 K41 | AND<= D1656 K42  =>  OUT Y1663                            ; 롤(−): 격리로 내보낼 때
+; --- 메인 코너 TTM (−Z로 90°에서 받아 0°로 돌려 −X로) ---
+F15  LD= D1549 K0 | ANI X1666 | AND X1669  =>  MOV K10 D1549
+F16  LD= D1549 K10 | AND X1666  =>  OUT T1546 K5                            ; 입구 빔이 다시 트임 = 다 올라옴. 0.5초 더 굴려 가운데로
+F28  LD= D1549 K10 | AND T1546  =>  MOV K20 D1549
+F17  LD= D1549 K20  =>  OUT T1550 K15                                          ; 롤러가 선 뒤 쉬기(출력 지연 약 1초보다 길게). 앞뒤 4칸 여유라 자리가 조금 달라도 됨
+F18  LD= D1549 K20 | AND T1550 | ANI M1753  =>  MOV K30 D1549                 ; 메인 라인 1이 멈춰 있으면(검사 중) 대기
+F19  LD= D1549 K30 | AND X1667  =>  MOV K31 D1549                           ; 0° 도착
+F20  LD= D1549 K31 | AND X1665  =>  MOV K32 D1549
+F21  LD= D1549 K32 | ANI X1665  =>  OUT T1547 K15
+F22  LD= D1549 K32 | AND T1547  =>  MOV K50 D1549
+F23  LD= D1549 K50 | AND X1669  =>  MOV K0 D1549                            ; 90° 복귀
+F24  LD<= D1549 K10 | ANI X1665 | LD>= D1549 K31 | AND<= D1549 K32 | ANI M1753 | ORB  =>  OUT Y1665   ; 롤(+)
 
 ; ===== G. 발열 격리 기록 핸드셰이크 (D1650~D1653) =====
 G01  LDF X1902 | AND= D1654 K0  =>  MOV D1648 D1651 | MOV D1649 D1652 | MOV K1 D1650 | MOV K10 D1654
@@ -248,6 +257,9 @@ G04  LD= D1654 K10 | AND T1525  =>  SET M1957                                   
 G05  LD= D1654 K10 | AND= D1653 K1  =>  MOV K0 D1650 | MOV K20 D1654
 G06  LD= D1654 K20 | AND= D1653 K0  =>  MOV K0 D1654
 G99  MCR N0
+; --- MC 밖: 정지 · 비상정지 중에도 각도 유지(꺼지면 팔레트를 얹은 채 돌아감) ---
+F25  LD>= D1656 K30 | AND<= D1656 K42  =>  OUT Y1664                            ; TT1 회전(90°)
+F26  LD<= D1549 K20 | OR= D1549 K50  =>  OUT Y1666                              ; TTM 회전(받는 각도 = 90°)
 
 ; ===== J. STEP 03 RFID ② · 메인 검사 (D1710~D1714 ↔ D1700~D1703) =====
 ; @PROGRAM INSPECT
@@ -304,32 +316,21 @@ J37  LD= D1750 K70 | AND T1528  =>  MOV K0 D1750
 J39  LD>= D1750 K10 | AND<= D1750 K65  =>  OUT M1753
 
 ; ===== K. M1720 분기 (Pusher, 번지 안 기준) =====
-K01  LD= D1657 K0 | ANI X1720  =>  MOV K10 D1657                               ; CT2 앞에 팩
-K02  LD= D1657 K10 | AND X1723  =>  MOV K20 D1657                              ; CT2 도착
-K03  LD= D1657 K20  =>  OUT T1543 K30
-K04  LD= D1657 K20 | AND T1543 | ANI M1754 | ANI M1762 | AND= D1550 K0  =>  MOV K30 D1657          ; GOOD → 왼쪽(합류 중이면 대기)
-K05  LD= D1657 K20 | AND T1543 | AND M1754 | ANI M1765 | AND= D1551 K0  =>  MOV K40 D1657          ; 재검사 대상 → 오른쪽(재검사 라인이 멈춰 있으면 대기)
-K06  LD>= D1657 K30 | AND<= D1657 K40 | ANI X1723  =>  OUT T1544 K10
-K07  LD>= D1657 K30 | AND<= D1657 K40 | AND T1544  =>  MOV K0 D1657 | RST M1750 | RST M1754   ; CT2 비움 → 메인 출구 · 분기 대상 해제(RST 한 곳)
-K08  LD>= D1657 K10 | AND<= D1657 K20 | AND< T1543 K12  =>  OUT Y1722                                             ; CT2 롤러(load)
-K09  LD= D1657 K30  =>  OUT Y1723                                             ; CT2 체인 왼쪽(GOOD)
-K10  LD= D1657 K40  =>  OUT Y1724                                             ; CT2 체인 오른쪽(재검사)
-; --- 코너 CTG (GOOD: −Z → −X) ---
-K11  LD= D1550 K0 | AND X1706  =>  MOV K20 D1550                               ; CTG 도착(정전용량)
-K12  LD= D1550 K20  =>  OUT T1548 K30
-K13  LD= D1550 K20 | AND T1548 | ANI M1762  =>  MOV K30 D1550                 ; 합류 받는 중이면 대기
-K14  LD= D1550 K30 | ANI X1706  =>  OUT T1549 K10
-K15  LD= D1550 K30 | AND T1549  =>  MOV K0 D1550
-K16  LD<= D1550 K20 | AND< T1548 K12  =>  OUT Y1706                                             ; CTG 롤러: 쉴 때 켜 두어 팩을 받음
-K17  LD= D1550 K30  =>  OUT Y1707                                            ; CTG 체인 → −X
-; --- 코너 CTR (재검사: +Z → −X) ---
-K18  LD= D1551 K0 | AND X1806  =>  MOV K20 D1551                               ; CTR 도착(정전용량)
-K19  LD= D1551 K20  =>  OUT T1550 K30
-K20  LD= D1551 K20 | AND T1550 | ANI M1765  =>  MOV K30 D1551                 ; 재검사 라인이 멈춰 있으면(재검사 중) 대기
-K21  LD= D1551 K30 | ANI X1806  =>  OUT T1551 K10
-K22  LD= D1551 K30 | AND T1551  =>  MOV K0 D1551
-K23  LD<= D1551 K20 | AND< T1550 K12  =>  OUT Y1806                                             ; CTR 롤러: 쉴 때 켜 두어 팩을 받음
-K24  LD= D1551 K30  =>  OUT Y1807                                            ; CTR 체인 → −X
+K01  LD= D1657 K0 | ANI X1720 | AND X1725  =>  MOV K10 D1657                    ; TT2 입구 빔 가림(0°일 때만)
+K02  LD= D1657 K10 | AND X1720  =>  OUT T1543 K5                            ; 입구 빔이 다시 트임 = 다 올라옴. 0.5초 더 굴려 가운데로
+K16  LD= D1657 K10 | AND T1543  =>  MOV K20 D1657
+K03  LD= D1657 K20  =>  OUT T1551 K15                                          ; 롤러가 선 뒤 쉬기(출력 지연 약 1초보다 길게). 앞뒤 4칸 여유라 자리가 조금 달라도 됨
+K04  LD= D1657 K20 | AND T1551 | ANI M1754 | ANI M1762  =>  MOV K30 D1657          ; GOOD(합류 중이면 대기)
+K05  LD= D1657 K20 | AND T1551 | AND M1754 | ANI M1765  =>  MOV K40 D1657          ; 재검사 대상(재검사 라인이 멈춰 있으면 대기)
+K06  LD= D1657 K30 | AND X1726  =>  MOV K31 D1657                               ; 90° 도착
+K07  LD= D1657 K31 | AND X1724  =>  MOV K32 D1657                               ; 뒤 센서 지나는 중
+K08  LD= D1657 K40 | AND X1726  =>  MOV K41 D1657
+K09  LD= D1657 K41 | AND X1723  =>  MOV K42 D1657                               ; 앞 센서 지나는 중
+K10  LD= D1657 K32 | ANI X1724 | LD= D1657 K42 | ANI X1723 | ORB  =>  OUT T1544 K15
+K11  LD>= D1657 K32 | AND<= D1657 K42 | AND T1544  =>  MOV K50 D1657 | RST M1750 | RST M1754   ; 비움 → 메인 출구 · 분기 대상 해제(RST 한 곳)
+K12  LD= D1657 K50 | AND X1725  =>  MOV K0 D1657                                ; 0° 복귀
+K13  LD<= D1657 K10 | ANI X1723 | LD>= D1657 K41 | AND<= D1657 K42 | ORB  =>  OUT Y1722   ; 롤(+): 쉴 때 · 받을 때 · 재검사로
+K14  LD>= D1657 K31 | AND<= D1657 K32  =>  OUT Y1723                            ; 롤(−): GOOD으로
 
 ; ===== L. 재검사 라인 D1800 · M1800 =====
 L01  LDF X1800  =>  INC D1800
@@ -337,6 +338,7 @@ L02  LDI X1800  =>  OUT T1529 K30                                            ; �
 L03  LD T1529  =>  OUT M1800
 L99  MCR N0
 ; --- MC 밖(11-25): 정지 · 비상정지 중에도 스텝에 맞춰 자리 유지 — 포크 · 리프트가 꺼지면 들던 팔레트가 떨어짐(비상정지 시험) ---
+K15  LD>= D1657 K30 | AND<= D1657 K42  =>  OUT Y1724                            ; TT2 회전(90°)
 J38  LD< D1750 K70  =>  OUT Y1701                                             ; 스토퍼(안)
 
 ; ===== N. 재검사기 RFID ③ (D1740~D1744 ↔ D1730~D1733) =====
@@ -395,33 +397,48 @@ N37  LD= D1760 K60 | AND T1532  =>  MOV K0 D1760
 N39  LD>= D1760 K10 | AND<= D1760 K55  =>  OUT M1765
 
 ; ===== P. 2차 분리 =====
-P01  LD= D1658 K0 | ANI X1731  =>  MOV K10 D1658                               ; CT3 앞에 팩
-P02  LD= D1658 K10 | AND X1733  =>  MOV K20 D1658                              ; CT3 도착
-P03  LD= D1658 K20  =>  OUT T1533 K30
-P04  LD= D1658 K20 | AND T1533 | AND M1764 | AND= D1659 K0  =>  MOV K30 D1658      ; GOOD → 왼쪽(CT4 대기 칸이 비어 있을 때)
-P05  LD= D1658 K20 | AND T1533 | ANI M1764  =>  MOV K40 D1658                     ; NG → 오른쪽
-P06  LD>= D1658 K30 | AND<= D1658 K40 | ANI X1733  =>  OUT T1534 K10
-P07  LD>= D1658 K30 | AND<= D1658 K40 | AND T1534  =>  MOV K0 D1658 | RST M1760     ; CT3 비움 → 재검사 출구 비움(RST 한 곳)
-P08  LD>= D1658 K10 | AND<= D1658 K20 | AND< T1533 K12  =>  OUT Y1733                                             ; CT3 롤러(load)
-P09  LD= D1658 K30  =>  OUT Y1734                                             ; CT3 체인 왼쪽(GOOD → CT4)
-P10  LD= D1658 K40  =>  OUT Y1735                                             ; CT3 체인 오른쪽(NG)
+P01  LD= D1658 K0 | ANI X1731 | AND X1735  =>  MOV K10 D1658                    ; TT3 입구 빔 가림(0°일 때만)
+P02  LD= D1658 K10 | AND X1731  =>  OUT T1533 K5                            ; 입구 빔이 다시 트임 = 다 올라옴. 0.5초 더 굴려 가운데로
+P16  LD= D1658 K10 | AND T1533  =>  MOV K20 D1658
+P03  LD= D1658 K20  =>  OUT T1554 K15                                          ; 롤러가 선 뒤 쉬기(출력 지연 약 1초보다 길게). 앞뒤 4칸 여유라 자리가 조금 달라도 됨
+P04  LD= D1658 K20 | AND T1554 | AND M1764 | AND= D1659 K0  =>  MOV K30 D1658      ; GOOD(합류 대기 레일이 비어 있을 때)
+P05  LD= D1658 K20 | AND T1554 | ANI M1764  =>  MOV K40 D1658                     ; NG
+P06  LD= D1658 K30 | AND X1737  =>  MOV K31 D1658                               ; 90° 도착
+P07  LD= D1658 K31 | AND X1734  =>  MOV K32 D1658                               ; 뒤 센서 지나는 중
+P08  LD= D1658 K40 | AND X1737  =>  MOV K41 D1658
+P09  LD= D1658 K41 | AND X1733  =>  MOV K42 D1658                               ; 앞 센서 지나는 중
+P10  LD= D1658 K32 | ANI X1734 | LD= D1658 K42 | ANI X1733 | ORB  =>  OUT T1534 K15
+P11  LD>= D1658 K32 | AND<= D1658 K42 | AND T1534  =>  MOV K50 D1658 | RST M1760    ; 비움 → 재검사 출구 비움(RST 한 곳)
+P12  LD= D1658 K50 | AND X1735  =>  MOV K0 D1658                                ; 0° 복귀
+P13  LD<= D1658 K10 | ANI X1733 | LD>= D1658 K41 | AND<= D1658 K42 | ORB  =>  OUT Y1733   ; 롤(+): 쉴 때 · 받을 때 · NG로
+P14  LD>= D1658 K31 | AND<= D1658 K32  =>  OUT Y1734                            ; 롤(−): GOOD으로
 
 ; ===== Q. X1903 합류 =====
-Q01  LD= D1659 K0 | AND= D1658 K30  =>  MOV K10 D1659                           ; 재검사 GOOD 팩이 CT4로 옴
-Q02  LD= D1659 K10 | AND X1736  =>  MOV K20 D1659                              ; CT4 도착 → 합류 대기
-Q03  LD X1903  =>  OUT T1535 K10                                              ; 합류 지점 앞(메인 GOOD)이 1초 동안 비어 있음
-Q04  LD= D1659 K20 | AND T1535 | AND= D1657 K0  =>  MOV K30 D1659                 ; 메인 GOOD이 오지 않음 → 합류 시작
-Q05  LD= D1659 K30 | AND X1904  =>  MOV K40 D1659                              ; CT5 도착
-Q06  LD= D1659 K40  =>  OUT T1536 K30
-Q07  LD= D1659 K40 | AND T1536  =>  MOV K50 D1659
-Q08  LD= D1659 K50 | ANI X1904  =>  OUT T1545 K10
-Q09  LD= D1659 K50 | AND T1545  =>  MOV K0 D1659
-Q10  LD>= D1659 K30 | AND<= D1659 K40  =>  OUT M1762                             ; 합류 중(메인 GOOD 컨베이어 · CT2 왼쪽 멈춤)
-Q11  LD= D1659 K10 | OR= D1659 K30  =>  OUT Y1736                               ; CT4 체인 왼쪽(받을 때 · 보낼 때)
-Q12  LD>= D1659 K30 | AND<= D1659 K40 | AND< T1536 K12  =>  OUT Y1904                                             ; CT5 롤러(load)
-Q13  LDI M1762  =>  OUT Y1905                                                 ; CT5 체인 오른쪽: 평소 켜 둠(메인 GOOD 통과), 합류 받는 동안만 끔
+Q01  LD= D1659 K0 | AND>= D1658 K31 | AND<= D1658 K32  =>  MOV K10 D1659          ; 재검사 GOOD 팩이 TT3에서 나옴
+Q02  LD= D1659 K10 | AND X1736  =>  MOV K20 D1659                              ; 합류 대기 레일에 올라옴(확산 반사, ON = 있음) → 멈춰 대기
+Q03  LD X1903 | ANI X1904 | ANI X1905  =>  OUT T1535 K25                      ; TT5 입구 · 위에 메인 GOOD이 2.5초 동안 없음
+Q04  LD= D1659 K20 | AND T1535 | AND= D1657 K0 | AND= D1658 K0  =>  MOV K25 D1659  ; 메인 GOOD 구간을 멈추고
+Q05  LD= D1659 K25 | ANI X1903  =>  MOV K20 D1659                              ; 멈추는 사이 들어온 팩이 있으면 먼저 보냄
+Q06  LD= D1659 K25  =>  OUT T1536 K30                                          ; 3초(출력 지연보다 길게) 동안 안 들어오면
+Q07  LD= D1659 K25 | AND T1536  =>  MOV K30 D1659                               ; TT5를 90°로
+Q08  LD= D1659 K30 | AND X1908  =>  MOV K31 D1659                              ; 90° 도착 → 합류 레일 · 롤(−)
+Q09  LD= D1659 K31 | ANI X1906  =>  MOV K32 D1659                              ; 입구 빔 가림
+Q11  LD= D1659 K32 | AND X1906  =>  OUT T1545 K5                                ; 다 올라옴. 0.5초 더 굴림
+Q22  LD= D1659 K32 | AND T1545  =>  MOV K40 D1659
+Q12  LD= D1659 K40  =>  OUT T1555 K15
+Q13  LD= D1659 K40 | AND T1555  =>  MOV K45 D1659                               ; 0°로
+Q14  LD= D1659 K45 | AND X1907  =>  MOV K50 D1659                              ; 0° 도착 → 롤(+)로 내보냄
+Q15  LD= D1659 K50 | AND X1904  =>  MOV K51 D1659
+Q16  LD= D1659 K51 | ANI X1904  =>  OUT T1548 K15
+Q17  LD= D1659 K51 | AND T1548  =>  MOV K0 D1659
+Q10  LD>= D1659 K25 | AND<= D1659 K51  =>  OUT M1762                             ; 합류 중(메인 GOOD 구간 · TT2 GOOD 멈춤)
+Q18  LD= D1659 K10 | LD>= D1659 K31 | AND<= D1659 K32 | ORB  =>  OUT Y1736       ; 합류 레일(받을 때 · 보낼 때)
+Q19  LD<= D1659 K25 | OR= D1659 K50 | OR= D1659 K51  =>  OUT Y1904               ; 롤(+): 평소 켜 둠(메인 GOOD 통과) · 내보낼 때
+Q20  LD>= D1659 K31 | AND<= D1659 K32 | ANI X1905  =>  OUT Y1906   ; 롤(−): 재검사 GOOD을 받을 때
 Q99  MCR N0
 ; --- MC 밖(11-25): 정지 · 비상정지 중에도 스텝에 맞춰 자리 유지 — 포크 · 리프트가 꺼지면 들던 팔레트가 떨어짐(비상정지 시험) ---
+P15  LD>= D1658 K30 | AND<= D1658 K42  =>  OUT Y1735                            ; TT3 회전(90°)
+Q21  LD>= D1659 K30 | AND<= D1659 K40  =>  OUT Y1905                            ; TT5 회전(재검사 GOOD을 받는 각도 = 90°)
 N38  LD< D1760 K60  =>  OUT Y1730                                             ; 스토퍼(안)
 
 ; ===== V. 컨베이어 구동 =====
