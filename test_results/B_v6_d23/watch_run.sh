@@ -2,7 +2,7 @@
 L=$1; S=${2:-45}; PL="/c/Users/user/AppData/LocalLow/Real Games/Factory IO/Player.log"
 while [ $SECONDS -lt 580 ]; do
   grep -qE "결과:|Traceback|모든 팩" $L && { echo "== 끝"; break; }
-  grep -q "알람" $L && { echo "== 알람"; break; }
+  grep "알람" $L | grep -vq M1500 && { echo "== 알람"; break; }
   grep -q "Error accessing" "$PL" && { echo "== 라이선스"; break; }
   [ $(( $(date +%s) - $(stat -c %Y $L) )) -gt $S ] && { echo "== 정체 ${S}초"; break; }
   sleep 2

@@ -51,6 +51,9 @@ class Link(P.OpcDirectLink):
             return bad
 
 
+OVR = {}; ESTOP = []                                        # --estop "X1500@D1640=11|X1502@D1750=12": softplc.py ESTOP과 같음(6초 누름 → 뗌 → 시작 버튼)
+if "--estop" in sys.argv: ESTOP = [(x.split("@")[0],) + tuple(x.split("@")[1].split("=")) for x in sys.argv[sys.argv.index("--estop") + 1].split("|")]
+_es = {"t": None, "n": 0}
 L = Link(device=DEV, source=P.OPC_DS_CACHE)
 T0 = time.time()
 def log(m): print(f"{time.time()-T0:6.1f}s {m}", flush=True)
@@ -99,6 +102,7 @@ if "--bridge" in sys.argv:                                  # Factory I/O(Modbus
             ch = []
             for n, ar, a in BR["in"]:
                 v = bool(d[a]) if ar == "di" else ((r[a] + 32768) % 65536) - 32768
+                v = OVR.get(n, v)                                   # 11-25 비상정지 · 정지 시험: 버튼 입력을 대신 넣음
                 if BR["sent"].get(n) != v: ch.append((n, v))
             if not ch: time.sleep(0.01); continue
             bad = Lw.write_many(ch)
@@ -121,7 +125,7 @@ if "--bridge" in sys.argv:                                  # Factory I/O(Modbus
     for f in (_in_loop, _out_loop): threading.Thread(target=f, daemon=True).start()
     log("중계 스레드 시작(입력 쓰기 · 출력 읽기 따로)")
 def log(m): print(f"{time.time()-T0:6.1f}s {m}", flush=True)
-WATCH = ["M1950", "D1541", "D1750", "D1760", "D1525", "D1535", "D1558", "D1568", "D1900", "D1901", "D1902"] + [f"M{1951+i}" for i in range(7)]
+WATCH = ["M1950", "M1500", "D1640", "D1641", "D1656", "D1541", "D1750", "D1760", "D1525", "D1535", "D1558", "D1568", "D1900", "D1901", "D1902"] + [f"M{1951+i}" for i in range(7)]
 HS = ["M1510", "D1710", "D1711", "D1713", "D1740", "D1741", "D1743", "D1650", "D1651", "D1652", "D1653"]
 RACK = [f"D{1660+k}" for k in range(24)] + [f"D{1810+k}" for k in range(24)]
 ALL = WATCH + HS + RACK
@@ -142,6 +146,15 @@ while time.time() - T0 < LIMIT:
             else:
                 log(f"  {w} = {V.get(w)}")
             prev[w] = V.get(w)
+    if ESTOP or _es["t"]:                                   # 비상정지 · 정지 시험
+        if _es["t"] is None and _es["n"] < len(ESTOP):
+            b, w, v = ESTOP[_es["n"]]
+            if V.get(w) == int(v): _es.update(t=t, b=b); OVR[b] = False; log(f"** {b} 누름 ({w}={v})")
+        elif _es["t"]:
+            d = t - _es["t"]
+            if d >= 6: OVR.pop(_es["b"], None)
+            if 8 <= d < 11: OVR["X1501"] = True
+            if d >= 11: OVR.pop("X1501", None); _es["t"] = None; _es["n"] += 1; log(f"** 다시 시작 M1950={V.get('M1950')}")
     # C 인계
     if pend["C"] and V["M1510"]: pend["C"] = "seen"
     if pend["C"] == "seen" and not V["M1510"]: pend["C"] = False          # 래더가 M1510을 받아 내린 뒤에만 다음 인계

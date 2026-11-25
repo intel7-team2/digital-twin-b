@@ -161,7 +161,22 @@ def io_in():
         if ar == "di": B[n] = bool(d[a])
         else: W[n] = ((r[a] + 32768) % 65536) - 32768
     for k, v in FORCE.items(): B[k] = v
+    estop_tick()
 import collections, os
+# 11-25 비상정지 · 정지 시험: ESTOP="X1500@D1640=11|X1502@D1750=12" — 조건이 되면 그 버튼을 6초 누름(NC라 OFF) → 뗌 → 2초 뒤 시작 버튼 1.5초. 한 건씩 차례로
+ESTOP = [tuple(re.split("[@=]", x)) for x in os.environ.get("ESTOP", "").split("|") if x]; _es = {"t": None, "n": 0}
+def estop_tick():
+    now = time.time()
+    if _es["t"] is None:
+        if _es["n"] < len(ESTOP):
+            b, w, v = ESTOP[_es["n"]]
+            if W.get(w, 0) == int(v): _es["t"] = now; _es["b"] = b; print(f"{now-T0:6.1f}s ** {b} 누름 ({w}={v})", flush=True)
+    if _es["t"] is not None:
+        d = now - _es["t"]
+        if d < 6: B[_es["b"]] = False
+        elif 8 <= d < 9.5: B["X1501"] = True
+        elif d >= 9.5:
+            B["X1501"] = False; _es["t"] = None; _es["n"] += 1; print(f"{now-T0:6.1f}s ** 다시 시작 M1950={B.get('M1950')}", flush=True)
 OUT_DELAY = float(os.environ.get('OUT_DELAY', '0')); _q = collections.deque(); OUT_ONLY = set(filter(None, os.environ.get('OUT_ONLY', '').split(',')))
 def io_out():
     co = {}; hr = {}
