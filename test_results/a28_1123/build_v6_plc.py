@@ -25,8 +25,11 @@ def ct(x, z, yaw, p):
     # 롤러 진행 방향 끝 4칸에 도착 센서(정전용량, 브래킷이 끝 막이 역할) — 예제 씬 Sorting by Height와 같은 배치
     fx, fz = {"W": (-1, 0), "E": (1, 0), "N": (0, -1), "S": (0, 1)}[yaw]
     syaw = {"W": "S", "E": "N", "N": "W", "S": "E"}[yaw]          # 센서 Right = −진행 방향(CT 쪽을 봄)
-    O.append(place("CapacitiveSensor", x + 4 * fx, 5, z + 4 * fz, syaw, src="Sorting by Height (Basic)", names={"Loaded": sn}))
-def rstop(x, z, yaw, name): O.append(place("RollerStop", x, 2, z, yaw, names={"Load stop": name}))   # Y=2 유지: 다른 씬 값 Y=3 · 센서 +3은 이 배치에서 RFID가 태그를 못 봄(11-23 시험). 넘어감은 래더가 롤러 · 라인을 멈춰 막음(C39 · V03 · V04)
+    # 11-25: 센서 몸체가 팔레트를 세우므로 1칸 안쪽 + FinePosition −0.06 m(0.44칸)로 가운데에 서게 함. CT4 · CT5는 체인으로 지나는 팔레트가 닿으므로 그대로(4칸)
+    k, fp = (4, "0") if p in ("CT4 wait", "CT5 merge") else (3, "-0.06")
+    O.append(place("CapacitiveSensor", x + k * fx, 5, z + k * fz, syaw, src="Sorting by Height (Basic)", names={"Loaded": sn},
+                   extra=lambda o: o.replace("<FinePosition>0</FinePosition>", f"<FinePosition>{fp}</FinePosition>")))
+def rstop(x, z, yaw, name, y=2): O.append(place("RollerStop", x, y, z, yaw, names={"Load stop": name}))   # Y=2 유지: 다른 씬 값 Y=3 · 센서 +3은 이 배치에서 RFID가 태그를 못 봄(11-23 시험). 넘어감은 래더가 롤러 · 라인을 멈춰 막음(C39 · V03 · V04)
 def retro(x, z, axis, name):
     """반사형 한 쌍(빔 높이 Y=5, 세밀 위치 −0.35). axis='X'면 X 방향 라인을 가로지름(센서 Z+4, 거울 Z−4)."""
     if axis == "X":
@@ -105,7 +108,7 @@ roller(2, 222, 197, "S", "Y1690"); retro(222, 194, "Z", "X1902"); remover(222, 2
 roller(2, 222, 171, "N", "Y1700")
 ct(222, 159, "N", "CTM corner")              # 롤러(−Z)로 받아 체인 오른쪽(−X)으로
 roller(4, 201, 159, "W", "Y1700")
-rstop(189, 159, "W", "Y1701"); retro(193, 159, "X", "X1700"); rfid(190, 163, "N", 1520)   # 11-24: 라인 +Z 4칸(1칸 가깝게) — 6팩 5회씩 비교에서 판독 실패 ② 2/40 · ③ 3/25 → 가깝게 0/25 · 1/15, Y5는 0/25 · 3/15
+rstop(189, 159, "W", "Y1701", 3); retro(193, 159, "X", "X1700"); rfid(192, 163, "N", 1520)   # 11-24: 라인 +Z 4칸(1칸 가깝게) — 6팩 5회씩 비교에서 판독 실패 ② 2/40 · ③ 3/25 → 가깝게 0/25 · 1/15, Y5는 0/25 · 3/15
 roller(2, 177, 159, "W", "Y1702")
 retro(172, 159, "X", "X1720")
 ct(165, 159, "W", "CT2")                     # M1720: 왼쪽(−Z) = GOOD, 오른쪽(+Z) = 재검사
@@ -124,7 +127,7 @@ roller(2, 165, 146, "N", "Y1800")
 retro(165, 143, "Z", "X1800")
 ct(165, 134, "N", "CTR corner")              # 롤러(−Z)로 받아 체인 오른쪽(−X)으로
 roller(2, 153, 134, "W", "Y1800")
-rstop(149, 134, "W", "Y1730"); retro(153, 134, "X", "X1730"); rfid(150, 138, "N", 1530)   # 11-24: 1칸 가깝게(② 참고)
+rstop(149, 134, "W", "Y1730", 3); retro(153, 134, "X", "X1730"); rfid(152, 138, "N", 1530)   # 11-24: 1칸 가깝게(② 참고)
 retro(146, 134, "X", "X1731")
 ct(141, 134, "W", "CT3")                     # 2차 분리: 오른쪽(+Z) = GOOD 합류 쪽, 왼쪽(−Z) = NG
 roller(2, 141, 146, "S", "Y1731")

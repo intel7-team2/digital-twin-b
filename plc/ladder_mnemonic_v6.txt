@@ -162,7 +162,7 @@ D03  LD= D1640 K0 | AND= D1548 K40 | AND M1542 | AND= D1544 K6 | AND<> D1691 K0 
 D04  LD= D1640 K0 | AND= D1548 K40 | AND M1542 | AND= D1544 K6 | AND= D1691 K0 | AND<> D1690 K0  =>  MOV D1690 D1642 | MOV K1 D1640   ; 6S 구역 만차 → 4S 구역
 D05  LD= D1640 K1  =>  MOV D1642 Z2 | DEC Z2 | MOV D1543 D1660Z2 | MOV K0 D1810Z2 | MOV D1642 D1600 | MOV K10 D1640
 D07  LD= D1640 K10 | AND X1602  =>  MOV K11 D1640                             ; 포크 입고점 쪽(왼쪽) 끝
-D08  LD= D1640 K11  =>  OUT T1515 K50                                         ; 들어 올림 5초 + 승강 끝(D09). 11-24 실제 PLC + OPC: 리프트 출력 → 승강 중 신호가 약 2.3 s 늦게 들어와 1.5 · 3초로는 다 들기 전에 포크를 빼 팔레트가 떨어짐
+D08  LD= D1640 K11  =>  OUT T1515 K80                                         ; 들어 올림 8초 + 승강 끝(D09). 11-24 실제 PLC + OPC: 리프트 출력 → 승강 중 신호가 약 2.3 s 늦게 들어와 1.5 · 3초로는 다 들기 전에 포크를 빼 팔레트가 떨어짐
 D09  LD= D1640 K11 | AND T1515 | ANI X1601  =>  MOV K12 D1640
 D10  LD= D1640 K12 | AND X1603  =>  MOV K20 D1640
 D11  LD= D1640 K20  =>  MOV D1870Z2 D1601 | OUT T1516 K30                     ; 목표 칸(변환표). 3초 안에 안 움직이면 이미 그 자리
@@ -171,7 +171,7 @@ D23  LD= D1640 K20 | AND T1516  =>  MOV K21 D1640
 D24  LD= D1640 K21 | ANI X1600 | ANI X1601  =>  OUT T1539 K5
 D25  LD= D1640 K21 | AND T1539  =>  MOV K30 D1640                              ; 0.5초 동안 멈춰 있음 = 도착
 D14  LD= D1640 K30 | AND X1604  =>  MOV K31 D1640                             ; 포크 랙 쪽(오른쪽) 끝
-D15  LD= D1640 K31  =>  OUT T1517 K50                                         ; 내려놓음 5초 + 승강 끝(D16, D08과 같은 이유)
+D15  LD= D1640 K31  =>  OUT T1517 K80                                         ; 내려놓음 8초 + 승강 끝(D16, D08과 같은 이유)
 D16  LD= D1640 K31 | AND T1517 | ANI X1601  =>  MOV K32 D1640
 D17  LD= D1640 K32 | AND X1603  =>  MOV D1540 D1810Z2 | RST M1542 | MOV K40 D1640    ; 입고 시각 = 숙성 시작
 D18  LD= D1640 K40  =>  MOV K55 D1601 | OUT T1518 K30                           ; 대기 위치 55(입고점)
@@ -196,7 +196,7 @@ E23  LD= D1641 K10 | AND T1519  =>  MOV K11 D1641
 E24  LD= D1641 K11 | ANI X1608 | ANI X1609  =>  OUT T1541 K5
 E25  LD= D1641 K11 | AND T1541  =>  MOV K20 D1641
 E09  LD= D1641 K20 | AND X160A  =>  MOV K21 D1641                             ; 포크 랙 쪽(왼쪽) 끝
-E10  LD= D1641 K21  =>  OUT T1520 K50                                         ; 들어 올림 5초 + 승강 끝(E11, D08과 같은 이유)
+E10  LD= D1641 K21  =>  OUT T1520 K80                                         ; 들어 올림 8초 + 승강 끝(E11, D08과 같은 이유)
 E11  LD= D1641 K21 | AND T1520 | ANI X1609  =>  MOV K22 D1641
 E12  LD= D1641 K22 | AND X160B  =>  MOV K0 D1660Z3 | MOV K0 D1810Z3 | MOV K0 D1610Z3 | MOV K30 D1641   ; 칸 비움 (온도는 남겨 LOCK)
 E13  LD= D1641 K30  =>  MOV K55 D1602 | OUT T1521 K30
@@ -205,7 +205,7 @@ E26  LD= D1641 K30 | AND T1521  =>  MOV K31 D1641
 E27  LD= D1641 K31 | ANI X1608 | ANI X1609 | AND X1610 | ANI M1670  =>  OUT T1542 K5   ; 대기 위치에 멈춤 · 출고점 비어 있음(반사형 ON = 비어 있음)
 E28  LD= D1641 K31 | AND T1542  =>  MOV K41 D1641
 E16  LD= D1641 K41 | AND X160C  =>  MOV K42 D1641                             ; 포크 출고점 쪽(오른쪽) 끝
-E17  LD= D1641 K42  =>  OUT T1522 K50                                         ; 내려놓음 5초 + 승강 끝(E18)
+E17  LD= D1641 K42  =>  OUT T1522 K80                                         ; 내려놓음 8초 + 승강 끝(E18)
 E18  LD= D1641 K42 | AND T1522 | ANI X1609  =>  MOV K43 D1641
 E19  LD= D1641 K43 | AND X160B  =>  MOV D1644 D1646 | MOV D1645 D1647 | SET M1670 | MOV K0 D1641
 E08  LD>= D1641 K20 | AND<= D1641 K21  =>  OUT Y1608                           ; 포크 왼쪽(랙): 들어 올리는 동안 유지
@@ -220,21 +220,21 @@ E99  MCR N0
 F00  LD M1950  =>  MC N0 M1549                         ; 운전 중일 때만 이 파일 실행(정지 시 OUT 끔)
 F01  LD= D1656 K0 | ANI X1660  =>  MOV K10 D1656                               ; CT1 앞에 팩(반사형 OFF = 가림)
 F02  LD= D1656 K10 | AND X1662  =>  MOV K20 D1656                              ; CT1 도착(정전용량, ON = 있음)
-F03  LD= D1656 K20  =>  OUT T1523 K8                                           ; 멈춤 0.8초
+F03  LD= D1656 K20  =>  OUT T1523 K30                                          ; 끝막이에 붙이기 1.2초 + 롤러가 선 뒤 쉬기 1.8초(실제 PLC 출력 지연 약 1초보다 길게)
 F04  LD= D1656 K20 | AND T1523 | AND= D1647 K0 | ANI M1753 | AND= D1549 K0  =>  MOV K30 D1656      ; 정상 → 왼쪽(메인). 메인 라인 1이 멈춰 있으면 CT1 위에서 대기
 F05  LD= D1656 K20 | AND T1523 | AND<> D1647 K0  =>  MOV D1646 D1648 | MOV D1647 D1649 | MOV K40 D1656   ; 발열 → 오른쪽(격리)
 F06  LD>= D1656 K30 | AND<= D1656 K40 | ANI X1662  =>  OUT T1524 K10
 F07  LD>= D1656 K30 | AND<= D1656 K40 | AND T1524  =>  MOV K0 D1656 | RST M1670    ; CT1 비움 → 출고 구간 비움(RST 한 곳)
-F08  LD= D1656 K10  =>  OUT Y1662                                             ; CT1 롤러(load)
+F08  LD>= D1656 K10 | AND<= D1656 K20 | AND< T1523 K12  =>  OUT Y1662           ; CT1 롤러(load): 도착 뒤 1.2초 더 돌려 끝막이에 붙임(서는 자리가 지연과 무관)
 F09  LD= D1656 K30  =>  OUT Y1663                                             ; CT1 체인 왼쪽
 F10  LD= D1656 K40  =>  OUT Y1664                                             ; CT1 체인 오른쪽
 ; --- 코너 CTM (메인: −Z → −X, 팔레트 방향 유지) ---
 F11  LD= D1549 K0 | AND X1665  =>  MOV K20 D1549                               ; CTM 도착(정전용량)
-F12  LD= D1549 K20  =>  OUT T1546 K8
+F12  LD= D1549 K20  =>  OUT T1546 K30
 F13  LD= D1549 K20 | AND T1546 | ANI M1753  =>  MOV K30 D1549                 ; 메인 라인 1이 멈춰 있으면(검사 중) 대기
 F14  LD= D1549 K30 | ANI X1665  =>  OUT T1547 K10
 F15  LD= D1549 K30 | AND T1547  =>  MOV K0 D1549
-F16  LD= D1549 K0  =>  OUT Y1665                                             ; CTM 롤러: 쉴 때 켜 두어 팩을 받음
+F16  LD<= D1549 K20 | AND< T1546 K12  =>  OUT Y1665                                             ; CTM 롤러: 쉴 때 켜 두어 팩을 받음
 F17  LD= D1549 K30  =>  OUT Y1666                                            ; CTM 체인 → −X
 
 ; ===== G. 발열 격리 기록 핸드셰이크 (D1650~D1653) =====
@@ -262,7 +262,8 @@ J03  LD>= D1750 K10 | AND<= D1750 K13 | AND M1557  =>  MOV K51 D1750    ; 판독
 J12  LD= D1750 K13 | AND M1556  =>  MOV D1525 D1714 | MOV K20 D1750                ; D1558은 시리얼만 둠(11-24: 셀 수로 덮으면 직전 팩 시리얼을 못 거름)
 J10  LD= D1750 K12 | AND M1556  =>  MOV D1525 D1527 | MOV K13 D1750
 J07  LD= D1750 K11 | AND M1556 | AND<> D1525 K0  =>  MOV D1525 D1526 | MOV K12 D1750
-J08  LD= D1750 K11 | AND M1556  =>  MOV K0 D1526 | MOV K51 D1750        ; 미등록(0)
+J08  LD= D1750 K11 | AND M1556 | AND>= D1559 K2  =>  MOV K0 D1526 | MOV K51 D1750        ; 미등록(0): 다시 읽어도 0일 때만
+J50  LD= D1750 K11 | AND M1556 | AND= D1525 K0  =>  INC D1559                  ; PACK ID가 0으로 읽힘 → 다시 읽기(스텝 11 유지, 11-25)
 J05  LD= D1750 K10 | AND M1556 | AND<> D1525 K0 | AND<> D1525 D1558 | AND<> D1525 D1714  =>  MOV D1525 D1558 | MOV K11 D1750   ; 읽은 값이 0이 아니고, 직전 팩 시리얼(D1558)도 레지스터에 남은 직전 셀 수(D1714)도 아님 = 이 팩 태그를 읽음. 태그를 아직 못 잡으면 리더가 직전 팩 태그 값을 돌려줌 → 103을 102로 읽은 일(11-24 v3)
 J46  LD= D1750 K10 | AND M1556 | AND< D1559 K2  =>  INC D1559 | MOV K14 D1750       ; 시리얼이 맞지 않으면 1초 뒤 다시 읽기(2번까지, 11-23)
 J47  LD= D1750 K10 | AND M1556  =>  MOV K51 D1750                              ; 3번 다 못 잡음 → 판독 실패
@@ -303,29 +304,29 @@ J39  LD>= D1750 K10 | AND<= D1750 K65  =>  OUT M1753
 ; ===== K. M1720 분기 (Pusher, 번지 안 기준) =====
 K01  LD= D1657 K0 | ANI X1720  =>  MOV K10 D1657                               ; CT2 앞에 팩
 K02  LD= D1657 K10 | AND X1723  =>  MOV K20 D1657                              ; CT2 도착
-K03  LD= D1657 K20  =>  OUT T1543 K8
+K03  LD= D1657 K20  =>  OUT T1543 K30
 K04  LD= D1657 K20 | AND T1543 | ANI M1754 | ANI M1762 | AND= D1550 K0  =>  MOV K30 D1657          ; GOOD → 왼쪽(합류 중이면 대기)
 K05  LD= D1657 K20 | AND T1543 | AND M1754 | ANI M1765 | AND= D1551 K0  =>  MOV K40 D1657          ; 재검사 대상 → 오른쪽(재검사 라인이 멈춰 있으면 대기)
 K06  LD>= D1657 K30 | AND<= D1657 K40 | ANI X1723  =>  OUT T1544 K10
 K07  LD>= D1657 K30 | AND<= D1657 K40 | AND T1544  =>  MOV K0 D1657 | RST M1750 | RST M1754   ; CT2 비움 → 메인 출구 · 분기 대상 해제(RST 한 곳)
-K08  LD= D1657 K10  =>  OUT Y1722                                             ; CT2 롤러(load)
+K08  LD>= D1657 K10 | AND<= D1657 K20 | AND< T1543 K12  =>  OUT Y1722                                             ; CT2 롤러(load)
 K09  LD= D1657 K30  =>  OUT Y1723                                             ; CT2 체인 왼쪽(GOOD)
 K10  LD= D1657 K40  =>  OUT Y1724                                             ; CT2 체인 오른쪽(재검사)
 ; --- 코너 CTG (GOOD: −Z → −X) ---
 K11  LD= D1550 K0 | AND X1706  =>  MOV K20 D1550                               ; CTG 도착(정전용량)
-K12  LD= D1550 K20  =>  OUT T1548 K8
+K12  LD= D1550 K20  =>  OUT T1548 K30
 K13  LD= D1550 K20 | AND T1548 | ANI M1762  =>  MOV K30 D1550                 ; 합류 받는 중이면 대기
 K14  LD= D1550 K30 | ANI X1706  =>  OUT T1549 K10
 K15  LD= D1550 K30 | AND T1549  =>  MOV K0 D1550
-K16  LD= D1550 K0  =>  OUT Y1706                                             ; CTG 롤러: 쉴 때 켜 두어 팩을 받음
+K16  LD<= D1550 K20 | AND< T1548 K12  =>  OUT Y1706                                             ; CTG 롤러: 쉴 때 켜 두어 팩을 받음
 K17  LD= D1550 K30  =>  OUT Y1707                                            ; CTG 체인 → −X
 ; --- 코너 CTR (재검사: +Z → −X) ---
 K18  LD= D1551 K0 | AND X1806  =>  MOV K20 D1551                               ; CTR 도착(정전용량)
-K19  LD= D1551 K20  =>  OUT T1550 K8
+K19  LD= D1551 K20  =>  OUT T1550 K30
 K20  LD= D1551 K20 | AND T1550 | ANI M1765  =>  MOV K30 D1551                 ; 재검사 라인이 멈춰 있으면(재검사 중) 대기
 K21  LD= D1551 K30 | ANI X1806  =>  OUT T1551 K10
 K22  LD= D1551 K30 | AND T1551  =>  MOV K0 D1551
-K23  LD= D1551 K0  =>  OUT Y1806                                             ; CTR 롤러: 쉴 때 켜 두어 팩을 받음
+K23  LD<= D1551 K20 | AND< T1550 K12  =>  OUT Y1806                                             ; CTR 롤러: 쉴 때 켜 두어 팩을 받음
 K24  LD= D1551 K30  =>  OUT Y1807                                            ; CTR 체인 → −X
 
 ; ===== L. 재검사 라인 D1800 · M1800 =====
@@ -351,7 +352,8 @@ N15  LD= D1760 K14 | AND M1566  =>  MOV D1535 D1744 | MOV K15 D1760             
 N13  LD= D1760 K13 | AND M1566  =>  MOV D1535 D1761 | MOV K14 D1760
 N11  LD= D1760 K12 | AND M1566  =>  MOV D1535 D1537 | MOV K13 D1760
 N08  LD= D1760 K11 | AND M1566 | AND<> D1535 K0  =>  MOV D1535 D1536 | MOV K12 D1760
-N09  LD= D1760 K11 | AND M1566  =>  MOV K0 D1536 | MOV K51 D1760                   ; 미등록(0) → NG
+N09  LD= D1760 K11 | AND M1566 | AND>= D1569 K2  =>  MOV K0 D1536 | MOV K51 D1760                   ; 미등록(0): 다시 읽어도 0일 때만 → NG
+N50  LD= D1760 K11 | AND M1566 | AND= D1535 K0  =>  INC D1569                  ; J50과 같음
 N06  LD= D1760 K10 | AND M1566 | AND<> D1535 K0 | AND<> D1535 D1568 | AND<> D1535 D1744  =>  MOV D1535 D1568 | MOV K11 D1760   ; 시리얼 확인(J05와 같음)
 N46  LD= D1760 K10 | AND M1566 | AND< D1569 K2  =>  INC D1569 | MOV K16 D1760       ; 1초 뒤 다시 읽기(2번까지, J46과 같음)
 N47  LD= D1760 K10 | AND M1566  =>  MOV K51 D1760                              ; 3번 다 못 잡음 → 판독 실패
@@ -392,12 +394,12 @@ N39  LD>= D1760 K10 | AND<= D1760 K55  =>  OUT M1765
 ; ===== P. 2차 분리 =====
 P01  LD= D1658 K0 | ANI X1731  =>  MOV K10 D1658                               ; CT3 앞에 팩
 P02  LD= D1658 K10 | AND X1733  =>  MOV K20 D1658                              ; CT3 도착
-P03  LD= D1658 K20  =>  OUT T1533 K8
+P03  LD= D1658 K20  =>  OUT T1533 K30
 P04  LD= D1658 K20 | AND T1533 | AND M1764 | AND= D1659 K0  =>  MOV K30 D1658      ; GOOD → 왼쪽(CT4 대기 칸이 비어 있을 때)
 P05  LD= D1658 K20 | AND T1533 | ANI M1764  =>  MOV K40 D1658                     ; NG → 오른쪽
 P06  LD>= D1658 K30 | AND<= D1658 K40 | ANI X1733  =>  OUT T1534 K10
 P07  LD>= D1658 K30 | AND<= D1658 K40 | AND T1534  =>  MOV K0 D1658 | RST M1760     ; CT3 비움 → 재검사 출구 비움(RST 한 곳)
-P08  LD= D1658 K10  =>  OUT Y1733                                             ; CT3 롤러(load)
+P08  LD>= D1658 K10 | AND<= D1658 K20 | AND< T1533 K12  =>  OUT Y1733                                             ; CT3 롤러(load)
 P09  LD= D1658 K30  =>  OUT Y1734                                             ; CT3 체인 왼쪽(GOOD → CT4)
 P10  LD= D1658 K40  =>  OUT Y1735                                             ; CT3 체인 오른쪽(NG)
 
@@ -407,13 +409,13 @@ Q02  LD= D1659 K10 | AND X1736  =>  MOV K20 D1659                              ;
 Q03  LD X1903  =>  OUT T1535 K10                                              ; 합류 지점 앞(메인 GOOD)이 1초 동안 비어 있음
 Q04  LD= D1659 K20 | AND T1535 | AND= D1657 K0  =>  MOV K30 D1659                 ; 메인 GOOD이 오지 않음 → 합류 시작
 Q05  LD= D1659 K30 | AND X1904  =>  MOV K40 D1659                              ; CT5 도착
-Q06  LD= D1659 K40  =>  OUT T1536 K8
+Q06  LD= D1659 K40  =>  OUT T1536 K30
 Q07  LD= D1659 K40 | AND T1536  =>  MOV K50 D1659
 Q08  LD= D1659 K50 | ANI X1904  =>  OUT T1545 K10
 Q09  LD= D1659 K50 | AND T1545  =>  MOV K0 D1659
 Q10  LD>= D1659 K30 | AND<= D1659 K40  =>  OUT M1762                             ; 합류 중(메인 GOOD 컨베이어 · CT2 왼쪽 멈춤)
 Q11  LD= D1659 K10 | OR= D1659 K30  =>  OUT Y1736                               ; CT4 체인 왼쪽(받을 때 · 보낼 때)
-Q12  LD= D1659 K30  =>  OUT Y1904                                             ; CT5 롤러(load)
+Q12  LD>= D1659 K30 | AND<= D1659 K40 | AND< T1536 K12  =>  OUT Y1904                                             ; CT5 롤러(load)
 Q13  LDI M1762  =>  OUT Y1905                                                 ; CT5 체인 오른쪽: 평소 켜 둠(메인 GOOD 통과), 합류 받는 동안만 끔
 Q99  MCR N0
 

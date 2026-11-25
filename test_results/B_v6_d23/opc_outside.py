@@ -146,21 +146,21 @@ while time.time() - T0 < LIMIT:
     if pend["C"] and V["M1510"]: pend["C"] = "seen"
     if pend["C"] == "seen" and not V["M1510"]: pend["C"] = False          # 래더가 M1510을 받아 내린 뒤에만 다음 인계
     if fed < len(plan) and not pend["C"] and V["D1541"] == 0 and not V["M1510"] and time.time() - T0 > 3:
-        pend["C"] = True; L.write("D1516", pack_ids[fed]); L.write("D1518", 6 if plan[fed].endswith("L") else 4); L.write("D1542", 1480); L.write("M1510", 1)
+        pend["C"] = True; L.write_many([("D1516", pack_ids[fed]), ("D1518", 6 if plan[fed].endswith("L") else 4), ("D1542", 1480), ("M1510", 1)])   # 11-25: 한 번에 씀(한 건씩 쓰면 건당 0.6 s라 그동안 PLC 출력 갱신이 밀려 크레인 B가 내려놓기 전에 포크를 당김)
         log(f"C 인계: PACK {pack_ids[fed]} 판정 계획 {plan[fed]}"); fed += 1
     # 메인 검사 핸드셰이크
     if V["D1710"] == 0: pend["main"] = False
     if V["D1710"] == 1 and (V["D1713"] or 0) == 0 and not pend["main"]:
         pend["main"] = True; pid = V["D1711"]; p = plan[pack_ids.index(pid)] if pid in pack_ids else "1"
         j = {"1": 1, "H": 1, "2": 2, "3": 3}[p.rstrip("L")]
-        for a, v in (("D1700", j), ("D1701", 5), ("D1702", 60), ("D1703", 250), ("D1713", 1)): L.write(a, v)
+        L.write_many([("D1700", j), ("D1701", 5), ("D1702", 60), ("D1703", 250), ("D1713", 1)])
         log(f"메인 검사 PACK {pid} → 판정 {j}")
     if V["D1710"] == 0 and V["D1713"] == 1: L.write("D1713", 0)
     # 재검사 핸드셰이크(GOOD)
     if V["D1740"] == 0: pend["re"] = False
     if V["D1740"] == 1 and (V["D1743"] or 0) == 0 and not pend["re"]:
         pend["re"] = True
-        for a, v in (("D1730", 1), ("D1731", 5), ("D1732", 60), ("D1733", 250), ("D1743", 1)): L.write(a, v)
+        L.write_many([("D1730", 1), ("D1731", 5), ("D1732", 60), ("D1733", 250), ("D1743", 1)])
         log(f"재검사 PACK {V['D1741']} → GOOD")
     if V["D1740"] == 0 and V["D1743"] == 1: L.write("D1743", 0)
     # 격리 기록
@@ -171,7 +171,7 @@ while time.time() - T0 < LIMIT:
     for k in range(24):
         pid = V[f"D{1660+k}"]
         if pid in pack_ids and plan[pack_ids.index(pid)].rstrip("L") == "H" and (V[f"D{1810+k}"] or 0) > 0 and pid not in judged:
-            judged.add(pid); L.write("D1697", k + 1); L.write("D1698", 410); L.write("M1672", 1); log(f"발열 접수: 칸 {k+1} PACK {pid}")
+            judged.add(pid); L.write_many([("D1697", k + 1), ("D1698", 410), ("M1672", 1)]); log(f"발열 접수: 칸 {k+1} PACK {pid}")
     done = sum(V[d] or 0 for d in ("D1900", "D1901", "D1902"))
     if done >= len(plan): log("모든 팩 배출"); break
     prev["주기"] = max(prev.get("주기", 0), time.time() - t)
