@@ -261,7 +261,7 @@ def log(m): print(f"{time.time()-T0:6.1f}s {m}", flush=True)
 V2 = "ladder_mnemonic_v6" not in os.path.basename(SRC)   # v2는 스텝이 M 릴레이라 D1541이 없음 → 접수 비트만 봄
 if os.environ.get("T2F"): plan = [x for x in os.environ["T2F"].split(",") if x]
 pack_ids = list(range(101, 101 + len(plan)))
-fed = 0; judged = {}; watch = ["D1525", "D1535", "D1558", "D1568", "D1750", "D1760", "D1517"]
+fed = 0; judged = {}; watch = ["D1525", "D1535", "D1558", "D1568", "D1750", "D1760", "D1517"] + [x for x in os.environ.get("WWATCH", "").split(",") if x]   # 11-26: WWATCH="D1601,D1602" 워드 기록 추가
 prev = {}
 # 11-26: 2층만 시험(T2F="3,1L,..." 계획 코드) — 1층 팩 없이, 픽앤플레이스가 비면 시험 씬의 Emitter(Y19F0)로
 # E1 2층 출구 롤러에 팔레트+상자를 내보내고 2층 단계(M1592)를 바로 시작. GOOD/NG(M1982) · L(M1748)도 여기서 줌
@@ -410,7 +410,7 @@ try:
             prev[a] = B.get(a)
         done = W.get("D1900", 0) + W.get("D1901", 0) + W.get("D1902", 0)
         if prev.get("cnt") != done: prev["cnt"] = done; log(f"카운터 GOOD {W.get('D1900',0)} · NG {W.get('D1901',0)} · 격리 {W.get('D1902',0)}")
-        if done >= end_need: log("모든 팩 배출"); break
+        if done >= end_need and not os.environ.get("KEEP"): log("모든 팩 배출"); break   # KEEP=1: 다 나와도 계속(STOPAT으로 끝냄)
         hit = [s_ for s_ in STOPAT if (B.get(s_[0]) if s_[0][0] in "MXY" else W.get(s_[0], 0)) == s_[1]]
         if hit: log(f"멈춤 조건 {hit}"); break
         time.sleep(0.005)

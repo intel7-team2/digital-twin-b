@@ -4,7 +4,12 @@
 
 | 프로그램 | 렁 | 명령어 수 | 스텝(추정) |
 |---|---|---|---|
-| COMMON | Z01 | 47 | 89 |
+| COMMON | Z01 | 5 | 5 |
+| COMMON | Z02 | 8 | 22 |
+| COMMON | Z03 | 7 | 19 |
+| COMMON | Z04 | 12 | 28 |
+| COMMON | Z05 | 10 | 10 |
+| COMMON | Z06 | 11 | 11 |
 | COMMON | A01 | 2 | 2 |
 | COMMON | A02 | 3 | 3 |
 | COMMON | A03 | 3 | 3 |
@@ -12,7 +17,7 @@
 | COMMON | A05 | 3 | 4 |
 | COMMON | A06 | 3 | 8 |
 | COMMON | A08 | 3 | 5 |
-| COMMON | A24 | 7 | 10 |
+| COMMON | A24 | 23 | 26 |
 | COMMON | S01 | 4 | 9 |
 | COMMON | S02 | 1 | 2 |
 | COMMON | S03 | 12 | 30 |
@@ -107,6 +112,8 @@
 | CRANE | E91 | 3 | 3 |
 | CRANE | E92 | 3 | 3 |
 | CRANE | E93 | 6 | 6 |
+| CRANE | D94 | 3 | 5 |
+| CRANE | D95 | 3 | 5 |
 | CRANE | E94 | 5 | 5 |
 | SORT1 | F01 | 5 | 5 |
 | SORT1 | F02 | 12 | 15 |
@@ -133,7 +140,7 @@
 | SORT1 | F94 | 5 | 5 |
 | INSPECT | J01 | 9 | 15 |
 | INSPECT | J02 | 4 | 4 |
-| INSPECT | J03 | 17 | 21 |
+| INSPECT | J03 | 10 | 10 |
 | INSPECT | J04 | 5 | 5 |
 | INSPECT | J05 | 7 | 9 |
 | INSPECT | J06 | 4 | 4 |
@@ -157,7 +164,7 @@
 | INSPECT | K03 | 5 | 5 |
 | INSPECT | K04 | 5 | 5 |
 | INSPECT | K05 | 5 | 5 |
-| INSPECT | K06 | 22 | 25 |
+| INSPECT | K06 | 16 | 19 |
 | INSPECT | K07 | 5 | 5 |
 | INSPECT | K08 | 8 | 8 |
 | INSPECT | L01 | 2 | 4 |
@@ -168,7 +175,7 @@
 | RETEST | N01 | 7 | 10 |
 | RETEST | N02 | 4 | 4 |
 | RETEST | N03 | 4 | 4 |
-| RETEST | N04 | 17 | 21 |
+| RETEST | N04 | 11 | 11 |
 | RETEST | N05 | 4 | 4 |
 | RETEST | N06 | 6 | 9 |
 | RETEST | N07 | 9 | 17 |
@@ -198,7 +205,7 @@
 | RETEST | Q04 | 6 | 9 |
 | RETEST | Q05 | 5 | 5 |
 | RETEST | Q06 | 5 | 5 |
-| RETEST | Q08 | 18 | 18 |
+| RETEST | Q08 | 12 | 12 |
 | RETEST | Q09 | 5 | 5 |
 | RETEST | Q10 | 7 | 7 |
 | RETEST | P90 | 5 | 5 |
@@ -213,9 +220,9 @@
 | DRIVE | X01 | 7 | 10 |
 | DRIVE | X02 | 7 | 10 |
 | DRIVE | X03 | 5 | 5 |
-| DRIVE | X04 | 22 | 25 |
+| DRIVE | X04 | 16 | 19 |
 | DRIVE | X05 | 6 | 9 |
-| DRIVE | X06 | 18 | 18 |
+| DRIVE | X06 | 12 | 12 |
 | DRIVE | X07 | 5 | 5 |
 | DRIVE | X08 | 5 | 5 |
 | DRIVE | U01 | 7 | 10 |
@@ -225,12 +232,14 @@
 | DRIVE | U05 | 12 | 18 |
 | DRIVE | U06 | 5 | 7 |
 | DRIVE | U07 | 7 | 10 |
-| DRIVE | U08 | 6 | 9 |
-| DRIVE | U09 | 15 | 27 |
+| DRIVE | U08 | 14 | 20 |
+| DRIVE | U11 | 7 | 12 |
+| DRIVE | U09 | 10 | 21 |
 | DRIVE | U10 | 7 | 10 |
 | DRIVE | Y03 | 15 | 23 |
 | DRIVE | Y04 | 5 | 5 |
 | DRIVE | Y05 | 11 | 11 |
+| DRIVE | O17 | 10 | 15 |
 | DRIVE | O01 | 8 | 12 |
 | DRIVE | O02 | 5 | 5 |
 | DRIVE | O03 | 6 | 9 |
@@ -258,7 +267,7 @@
 | DRIVE | U93 | 2 | 2 |
 | DRIVE | U94 | 5 | 5 |
 | DRIVE | U95 | 2 | 5 |
-| DRIVE | U96 | 36 | 46 |
+| DRIVE | U96 | 38 | 48 |
 | DRIVE | Y91 | 4 | 4 |
 | DRIVE | Y92 | 5 | 5 |
 | DRIVE | O90 | 4 | 4 |
@@ -284,14 +293,14 @@
 
 | 프로그램 | 렁 수 | 스텝(추정, END 포함) |
 |---|---|---|
-| COMMON | 20 | 283 |
+| COMMON | 25 | 305 |
 | RFID | 18 | 220 |
 | INFEED | 22 | 276 |
-| CRANE | 44 | 433 |
+| CRANE | 46 | 443 |
 | SORT1 | 23 | 195 |
-| INSPECT | 34 | 413 |
-| RETEST | 44 | 465 |
-| DRIVE | 62 | 539 |
+| INSPECT | 34 | 396 |
+| RETEST | 44 | 449 |
+| DRIVE | 64 | 561 |
 | COUNTER | 7 | 51 |
 | LAMP | 3 | 11 |
-| **합계** | 277 | 2886 |
+| **합계** | 286 | 2907 |

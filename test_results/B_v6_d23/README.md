@@ -96,7 +96,7 @@ cd ../..; python plc/v3/make_v3.py && python plc/mnemonic_to_gxw_csv.py plc/v3/l
 - 11-26 결과: 실제 PLC 6팩 + 비상정지 3 · 정지 1 → GOOD 4 · NG 1 · 격리 1, 알람 0(15분). 중계는 입력 변화를 최소 2초 붙잡아 PLC에 보임(`HOLD`)
 - **Python 계측 엔진으로 판정(논의 문서 15-17)**: `python measurement_engine.py handoff --start 101 --count 6 --db <DB>` → `python measurement_engine.py serve --opc-device CSIM --opc-source cache --db <DB>` → `opc_outside.py 1,1L,1,H,1,1 1200 --v2 --serve --bridge …`(`--serve` = 검사 · 격리 기록 응답을 serve에 맡김, 계획은 L · H만 씀) → 끝나면 `measurement_engine.py report --db <DB>`
 - **회차 사이 초기화(11-26, 논의 문서 15-18)**: `opc_reset.py`가 정지 상태에서 `M1961`을 펄스해 v3 래더의 단계 릴레이 · 구간 기억 비트 · 알람을 지움 → 시뮬레이터를 다시 띄우지 않고 중단한 회차 뒤에도 바로 다음 회차. (v1 · v2 래더는 여전히 PLC 재시작 필요.) `serve`는 PLC 재시작 중 통신 오류가 나도 2초마다 다시 붙음
-- **고장 · 조작 시험(`softplc.py`)**: `FAULT="D1515=9999@M1952"`(그 비트가 켜질 때까지 입력 워드를 덮음 = RFID 오류 흉내) · `PRESS="X1503@M1952=1:1.5"`(조건 3초 뒤 버튼을 1.5초 누름, `|`로 여러 건) · `BWATCH="Y1692,M1671"`(비트 변화 기록). 격리 레일을 비우는 시험 씬은 `TESTREL=1 python build_v7_2f.py …`(코일 `Y19F1` 리무버)
+- **고장 · 조작 시험(`softplc.py`)**: `FAULT="D1515=9999@M1952"`(그 비트가 켜질 때까지 입력 워드를 덮음 = RFID 오류 흉내) · `PRESS="X1503@M1952=1:1.5"`(조건 3초 뒤 버튼을 1.5초 누름, `|`로 여러 건) · `BWATCH="Y1692,M1671"`(비트 변화 기록) · `WWATCH="D1601,D1602"`(워드 변화 기록) · `KEEP=1`(팩이 다 나와도 계속, `STOPAT`으로 끝냄). 격리 레일을 비우는 시험 씬은 `TESTREL=1 python build_v7_2f.py …`(코일 `Y19F1` 리무버)
 
 ## 11-24 시험 도구
 
