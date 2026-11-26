@@ -65,7 +65,7 @@ python hmi_mc_relay.py --backend opc               # Pro-face HMI(WinGP) 중계 
 ```
 - OPC는 기본으로 OPC DA 커스텀 인터페이스에 직접 붙습니다(`--opc-wrapper auto`). OPC Core Components(프록시)만 있으면 됩니다. 이전 방식(32비트 Python + `OPC.SiemensDAAuto` 래퍼)은 `--opc-wrapper OPC.SiemensDAAuto`.
 - Simulate 장치로 시험할 때는 `--opc-source cache`(장치 직접 읽기 · 쓰기는 거부됨).
-- HMI 연결 1안(D20): WinGP 화면은 미쓰비시 "Q Series QnU CPU Ethernet" 드라이버로 만들고 접속 IP를 중계 서버로 둡니다. PLC 없이 접속만 시험할 때는 `python hmi_mc_relay.py --backend memory --demo`.
+- HMI 연결 1안(D20): WinGP 화면은 미쓰비시 "Q/QnA Series Ethernet" 드라이버(MC 프로토콜 3E 바이너리, IP `127.0.0.1` · 포트 5000)로 만듭니다. "Q Series QnU CPU Ethernet" 드라이버는 MELSOFT 접속이라 중계 서버와 통하지 않습니다(11-26 확인, [확인필요_및_논의사항.md 15-16](확인필요_및_논의사항.md)). PLC 없이 접속만 시험할 때는 `python hmi_mc_relay.py --backend memory --demo`.
 - MX OPC Configurator에 1500~19FF 태그를 먼저 등록해야 합니다 → [확인필요_및_논의사항.md 4-14](확인필요_및_논의사항.md)
 - Modbus TCP로 직접 붙을 때: `--link modbus --host 192.168.0.XXX`
 - MC 프로토콜 3E로 PLC에 직접 붙을 때(MX OPC를 못 쓰는 PC, D21): `--link mc --host 192.168.0.XXX [--port 5000]` (`pymcprotocol` 필요, PLC 오픈 설정 필요)

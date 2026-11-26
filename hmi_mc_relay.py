@@ -4,7 +4,8 @@ Project B · HMI 중계 서버 (MC 프로토콜 3E 바이너리) — HMI 연결 
 실물 PLC · MX Component 없이 Pro-face HMI(WinGP)를 GX Simulator2 에 붙이기 위한 중계 서버입니다.
 WinGP 쪽에서는 미쓰비시 Q 시리즈 PLC(이더넷)처럼 보이고, 실제 값은 MX OPC Server 로 GX Simulator2 와 주고받습니다.
 
-  WinGP (Pro-face, "Q Series QnU CPU Ethernet" 드라이버, IP = 이 PC)
+  WinGP (Pro-face, "Q/QnA Series Ethernet" 드라이버 · 바이너리 · E71 체크, IP = 이 PC · 포트 5000)
+        ※ "Q Series QnU CPU Ethernet" 드라이버는 MELSOFT 접속(MC 프로토콜 아님)이라 이 중계와 통하지 않음 (11-26 WinGP 실접속 확인)
      │  MC 프로토콜 3E 프레임 · 바이너리 · TCP/UDP
   hmi_mc_relay.py  ── backend opc: plc_link.OpcLink (MX OPC Server, 직접 연결 · 64/32비트 Python, D21)
      │              └ backend memory: 이 프로그램 안의 메모리 (WinGP 접속 시험용, PLC 없이)
@@ -112,13 +113,21 @@ class OpcBackend:
         self._warned = set()
 
     def read(self, names):
+        # 11-26 WinGP 실접속: Pro-face는 비트를 16개 단위(M1488~M1503 등) · 워드를 이어진 묶음으로 읽어
+        # 화면에 없는 번지까지 함께 옴 → MX OPC에 태그가 없는 번지는 0으로 채우고 처음 한 번만 알림(쓰기는 그대로 오류)
         out = []
         with self.lock:
             for n in names:
+                if n in self._warned:
+                    out.append(0)
+                    continue
                 try:
                     out.append(int(self.link.read(n)))
                 except Exception as e:
-                    raise RelayError(END_BACKEND, f"OPC 읽기 실패 {n}: {e}") from None
+                    if "등록 실패" in str(e):          # 태그가 없음 → 다음부터 바로 0 (PLC 재시작 중 품질 불량 같은 일시 실패는 매번 다시 읽음)
+                        self._warned.add(n)
+                        print(f"{time.strftime('%H:%M:%S')} [알림] OPC 태그 없음 {n} → 0으로 읽음", flush=True)
+                    out.append(0)
         return out
 
     def write(self, pairs):
