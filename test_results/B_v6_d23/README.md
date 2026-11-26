@@ -12,7 +12,7 @@ python build_v6_turntable.py ../../factoryio_test/V6_plc_19_base.factoryio ../..
 bash open_scene.sh V6_plc_21.factoryio                               # Factory I/O를 새로 띄워 씬 열기 (매 시험 전 새로)
 ```
 
-- Factory I/O 창은 **최대화해서 맨 앞**에 두세요(자동 화면 저장은 Factory IO 창 영역만 찍습니다).
+- Factory I/O 창은 **최대화해서 맨 앞**에 두세요(자동 화면 저장은 Factory IO 창 영역만 찍습니다). **시험 중 최소화 금지** — 최소화하면 시뮬레이션이 멈춤(11-26, 논의 문서 15-18).
 - 시험 중 같은 씬을 이어서 다시 돌리면 상태가 섞입니다. 회차마다 `open_scene.sh`로 새로 여세요.
 
 ## 실행
@@ -54,8 +54,8 @@ SHOTS=D:/seojung/fio_shots/run1 SHOT_EVERY=2 PYTHONIOENCODING=utf-8 python softp
 | `D1541` | STEP 01(투입 · RFID ① 등록) 스텝. 15 = 알람 대기 |
 | `D1548` | 입고 로딩 컨베이어 스텝(40 = 크레인 A 입고점 정지) |
 | `D1640` · `D1641` | 크레인 A · B 스텝 |
-| `D1656~D1659` | CT1 · CT2 · CT3 · CT4/CT5 합류 스텝 |
-| `D1549` · `D1550` · `D1551` | 코너 CT CTM · CTG · CTR 스텝 |
+| `D1656~D1659` | (v6 CT 씬 때) CT1 · CT2 · CT3 · CT4/CT5 합류 스텝 — v2 · v3 래더는 M 스텝 릴레이라 없음(`plc/v3/steps_relay_v3.md`) |
+| `D1549` · `D1550` · `D1551` | (v6 CT 씬 때) 코너 CT CTM · CTG · CTR 스텝 — v2 · v3에는 없음 |
 | `D1750` · `D1760` | 메인 검사 · 재검사 스텝(14 · 16 = RFID 다시 읽기 대기, 51 = 판독 실패) |
 | `D1558` · `D1568` | RFID ② · ③ 레지스터에 마지막으로 남은 읽기 값 |
 
@@ -65,13 +65,13 @@ SHOTS=D:/seojung/fio_shots/run1 SHOT_EVERY=2 PYTHONIOENCODING=utf-8 python softp
    `reg add "HKLM\SOFTWARE\Mitsubishi\MXOPCServer\Configuration" /v FileName /t REG_SZ /d "D:\seojung\digital-twin-b\test_results\MXOPC_B_v6_d25.mdb" /f /reg:32` 후 `net stop "MXOPC and MXOPC"` · `net start "MXOPC and MXOPC"`
 2. GX Works2에서 `B_v6_d23.gxw` → [디버그] 시뮬레이션 시작. **래더를 바꿨으면**: 시뮬레이터 창 STOP → [온라인] PLC 쓰기(파라미터 + 프로그램, 모두 예) → RESET → RUN.
    다른 이름의 프로젝트로 시뮬레이션을 시작하면 시뮬레이터가 하나 더(B) 떠 MX OPC(1번 = A)와 어긋남 → 시뮬레이터 · `SimManager`를 끄고 다시 시작
-3. `py -3.12 opc_reset.py ../MXOPC_B_v6_d25.mdb` (이전 회차 M · D를 0으로, 크레인 변환표 상수는 남김)
+3. `py -3.12 opc_reset.py ../MXOPC_B_v6_d25.mdb` (이전 회차 M · D를 0으로, 크레인 변환표 상수는 남김. 끝에 `M1961` 펄스 — v3 래더는 이것으로 단계까지 초기화)
 4. Factory I/O에 **Modbus 씬** `factoryio_test/V6_plc_21.factoryio`를 엶(`a28_1123/open_scene.sh V6_plc_21.factoryio`)
 5. `py -3.12 opc_outside.py 1,2L,3,H,1L,2 1200 --bridge "D:/seojung/digital-twin-b/factoryio_test/V6_plc_21.factoryio" > 로그` — Factory I/O(Modbus) ↔ PLC(OPC) 중계 + C 인계 · 검사 응답 · 발열 접수 대행. 운전 비트 `M1950`을 직접 SET
 6. 기록: `py -3.12 opc_shots.py img <폴더> <초> [간격]`(화면) · `py -3.12 opc_shots.py sig <폴더> <초>`(크레인 · 출고 신호 `signals.csv`)
 
 - **지연(측정)**: MX OPC 쓰기 한 번 약 0.6 s, 왕복 0.8 ~ 1.3 s. OPC Client 씬(`V6_plc_17_opc`) 직결은 수 초라 위치 맞춤이 안 돼 중계 방식만 씀.
-- 11-24 결과: 투입 ~ 크레인 A · B 6팩 정상. **CT1 다음 메인 라인 1에서 팔레트가 돌아 메인 판독 실패(미해결, 소프트 PLC는 정상)**.
+- 11-24 결과: 투입 ~ 크레인 A · B 6팩 정상. CT1 다음 메인 라인 1에서 팔레트가 돌아 메인 판독 실패(11-25 해결, 논의 문서 15-12).
 - **11-25 결과: `V6_plc_18` + 래더 386회로로 실제 PLC 경로 6팩 2회 모두 GOOD 4 · NG 1 · 격리 1, 알람 0**(논의 문서 15-12). `opc_outside.py`는 여러 값을 한 번에 씀.
 - **11-25 최종: `V6_plc_19` + 래더 387회로 6팩 1회 GOOD 4 · NG 1 · 격리 1, 알람 0(약 13분).** 남은 한계는 논의 문서 15-12.
 - **11-25 턴테이블: `V6_plc_21` + 래더 405회로 6팩 1회 GOOD 4 · NG 1 · 격리 1, 알람 0(13분 30초).** 논의 문서 15-13.
@@ -94,6 +94,9 @@ cd ../..; python plc/v3/make_v3.py && python plc/mnemonic_to_gxw_csv.py plc/v3/l
 - **2층만(1 ~ 2분)**: `LADDER=… T2F=3,1,3L,1L python softplc.py "D:/seojung/digital-twin-b/factoryio_test/V7_2f_test.factoryio" - 300` — 1층 없이 E1 2층 출구에 팔레트 + 상자를 하나씩 내보내고 2층 단계부터 시작. 계획 코드는 위와 같음(H 없음). 2층만 바꿨을 때는 이것만 돌림
 - 실제 PLC: MX OPC 실행 프로젝트 `test_results/MXOPC_B_v7.mdb`(태그 428, 위 1번처럼 레지스트리 · 서비스 재시작), GX `test_results/B_v7/B_v7.gxw`, `py -3.12 opc_reset.py ../MXOPC_B_v7.mdb`, `py -3.12 opc_outside.py 1,2L,3,H,1L,2 1200 --v2 --bridge "D:/seojung/digital-twin-b/factoryio_test/V7_plc_1.factoryio"`(비상정지 시험은 `--estop "X1500@Y1914=1|X1500@Y191A=1|X1500@Y1923=1|X1502@Y1664=1"`)
 - 11-26 결과: 실제 PLC 6팩 + 비상정지 3 · 정지 1 → GOOD 4 · NG 1 · 격리 1, 알람 0(15분). 중계는 입력 변화를 최소 2초 붙잡아 PLC에 보임(`HOLD`)
+- **Python 계측 엔진으로 판정(논의 문서 15-17)**: `python measurement_engine.py handoff --start 101 --count 6 --db <DB>` → `python measurement_engine.py serve --opc-device CSIM --opc-source cache --db <DB>` → `opc_outside.py 1,1L,1,H,1,1 1200 --v2 --serve --bridge …`(`--serve` = 검사 · 격리 기록 응답을 serve에 맡김, 계획은 L · H만 씀) → 끝나면 `measurement_engine.py report --db <DB>`
+- **회차 사이 초기화(11-26, 논의 문서 15-18)**: `opc_reset.py`가 정지 상태에서 `M1961`을 펄스해 v3 래더의 단계 릴레이 · 구간 기억 비트 · 알람을 지움 → 시뮬레이터를 다시 띄우지 않고 중단한 회차 뒤에도 바로 다음 회차. (v1 · v2 래더는 여전히 PLC 재시작 필요.) `serve`는 PLC 재시작 중 통신 오류가 나도 2초마다 다시 붙음
+- **고장 · 조작 시험(`softplc.py`)**: `FAULT="D1515=9999@M1952"`(그 비트가 켜질 때까지 입력 워드를 덮음 = RFID 오류 흉내) · `PRESS="X1503@M1952=1:1.5"`(조건 3초 뒤 버튼을 1.5초 누름, `|`로 여러 건) · `BWATCH="Y1692,M1671"`(비트 변화 기록). 격리 레일을 비우는 시험 씬은 `TESTREL=1 python build_v7_2f.py …`(코일 `Y19F1` 리무버)
 
 ## 11-24 시험 도구
 
@@ -109,7 +112,7 @@ cd ../..; python plc/v3/make_v3.py && python plc/mnemonic_to_gxw_csv.py plc/v3/l
 | `build_reader_probe.py` · `rfid_clash.py` · `rfid_seq.py` | 후보 리더를 옆에 같이 다는 비교 · 동시 명령 시험(위 이유로 실패한 방식, 기록용) |
 | `softplc.py` 추가 | 타이머 현재값 비교(`AND>= T1513 K5`), `STOPAT` 여러 개(`D1750=14\|D1760=16`), 화면 저장은 PrintWindow로 Factory IO 창만(가려져도 찍힘) |
 
-## 11-23 마지막 상태 (논의 문서 15-9)
+## 11-23 마지막 상태 (논의 문서 15-9, 지난 기록 — 이후 15-10 ~ 15-12에서 처리)
 
 - 최종 씬(그때) `V6_plc_16`: 4S = Medium · 6S = Large, CT2 뒤 대칭 배치(재검사 = CT2 왼쪽), 리무버 강제 ON, 높이 센서 `X1511` X=321 · Y8, RFID 리더 감지 1.0 m.
 - 6팩 시험: 5회차 계획과 완전히 같음(알람 0). 6회차에서 **크레인 B가 처음 꺼낸 팩만 RFID ② · ③을 못 읽는 일**이 다시 나옴 → 내일 자동 화면 저장으로 원인 확인할 것.

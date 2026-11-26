@@ -25,5 +25,11 @@ L.write("M1950", 0); time.sleep(0.5)
 bad = []
 for i in range(0, len(names), 40):
     bad += L.write_many([(n, 0) for n in names[i:i + 40]])
+# 11-26: 정지 중 초기화 입력 M1961 — v3 래더는 스텝 릴레이 · 구간 기억 비트(MX OPC에 없는 번지 포함)를 첫 스캔처럼 다시 잡음
+# (GX Simulator2를 다시 띄우지 않아도 중단한 회차 뒤에 바로 다음 회차를 돌릴 수 있음. v1 · v2 래더에서는 LOCK 해제만 함)
+try:
+    L.write("M1961", 1); time.sleep(1.5); L.write("M1961", 0)
+except Exception as e:
+    print("M1961 쓰기 실패(태그 없음?):", e)
 time.sleep(1)
 print(f"초기화: M · D {len(names)}개를 0으로 · 실패 {bad} · 확인 {L.read_many(['M1950', 'D1541', 'M1510', 'D1750', 'D1760'])}")

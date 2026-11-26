@@ -124,9 +124,10 @@ class OpcBackend:
                 try:
                     out.append(int(self.link.read(n)))
                 except Exception as e:
-                    if "등록 실패" in str(e):          # 태그가 없음 → 다음부터 바로 0 (PLC 재시작 중 품질 불량 같은 일시 실패는 매번 다시 읽음)
-                        self._warned.add(n)
-                        print(f"{time.strftime('%H:%M:%S')} [알림] OPC 태그 없음 {n} → 0으로 읽음", flush=True)
+                    if "등록 실패" not in str(e):      # PLC 재시작 중 품질 불량 같은 일시 실패 → 통신 오류로 답함(HMI가 0을 실제 값으로 보이지 않게)
+                        raise RelayError(END_BACKEND, f"OPC 읽기 실패 {n}: {e}") from None
+                    self._warned.add(n)                # 태그가 없음 → 다음부터 바로 0
+                    print(f"{time.strftime('%H:%M:%S')} [알림] OPC 태그 없음 {n} → 0으로 읽음", flush=True)
                     out.append(0)
         return out
 
@@ -382,12 +383,12 @@ def make_udp_handler(relay):
 
 
 class _TCP(socketserver.ThreadingTCPServer):
-    allow_reuse_address = True
+    allow_reuse_address = False     # 11-26: Windows에서 True면 같은 포트에 두 번 떠도 오류가 안 나, 예전 중계가 남아 HMI가 옛 값을 받음
     daemon_threads = True
 
 
 class _UDP(socketserver.ThreadingUDPServer):
-    allow_reuse_address = True
+    allow_reuse_address = False     # 11-26: Windows에서 True면 같은 포트에 두 번 떠도 오류가 안 나, 예전 중계가 남아 HMI가 옛 값을 받음
     daemon_threads = True
 
 

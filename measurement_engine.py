@@ -541,11 +541,18 @@ def cmd_serve(args):
     def write(addr, values):
         link.write_words(f"D{addr}", values)
 
+    # 11-26: MX OPC 캐시(--opc-source cache)는 쓴 값이 읽기에 늦게 보여, 완료를 쓴 직후에도 done = 0으로 읽혀
+    # 같은 요청에 두 번 답함(DB 계측 기록 2줄) → 요청이 0으로 내려갈 때까지 다시 답하지 않음
+    answered = set()
+
     def handle(st_no):
         st = STATIONS[st_no]
         base = st["req"]
         req, _, _, done = read(base, 4)
-        if req == 1 and done == 0:
+        if req == 0:
+            answered.discard(st_no)
+        if req == 1 and done == 0 and st_no not in answered:
+            answered.add(st_no)
             pack_id, rc = read(base + PACK, 2)            # 검사기 RFID가 읽은 idx0 / idx4
             tag_cells = read(base + CELLS)[0]             # 태그 idx9
             info = pack_info(conn, pack_id) if pack_id else None
@@ -570,7 +577,10 @@ def cmd_serve(args):
 
     def handle_isolation():
         req, pack_id, temp_x10, done = read(ISO_BLOCK, 4)
-        if req == 1 and done == 0:
+        if req == 0:
+            answered.discard("iso")
+        if req == 1 and done == 0 and "iso" not in answered:
+            answered.add("iso")
             if pack_id:
                 known = record_isolation(conn, pack_id, temp_x10)
                 print(f"[발열 격리] PACK-{pack_id:04d} 온도 {temp_x10 / 10:.1f}°C → DB ISO"
@@ -581,16 +591,32 @@ def cmd_serve(args):
         elif req == 0 and done == 1:
             write(ISO_BLOCK + 3, [0])
 
+    # 11-26: 통신 오류(PLC 재시작 중 품질 불량 · MX OPC 재시작)로 끝나지 않고 2초마다 다시 시도
+    # (전에는 여기서 종료돼, PLC를 다시 켠 뒤 serve를 안 띄우면 검사 요청에 답이 없어 라인이 검사기에서 멈춤)
+    down = False
     try:
         while True:
-            for st_no in STATIONS:
-                handle(st_no)
-            handle_isolation()
+            try:
+                for st_no in STATIONS:
+                    handle(st_no)
+                handle_isolation()
+                if down:
+                    down = False
+                    print("[ENGINE] 통신 복구")
+            except LinkError as e:
+                if not down:
+                    down = True
+                    print(f"[ENGINE] 통신 오류: {e} → 2초마다 다시 시도")
+                answered.clear()                      # 답하던 중 끊겼을 수 있음 → 복구 뒤 같은 요청에 다시 답함
+                time.sleep(2)
+                try:
+                    link.close()
+                    link = open_link(args)
+                except Exception:
+                    pass
             time.sleep(args.interval)
     except KeyboardInterrupt:
         print("\n[ENGINE] 종료")
-    except LinkError as e:
-        print(f"[ENGINE] 통신 오류: {e}")
     finally:
         link.close()
         conn.close()

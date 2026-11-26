@@ -2,7 +2,7 @@
 15 입고·RFID①,X1500,B,FIO→PLC,Emergency Stop Button,Emergency stop,조작반 비상정지 (NC: ON = 정상) → PLC가 M1500 = NOT X1500,신규(안)
 15 입고·RFID①,X1501,B,FIO→PLC,Start Push Button,Start,조작반 시작,신규(안)
 15 입고·RFID①,X1502,B,FIO→PLC,Stop Push Button,Stop,조작반 정지,신규(안)
-15 입고·RFID①,X1503,B,FIO→PLC,Reset Push Button,Reset,조작반 카운터 리셋 → PLC가 M1920 펄스,신규(안)
+15 입고·RFID①,X1503,B,FIO→PLC,Reset Push Button,Reset,조작반 리셋: 누르면 알람 확인(M1960과 같음 · RFID① 다시 읽기) · 2초 누르면 카운터 리셋(M1920과 같음) — 11-26 v3,신규(안)
 15 입고·RFID①,Y1500,B,PLC→FIO,Emitter,Emitter (Emit),투입 허가 (M1510 C 인계 수신 때 ON),신규(안)
 15 입고·RFID①,D1508,W,PLC→FIO,Emitter (Controller-Defined),Emitter (Part),박스 비트 1 = Small box(4S) · 4 = Large box(6S) ← D1518 셀 수로 PLC가 씀,신규(안)
 15 입고·RFID①,D1509,W,PLC→FIO,Emitter (Controller-Defined),Emitter (Base),받침 비트 1 = Pallet · 0 = 없음 (A27 결과에 따름),신규(안)
@@ -45,7 +45,7 @@
 16 AS/RS,Y1690,B,PLC→FIO,Belt Conveyor,Run,격리 라인 컨베이어,신규(안)
 16 AS/RS,X1902,B,FIO→PLC,Diffuse Sensor,Detect,발열 격리 게이트 (카운터 D1902),기존
 16 AS/RS,Y1691,B,PLC→FIO,Stack Light,Red,발열 경보 빨강 (M1690),신규(안)
-16 AS/RS,Y1692,B,PLC→FIO,Stack Light,Yellow,노랑 (재검사 라인 만차 M1800 등),신규(안)
+16 AS/RS,Y1692,B,PLC→FIO,Stack Light,Yellow,노랑 (재검사 라인 만차 M1800 · 래더 알람 M1951~M1957 — 11-26 v3),신규(안)
 16 AS/RS,Y1693,B,PLC→FIO,Stack Light,Green,초록 (운전 중),신규(안)
 16 AS/RS,Y1694,B,PLC→FIO,Alarm Siren,Alarm Siren,발열 경보음 (M1690),신규(안)
 17 검사·분류,Y1700,B,PLC→FIO,Belt Conveyor,Run,메인 라인 1 (1차 분리 → 메인 검사기),신규(안)

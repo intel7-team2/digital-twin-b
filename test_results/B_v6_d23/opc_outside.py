@@ -1,6 +1,7 @@
 """실제 PLC(GX Simulator2) + MX OPC + Factory I/O(OPC 씬) 6팩 시험용 — 바깥(C 인계 · 검사 엔진 · 발열 접수)을 OPC로 대신함(11-24).
 softplc.py의 outside()와 같은 동작. 래더는 GX Simulator2가 돌리고, 이 스크립트는 바깥 신호만 읽고 씀.
-사용: py -3.12 opc_outside.py <계획 예: 1,2L,3,H,1L,2> <제한 초> [--device CSIM] [--bridge <Modbus 씬>]
+사용: py -3.12 opc_outside.py <계획 예: 1,2L,3,H,1L,2> <제한 초> [--device CSIM] [--bridge <Modbus 씬>] [--serve]
+  --serve: 검사 · 격리 기록 응답을 하지 않음(measurement_engine.py serve가 함). 계획의 판정 숫자는 무시, L(6S) · H(발열)만 씀
 준비: GX Works2 시뮬레이션 RUN · MX OPC 프로젝트 MXOPC_B_v6_d24b.mdb(태그 359).
   --bridge 없이: Factory I/O에 V6_plc_17_opc(OPC Client 씬)를 열고 실행.
   --bridge 씬:  Factory I/O에 Modbus 씬(V6_plc_17)을 열고, 이 스크립트가 Factory I/O(Modbus) ↔ PLC(MX OPC)를 중계.
@@ -11,6 +12,7 @@ import plc_link as P
 
 plan = sys.argv[1].split(","); LIMIT = float(sys.argv[2])
 DEV = sys.argv[sys.argv.index("--device") + 1] if "--device" in sys.argv else "CSIM"
+SERVE = "--serve" in sys.argv                               # 11-26: 검사 · 격리 기록 응답은 measurement_engine.py serve가 함(여기서는 기록만). C 인계 · 발열 접수는 그대로 대행
 
 
 class Link(P.OpcDirectLink):
@@ -158,7 +160,7 @@ if "--bridge" in sys.argv:                                  # Factory I/O(Modbus
     log("중계 스레드 시작(입력 쓰기 · 출력 읽기 따로)")
 def log(m): print(f"{time.time()-T0:6.1f}s {m}", flush=True)
 WATCH = ["M1950", "M1500", "D1640", "D1641", "D1656", "D1541", "D1750", "D1760", "D1525", "D1535", "D1558", "D1568", "D1900", "D1901", "D1902"] + [f"M{1951+i}" for i in range(7)]
-HS = ["M1510", "D1710", "D1711", "D1713", "D1740", "D1741", "D1743", "D1650", "D1651", "D1652", "D1653"]
+HS = ["M1510", "D1710", "D1711", "D1713", "D1740", "D1741", "D1743", "D1650", "D1651", "D1652", "D1653", "D1700", "D1730"]
 RACK = [f"D{1660+k}" for k in range(24)] + [f"D{1810+k}" for k in range(24)]
 ALL = WATCH + HS + RACK + [w for _, w, _ in ESTOP if w not in WATCH + HS + RACK]
 pack_ids = list(range(101, 101 + len(plan))); fed = 0; judged = set(); prev = {}
@@ -193,25 +195,30 @@ while time.time() - T0 < LIMIT:
     if fed < len(plan) and not pend["C"] and ("--v2" in sys.argv or V["D1541"] == 0) and not V["M1510"] and time.time() - T0 > 3:
         pend["C"] = True; L.write_many([("D1516", pack_ids[fed]), ("D1518", 6 if plan[fed].endswith("L") else 4), ("D1542", 1480), ("M1510", 1)])   # 11-25: 한 번에 씀(한 건씩 쓰면 건당 0.6 s라 그동안 PLC 출력 갱신이 밀려 크레인 B가 내려놓기 전에 포크를 당김)
         log(f"C 인계: PACK {pack_ids[fed]} 판정 계획 {plan[fed]}"); fed += 1
-    # 메인 검사 핸드셰이크
-    if V["D1710"] == 0: pend["main"] = False
-    if V["D1710"] == 1 and (V["D1713"] or 0) == 0 and not pend["main"]:
-        pend["main"] = True; pid = V["D1711"]; p = plan[pack_ids.index(pid)] if pid in pack_ids else "1"
-        j = {"1": 1, "H": 1, "2": 2, "3": 3}[p.rstrip("L")]
-        L.write_many([("D1700", j), ("D1701", 5), ("D1702", 60), ("D1703", 250), ("D1713", 1)])
-        log(f"메인 검사 PACK {pid} → 판정 {j}")
-    if V["D1710"] == 0 and V["D1713"] == 1: L.write("D1713", 0)
-    # 재검사 핸드셰이크(GOOD)
-    if V["D1740"] == 0: pend["re"] = False
-    if V["D1740"] == 1 and (V["D1743"] or 0) == 0 and not pend["re"]:
-        pend["re"] = True
-        L.write_many([("D1730", 1), ("D1731", 5), ("D1732", 60), ("D1733", 250), ("D1743", 1)])
-        log(f"재검사 PACK {V['D1741']} → GOOD")
-    if V["D1740"] == 0 and V["D1743"] == 1: L.write("D1743", 0)
-    # 격리 기록
-    if V["D1650"] == 0: pend["iso"] = False
-    if V["D1650"] == 1 and (V["D1653"] or 0) == 0 and not pend["iso"]: pend["iso"] = True; L.write("D1653", 1); log(f"격리 기록 PACK {V['D1651']} 온도 {V['D1652']}")
-    if V["D1650"] == 0 and V["D1653"] == 1: L.write("D1653", 0)
+    if SERVE:                                                 # serve가 응답 → 완료가 올라온 순간만 기록
+        for st, req, res, done in (("메인 검사", "D1710", "D1700", "D1713"), ("재검사", "D1740", "D1730", "D1743"), ("격리 기록", "D1650", "D1651", "D1653")):
+            if V[done] == 1 and not pend.get(st): pend[st] = True; log(f"{st} 응답(serve): {res} = {V[res]}" + (f" · PACK {V['D1711'] if st == '메인 검사' else V['D1741']}" if st != "격리 기록" else ""))
+            if V[done] == 0: pend[st] = False
+    else:
+        # 메인 검사 핸드셰이크
+        if V["D1710"] == 0: pend["main"] = False
+        if V["D1710"] == 1 and (V["D1713"] or 0) == 0 and not pend["main"]:
+            pend["main"] = True; pid = V["D1711"]; p = plan[pack_ids.index(pid)] if pid in pack_ids else "1"
+            j = {"1": 1, "H": 1, "2": 2, "3": 3}[p.rstrip("L")]
+            L.write_many([("D1700", j), ("D1701", 5), ("D1702", 60), ("D1703", 250), ("D1713", 1)])
+            log(f"메인 검사 PACK {pid} → 판정 {j}")
+        if V["D1710"] == 0 and V["D1713"] == 1: L.write("D1713", 0)
+        # 재검사 핸드셰이크(GOOD)
+        if V["D1740"] == 0: pend["re"] = False
+        if V["D1740"] == 1 and (V["D1743"] or 0) == 0 and not pend["re"]:
+            pend["re"] = True
+            L.write_many([("D1730", 1), ("D1731", 5), ("D1732", 60), ("D1733", 250), ("D1743", 1)])
+            log(f"재검사 PACK {V['D1741']} → GOOD")
+        if V["D1740"] == 0 and V["D1743"] == 1: L.write("D1743", 0)
+        # 격리 기록
+        if V["D1650"] == 0: pend["iso"] = False
+        if V["D1650"] == 1 and (V["D1653"] or 0) == 0 and not pend["iso"]: pend["iso"] = True; L.write("D1653", 1); log(f"격리 기록 PACK {V['D1651']} 온도 {V['D1652']}")
+        if V["D1650"] == 0 and V["D1653"] == 1: L.write("D1653", 0)
     # 발열 접수(H)
     for k in range(24):
         pid = V[f"D{1660+k}"]

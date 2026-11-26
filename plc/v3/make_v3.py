@@ -30,6 +30,9 @@ seg(1691, "L0 L1 L2 L3 L4 L10 L20 L21 L22"); seg(1712, "L30 - L32 L33 L34 L35 L3
 RESET = [(1985, 15), (1591, 9), (1743, 3), (1691, 9), (1712, 8), (1570, 21), (1673, 17), (1733, 10), (1770, 23), (1810, 22), (1836, 27), (1863, 33), (1970, 10)]
 for n, v in STEPS.items(): assert any(a <= v < a + c for a, c in RESET), n
 INIT = [n for n in STEPS if re.fullmatch(r"(R\d_0|[A-Z]0)", n)]
+# 11-26: 스텝 밖의 기억 비트(구간 점유 · 판정 넘김 · RFID 요청 · 알람 · 운전)와 내부 카운트도 초기화에서 지움
+# (시뮬레이터 STOP → RUN은 M · D를 지우지 않아, 스텝만 지우면 M1984 같은 점유 비트가 남아 다음 회차가 멈춤)
+FLAGS = "BKRST M1542 K6 | BKRST M1555 K3 | BKRST M1565 K3 | BKRST M1670 K3 | BKRST M1746 K19 | BKRST M1951 K7 | BKRST M1980 K5 | RST M1510 | RST M1950 | MOV K0 D1655 | MOV K0 D1918"
 
 
 def rfid(k, base, tb, req, exe, gate):
@@ -68,8 +71,8 @@ def gate(cmd, req, branches, last):
 
 
 P = {}
-P["COMMON"] = f"""; [초기화부] 첫 스캔에만 스텝 릴레이 전부 리셋 → 초기 스텝 SET. 비상정지 때는 유지(들고 있던 팔레트 낙하 방지)
-Z01  LD SM402  =>  {' | '.join(f'BKRST M{a} K{c}' for a, c in RESET)} | {' | '.join('SET {%s}' % n for n in INIT)}
+P["COMMON"] = f"""; [초기화부] 첫 스캔, 또는 정지 중(M1950 OFF) 초기화 입력 M1961: 스텝 릴레이 · 구간 기억 비트 · 알람 리셋 → 초기 스텝 SET. 비상정지만으로는 유지(들고 있던 팔레트 낙하 방지). 랙 재고(D1660~)는 지우지 않음
+Z01  LD SM402 | LD M1961 | ANI M1950 | ORB  =>  {' | '.join(f'BKRST M{a} K{c}' for a, c in RESET)} | {FLAGS} | {' | '.join('SET {%s}' % n for n in INIT)}
 ; [공통]
 A01  LDI X1500  =>  OUT M1500
 A02  LD X1501 | ANI M1500  =>  SET M1950
@@ -77,7 +80,7 @@ A03  LDI X1502 | OR M1500  =>  RST M1950
 A04  LD SM412  =>  PLS M1540
 A05  LD M1540 | AND M1950  =>  INC D1540
 A06  LD= D1540 K0 | OR> D1540 K32000  =>  MOV K1 D1540
-A08  LD M1960  =>  BKRST M1951 K7
+A08  LD M1960 | OR X1503  =>  BKRST M1951 K7
 A24  LDP M1950  =>  MPS | AND {{A0}} | MOV K55 D1601 | MPP | AND {{B0}} | MOV K55 D1602
 ; [랙 스캔 · LOCK]
 S01  LD SM400  =>  FMOV K0 D1690 K6 | MOV K32767 D1694 | MOV K0 Z0
@@ -107,7 +110,7 @@ C06  LD M1546  =>  MPS | AND {{C28}} | SET {{C29}} | RST {{C28}} | MRD | AND {{C
 C07  LD M1546 | AND {{C22}}  =>  RST {{C22}} | MPS | AND= D1515 K0 | SET {{C23}} | MPP | AND<> D1515 K0 | SET {{C16}}
 C08  LD M1546  =>  MPS | AND {{C21}} | MOV D1515 D1517 | SET {{C22}} | RST {{C21}} | MPP | AND {{C20}} | SET {{C21}} | RST {{C20}}
 C09  LD {{C16}}  =>  SET M1952 | SET {{C15}} | RST {{C16}}
-C10  LD {{C15}} | AND M1960  =>  SET {{C10}} | RST {{C15}}
+C10  LD {{C15}} | LD M1960 | OR X1503 | ANB  =>  SET {{C10}} | RST {{C15}}
 C11  LD {{C10}}  =>  RST M1543 | ANI X1511 | MOV K2 D1519
 C12  LD {{C10}} | LD= D1519 K1 | AND= D1518 K4 | LD= D1519 K2 | AND= D1518 K6 | ORB | ANB  =>  SET M1543
 C13  LD {{C10}} | AND T1514  =>  RST {{C10}} | MPS | AND M1543 | SET {{C20}} | MPP | ANI M1543 | SET M1951 | SET {{C15}}
@@ -156,7 +159,7 @@ E08  LD {{B20}} | AND X160A | AND M1950  =>  SET {{B21}} | RST {{B20}}
 E09  LD {{B11}} | ANI X1608 | ANI X1609 | AND M1950  =>  OUT T1541 K5 | AND T1541 | SET {{B20}} | RST {{B11}}
 E10  LD {{B10}} | AND M1950  =>  / Z3 K6 D1874 | * D1874 K3 D1876 | + D1876 D1643 D1602 | OUT T1519 K30 | LD X1608 | OR X1609 | OR T1519 | ANB | SET {{B11}} | RST {{B10}}
 E11  LD {{B1}}  =>  MOV D1643 Z3 | DEC Z3 | MOV D1660Z3 D1644 | MOV D1840Z3 D1645 | MOV D1643 D1600 | SET {{B10}} | RST {{B1}} | MPS | AND= D1645 K0 | INC D1655 | MPP | AND<> D1645 K0 | SET M1671
-E12  LD {{B0}} | AND M1950  =>  MPS | AND<> D1692 K0 | ANI M1671 | MOV D1692 D1643 | SET {{B1}} | RST {{B0}} | MPP | AND= D1692 K0 | AND<> D1693 K0 | ANI M1800 | AND< D1655 K2 | MOV D1693 D1643 | SET {{B1}} | RST {{B0}}
+E12  LD {{B0}} | AND M1950  =>  MPS | AND<> D1692 K0 | ANI M1671 | AND X1902 | MOV D1692 D1643 | SET {{B1}} | RST {{B0}} | MPP | LD= D1692 K0 | OR M1671 | ORI X1902 | ANB | AND<> D1693 K0 | ANI M1800 | AND< D1655 K2 | MOV D1693 D1643 | SET {{B1}} | RST {{B0}}
 ; [출력부] 속도 지령
 I90  LD {{I20}} | AND M1950  =>  MOV K50 D1505 | MOV K50 D1506
 I91  LDI {{I20}} | ORI M1950  =>  MOV K0 D1505
@@ -361,10 +364,11 @@ R03  LDF X1902  =>  INC D1902
 R04  LD SM400  =>  + D1900 D1901 D1990 | + D1990 D1902 D1903 | MOV D1903 D1994 | MOV K0 D1995
 R05  LD<> D1903 K0  =>  * D1900 K1000 D1992 | D/ D1992 D1994 D1996 | MOV D1996 D1904
 R06  LD= D1903 K0  =>  MOV K0 D1904
-R07  LD M1920 | OR X1503  =>  FMOV K0 D1900 K5
+R07  LD M1920 | OR T1579  =>  FMOV K0 D1900 K5
+R08  LD X1503  =>  OUT T1579 K20
 """
 P["LAMP"] = """W01  LD M1690  =>  OUT Y1691 | OUT Y1694
-W02  LD M1800  =>  OUT Y1692
+W02  LD M1800 | OR<> K2M1951 K0  =>  OUT Y1692
 W03  LD M1950  =>  OUT Y1693
 """
 

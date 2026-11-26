@@ -20,7 +20,18 @@
 - 실물 PLC가 필요한 확인은 이 환경에서 하지 않고 [확인필요_및_논의사항.md 12장](확인필요_및_논의사항.md)(P1~P6)에 모아 둡니다.
 - 시연 PC는 아직 정해지지 않았습니다. 네트워크 주소는 `192.168.0.XXX`로 표기합니다(안건 A21).
 
-## 2. 공정 요약 (v6)
+## 2. 공정 요약
+
+**현재 Factory I/O 씬은 V7**(`factoryio_test/V7_plc_1.factoryio`, 생성 `test_results/a28_1123/build_v7_2f.py`) — 1층 검사 라인 위에 2층 분류 라인을 겹친 ㄷ자:
+
+```
+[1층] 입고 · RFID ① · 크레인 A → AS/RS 24칸 → 크레인 B
+      → TT1(1차 분리: 발열 팩 → 격리 보관 레일, 스토퍼 · 1팔레트) → TTM → 메인 검사(RFID ②)
+      → TT2(GOOD 직진 / 그 외 → 재검사 고리 → 재검사기(RFID ③) → TT3) → TT5 합류 → 엘리베이터 E1
+[2층] 픽앤플레이스가 상자만 집음: NG 상자 → NG 벨트 · GOOD 상자 → 박스 벨트 → 팔레타이저(2개 = 한 팔레트) · 빈 팔레트 → 직진 배출
+```
+
+아래는 처음 설계한 v6 흐름입니다(검사 · 판정 · 보관 규칙은 같고, 분리 장치만 V7에서 턴테이블 · 2층 분류로 바뀜). HTML 시뮬레이터와 레이아웃 그림은 v6 기준입니다.
 
 ```
 [Project C] 팩 조립 → 공유 DB에 packs · cells 기록
@@ -36,9 +47,10 @@ STEP 04  GOOD 직진 → GOOD OUT / RETEST · NG → M1720 → 재검사 라인(
 STEP 05  게이트 카운터(D1900~D1904) · HMI(Pro-face)     ← 프로젝트 범위는 여기까지 (NG 팩은 NG 라인 배출로 끝)
 ```
 
-- **11-26 현재 Factory I/O 씬은 V7**(`factoryio_test/V7_plc_1.factoryio`): 1층 검사 라인 위에 2층 분류 라인을 겹친 ㄷ자. 엘리베이터로 2층에 올려 픽앤플레이스가 상자만 집고, NG 상자는 NG 벨트 · GOOD 상자는 팔레타이저(2개 = 한 팔레트), 빈 팔레트는 따로 배출. 래더는 `plc/v3`(276회로), 실제 PLC 6팩 통과 → [확인필요_및_논의사항.md 15-15](확인필요_및_논의사항.md)
+- **11-26 현재 Factory I/O 씬은 V7**(`factoryio_test/V7_plc_1.factoryio`): 1층 검사 라인 위에 2층 분류 라인을 겹친 ㄷ자. 엘리베이터로 2층에 올려 픽앤플레이스가 상자만 집고, NG 상자는 NG 벨트 · GOOD 상자는 팔레타이저(2개 = 한 팔레트), 빈 팔레트는 따로 배출. 래더는 `plc/v3`(277회로, GX 2,840스텝). 실제 PLC 6팩 · 비상정지 · HMI(WinGP) · Python 계측 엔진(`serve`) · 공유 DB 연동 통과 → [확인필요_및_논의사항.md 15-15 ~ 15-18](확인필요_및_논의사항.md)
+- **알려진 한계(11-26)**: 비상정지 중에도 크레인은 목표 칸까지 감 · RFID를 못 읽은 팩은 상자 크기를 모름 · 배치 끝의 홀수 GOOD 상자는 팔레타이저에서 짝을 기다림 · 현장 즉시정지(`fio_interlock.py`)는 중계 프로그램에만 있음
 - 판정 코드: 1 PASS · 2 RETEST · 3 NG-ΔV · 4 NG-IR · 5 NG-TEMP (재검사는 1회까지)
-- 레이아웃 그림: [layout/layout_v6.png](layout/layout_v6.png)
+- 레이아웃 그림: [layout/layout_v6.png](layout/layout_v6.png) (v6 기준, V7 그림은 없음)
 - 자세한 구조 · 판정 기준 · 디바이스 표 · DB 스키마: [확인필요_및_논의사항.md 0장](확인필요_및_논의사항.md)
 
 ## 3. 빠른 시작
@@ -79,9 +91,9 @@ python hmi_mc_relay.py --backend opc               # Pro-face HMI(WinGP) 중계 
 | `3d_layout.html` | 3D 공정 레이아웃 뷰어(v6). 4S(작은 박스)·6S(큰 박스)가 구역별 입고 → 1차 분리(발열 격리) → 메인 검사 → 재검사 라인(연속) → 재검사 → 2차 분리(합류/NG)로 움직입니다. "구조 확인 포인트"를 누르면 해당 위치로 카메라가 이동합니다. 셀 조회 화면은 없습니다. | 브라우저로 열기 (인터넷 필요: three.js CDN) |
 | `3d_factoryio_v6.html` | **Factory I/O 부품 기준 3D 배치 뷰어(v6) 1판**. 상면도 1판 `layout/factoryio_topview_v6.svg`(M1720 = Pop-up Wheel Sorter)를 3D로 세운 것입니다. `3d_factoryio_v6_v2.html`과 조작 · 흐름 시연이 같고, M1720 분기 부품만 다릅니다. | 브라우저로 열기 (인터넷 필요: three.js CDN). `?view=top` · `?play=1` |
 | `3d_factoryio_v6_v2.html` | **Factory I/O 부품 기준 3D 배치 뷰어(v6) 2판**. 상면도 2판 `layout/factoryio_topview_v6_v2.svg`(M1720 = Pusher)와 같은 좌표(1칸 = 1 m) · 라벨 · 번지로 컨베이어 · 랙 · 스태커 크레인 · Small/Large box를 세웠습니다. 탑뷰(정사영)/사선 뷰 전환과 구간 카메라, 흐름 시연(D10~D18 경로 규칙)이 있습니다. 시연의 판정은 경로를 보여 주는 순서값이며 계측 엔진 값이 아닙니다. | 브라우저로 열기 (인터넷 필요: three.js CDN). `?view=top`(탑뷰로 열기) · `?play=1`(바로 재생) |
-| `measurement_engine.py` | Python 가상 계측 엔진(검사기 2대) + 공유 DB | `handoff --count 20` (C 인계 모사)<br>`demo --db` (인계 + 판정 저장, 재검사는 station 2)<br>`lookup --pack 17` / `--cell CELL-00017B` (팩 RFID 조회)<br>`isolate --pack 9 --temp 412` (발열 격리 DB 기록)<br>`report` (양품 · 원인별 불량 · 발열 격리 · 팩 종류별)<br>`stats --cells 6` (판정 비율)<br>`python3.12-32 measurement_engine.py serve` (검사기 2대 핸드셰이크 D1710 · D1740 + 발열 격리 D1650 + DB 저장. 기본 MX OPC Server 장치 `QSIM`, **32비트 Python + pywin32**. `--link modbus --host 192.168.0.XXX`로 Modbus 직접도 가능) |
-| `hmi_counter_monitor.py` | STEP 05 게이트 카운터 확인 도구. PLC `D1900~D1904`와 공유 DB 집계를 함께 보여 주고, PLC 합계·수율이나 NG·격리 수가 DB와 맞지 않으면 경고합니다. | `--demo` (PLC 없이 표시 형식 확인)<br>`python3.12-32 hmi_counter_monitor.py` (OPC, 1초마다 표시)<br>`--once`, `--reset` (M1920 리셋)<br>`--link modbus --host 192.168.0.XXX` (Modbus 직접) |
-| `hmi_mc_relay.py` | **HMI 중계 서버**(D20). Pro-face WinGP에는 미쓰비시 PLC처럼(MC 프로토콜 3E 바이너리, TCP · UDP 5000) 응답하고, 값은 MX OPC로 GX Simulator2와 주고받음. MX Component 불필요 | `python3.12-32 hmi_mc_relay.py --backend opc`<br>`python hmi_mc_relay.py --backend memory --demo` (PLC 없이 접속 시험) |
+| `measurement_engine.py` | Python 가상 계측 엔진(검사기 2대) + 공유 DB | `handoff --count 20` (C 인계 모사)<br>`demo --db` (인계 + 판정 저장, 재검사는 station 2)<br>`lookup --pack 17` / `--cell CELL-00017B` (팩 RFID 조회)<br>`isolate --pack 9 --temp 412` (발열 격리 DB 기록)<br>`report` (양품 · 원인별 불량 · 발열 격리 · 팩 종류별)<br>`stats --cells 6` (판정 비율)<br>`python measurement_engine.py serve --opc-device CSIM --opc-source cache --db <DB>` (검사기 2대 핸드셰이크 D1710 · D1740 + 발열 격리 D1650 + DB 저장. 64비트 가능(D21), 같은 요청에 한 번만 답함, 통신 오류 때 2초마다 다시 붙음. `--link modbus --host 192.168.0.XXX`로 Modbus 직접도 가능) |
+| `hmi_counter_monitor.py` | STEP 05 게이트 카운터 확인 도구. PLC `D1900~D1904`와 공유 DB 집계를 함께 보여 주고, PLC 합계·수율이나 NG·격리 수가 DB와 맞지 않으면 경고합니다. | `--demo` (PLC 없이 표시 형식 확인)<br>`python hmi_counter_monitor.py` (OPC, 1초마다 표시)<br>`--once`, `--reset` (M1920 리셋)<br>`--link modbus --host 192.168.0.XXX` (Modbus 직접) |
+| `hmi_mc_relay.py` | **HMI 중계 서버**(D20). Pro-face WinGP에는 미쓰비시 PLC처럼(MC 프로토콜 3E 바이너리, TCP · UDP 5000) 응답하고, 값은 MX OPC로 GX Simulator2와 주고받음. MX Component 불필요. MX OPC에 없는 번지는 0으로 읽음(WinGP가 비트를 16개 단위로 읽음), 같은 포트 중복 실행은 거부 | `python hmi_mc_relay.py --backend opc --opc-device CSIM --opc-source cache`<br>`python hmi_mc_relay.py --backend memory --demo` (PLC 없이 접속 시험) |
 | `plc_link.py` | **PLC 통신 계층**(D17). 코드는 디바이스 이름(D1700 · M1920)만 쓰고, 여기서 OPC 태그(`QSIM.D1700`) 또는 Modbus 주소로 바꿈. `serve` · HMI 모니터 · `modbus_probe.py`가 사용 | 직접 실행하지 않음 |
 | `tools/mxopc_tags.py` | **MX OPC 태그 목록(1500~19FF, 100개)** 생성 · 변환 · 확인. 태그 이름 = 디바이스 이름. Configurator 내보내기 CSV를 견본으로 가져오기용 CSV 생성, 기존 3000번대 태그 번지 이동, 등록 확인 | `python tools\mxopc_tags.py` (목록)<br>`--template qsim_export.csv --out qsim_import_v5.csv`<br>`--remap-old qsim_export.csv --out qsim_remap.csv`<br>`python3.12-32 tools\mxopc_tags.py --check` |
 | `tools/mxopc_tags_v5.csv` | 위 목록의 기본 CSV (태그 · 디바이스 · 형식 · 설명). Configurator 가져오기 형식과 다를 수 있어 `--template` 사용을 권장 | – |
@@ -90,9 +102,9 @@ python hmi_mc_relay.py --backend opc               # Pro-face HMI(WinGP) 중계 
 | `tools/modbus_probe.py` | Modbus TCP 연결 확인 도구(Computer Use 테스트 C3용). Coils · Discrete Inputs · Holding · Input Registers를 읽고, `--write`로 Holding Register 하나에 써서 다시 읽음 | `pip install pymodbus` 후 `python tools\modbus_probe.py --host 192.168.0.XXX --port 502` (주소 필수, 시연 PC 미정) |
 | `hmi/` | Pro-face HMI 화면 시안 v2(1024×768, WinGP 작화 가능 여부 확인 반영): `hmi_mockup.html`(`#s1`~`#s4`, `-bg` 배경만, `-guide` 부품 위치, `#parts` 부품 목록), 완성 시안 PNG 4장, **배경 이미지 `bg/` 4장**, 부품 위치 `guide/` 4장, 부품 목록 `hmi_parts_v2.csv`. 내용 · 번지 · 작화 순서는 `확인필요_및_논의사항.md` 14장 | 브라우저로 열기 · GP-Pro EX에 배경 PNG 배치 |
 | `layout/` | 상면 레이아웃 그림. **`layout_v6`(현재안)만 남김** (이전 판은 Git 이력에 있음) | `.drawio`는 draw.io(app.diagrams.net)에서 수정, `.png`는 미리보기, `make_layout_v6.py`로 다시 생성 |
-| `computer_use/` | **월요일(11-23) Computer Use 작업 준비**: 지시서 `README.md`, 점검 `preflight.py`, Factory I/O 씬 XML 도구 `fio_scene.py`(시험 씬 · 태그 이름 · Modbus/OPC 연결), Modbus 조작 `fio_modbus.py`(크레인 · RFID), 핸드셰이크 확인 `plc_side_check.py`, MX OPC 프로젝트 DB 도구 `mxopc_db.py`, 센서 · 액추에이터 번지 안 `fio_io_map_v6.csv`, 그림 `img/` | `python computer_use/preflight.py --opc`<br>`python computer_use/fio_scene.py tests` (시험 씬 다시 만들기)<br>`python computer_use/make_guides.py` (그림) |
-| `plc/` | **v6 공정 PLC 래더 설계서(초안)** `ladder_design_v6.md`: STEP 01~05 스텝 표(시작 조건 · 출력 · 끝 조건 · 타이머 · 번지)와 GX Works2 입력용 명령어 목록. 번지 안(확정 전)과 번지 없는 내부 디바이스(자리 표시, 안건 A30)를 구분해 적음. GX Works2 입력 · 시뮬레이션 전. `ladder_alloc_v6.csv`는 내부 번지 배정 초안(A30, 확정 전), `ladder_mnemonic_v6.txt`는 그 초안으로 치환한 입력용 목록(자동 생성). `check_ladder_design.py`는 설계서의 번지가 0-4 표 · 번지 안에 있는지, 배정이 겹치지 않는지 대조 | `python plc/check_ladder_design.py`<br>`--apply plc/ladder_mnemonic_v6.txt` (치환 목록 다시 만들기)<br>`plc/v2/` v2 래더(규칙 `radder_v2.md`, `python plc/v2/make_v2.py`) · `plc/v3/` V7 씬용 v3 래더(`python plc/v3/make_v3.py` → 명령어 목록 · IL · 스텝 표) |
-| `test_results/` | Computer Use 테스트 결과(스크린샷 · 로그 · `Computer_Use_테스트결과.md`) · GX Works2 테스트 프로젝트 `W_test.gxw` | – |
+| `computer_use/` | **Computer Use 작업 준비(11-20 준비, 11-23부터 사용)**: 지시서 `README.md`, 점검 `preflight.py`, Factory I/O 씬 XML 도구 `fio_scene.py`(시험 씬 · 태그 이름 · Modbus/OPC 연결), Modbus 조작 `fio_modbus.py`(크레인 · RFID), 핸드셰이크 확인 `plc_side_check.py`, MX OPC 프로젝트 DB 도구 `mxopc_db.py`, 센서 · 액추에이터 번지 안 `fio_io_map_v6.csv`, 그림 `img/` | `python computer_use/preflight.py --opc`<br>`python computer_use/fio_scene.py tests` (시험 씬 다시 만들기)<br>`python computer_use/make_guides.py` (그림) |
+| `plc/` | **PLC 래더 3가지**: v1 설계서 `ladder_design_v6.md` · 명령어 목록 `ladder_mnemonic_v6.txt`(276회로, 턴테이블 씬 `V6_plc_21`) · v2 `plc/v2/`(220회로, 규칙 `radder_v2.md`) · **v3 `plc/v3/`(277회로, 현재 V7 씬, GX `test_results/B_v7/B_v7.gxw`)**. 모두 GX Works2 시뮬레이션 + 실제 PLC 경로로 시험함. 번지 안(확정 전)과 번지 없는 내부 디바이스(자리 표시, 안건 A30)를 구분해 적음. `ladder_alloc_v6.csv`는 내부 번지 배정 초안(A30, 확정 전), `ladder_mnemonic_v6.txt`는 그 초안으로 치환한 입력용 목록(자동 생성). `check_ladder_design.py`는 설계서의 번지가 0-4 표 · 번지 안에 있는지, 배정이 겹치지 않는지 대조 | `python plc/check_ladder_design.py`<br>`--apply plc/ladder_mnemonic_v6.txt` (치환 목록 다시 만들기)<br>`plc/v2/` v2 래더(규칙 `radder_v2.md`, `python plc/v2/make_v2.py`) · `plc/v3/` V7 씬용 v3 래더(`python plc/v3/make_v3.py` → 명령어 목록 · IL · 스텝 표) |
+| `test_results/` | 시험 결과 · 도구: `B_v6_d23/`(시험 도구 `softplc.py` · `opc_outside.py` · `fio_interlock.py`, v1 GX `B_v6_d23.gxw`, 사용법 `README.md`) · `B_v6_v2/`(v2 GX) · **`B_v7/B_v7.gxw`(현재 v3 GX)** · `MXOPC_B_v7.mdb`(현재 MX OPC 프로젝트) · `HMI_v2_1123.prx`(HMI) · `a28_1123/`(씬 생성 스크립트) | – |
 | `확인필요_및_논의사항.md` | 현재 구조 · 결정(D#) · 검증 결과 · 확인 필요 사항 · 논의 안건(A#) · 테스트 지시서 · 결과 기록 | – |
 | `README.md` · `AGENTS.md` · `CLAUDE.md` | 저장소 안내 · AI 에이전트 공통 지침 · Claude Code 지침 | – |
 
@@ -126,6 +138,7 @@ python hmi_mc_relay.py --backend opc               # Pro-face HMI(WinGP) 중계 
 - 시뮬레이션 · 스크립트로 확인한 것과 실기로 확인한 것을 구분해서 적습니다. 실기 확인 전 항목은 "미확인"으로 둡니다.
 
 ### 테스트 · 장비 (실물 PLC 없는 환경)
+- **Factory I/O 창을 최소화하지 않습니다**(최소화하면 시뮬레이션이 멈춰 시험이 무효가 됨, 11-26). 다른 창은 Factory I/O 위에 띄우기만 합니다.
 - GX Works2는 **시뮬레이션으로만** 동작시킵니다. 실기 "PLC 쓰기 / 읽기 / RUN"은 쓰지 않습니다.
 - 원본 PLC 프로젝트(`E:\PLC\1\*.gxw`)는 저장 · 덮어쓰기하지 않습니다. 테스트 래더는 새 프로젝트로 `test_results\`에 저장합니다.
 - Factory I/O 씬은 새로 만들어 `factoryio_test\`에 다른 이름으로 저장합니다.

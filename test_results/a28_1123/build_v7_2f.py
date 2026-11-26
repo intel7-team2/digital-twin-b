@@ -72,6 +72,7 @@ rollY(2, 132, 14, 106, "N", "Y1928"); rollY(2, 132, 14, 79, "N", "Y1929"); beamX
 put("P Emit", 132, 18, 110, "N", {"P Emit": "Y192A", "P Base": "D1916"}); removerY(132, 18, 75)
 # 11-26: 2층만 시험하는 씬(TEST2F=1) — E1 2층 출구 롤러 위에 팔레트+상자 Emitter(Y19F0 · Part D1985 · Base D1986). 운전 씬에는 없음
 if os.environ.get("TESTISO"): put("P Emit", 219, 6, 195, "S", {"P Emit": "Y19F0", "P Base": "D1986", "P Part": "D1985"})   # 11-26 격리 레일만 시험
+if os.environ.get("TESTREL"): O.append(place("Remover", 219, 6, 202, "S", names={"Remover": "Y19F1"}))   # 11-26 시험 전용: 격리 레일 팔레트를 치우는 리무버(작업자가 치운 것 흉내, 코일 Y19F1). 운전 씬에는 없음
 if os.environ.get("TEST2F"): put("P Emit", 107, 31, 153, "E", {"P Emit": "Y19F0", "P Base": "D1986", "P Part": "D1985"})
 # 2층 받침(장식)
 for x in (113, 137, 161): O.append(place("PlatformL", x, 23, 153, "S"))

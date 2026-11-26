@@ -4,14 +4,14 @@
 
 | 프로그램 | 렁 | 명령어 수 | 스텝(추정) |
 |---|---|---|---|
-| COMMON | Z01 | 33 | 59 |
+| COMMON | Z01 | 47 | 89 |
 | COMMON | A01 | 2 | 2 |
 | COMMON | A02 | 3 | 3 |
 | COMMON | A03 | 3 | 3 |
 | COMMON | A04 | 2 | 3 |
 | COMMON | A05 | 3 | 4 |
 | COMMON | A06 | 3 | 8 |
-| COMMON | A08 | 2 | 4 |
+| COMMON | A08 | 3 | 5 |
 | COMMON | A24 | 7 | 10 |
 | COMMON | S01 | 4 | 9 |
 | COMMON | S02 | 1 | 2 |
@@ -51,7 +51,7 @@
 | INFEED | C07 | 9 | 13 |
 | INFEED | C08 | 10 | 11 |
 | INFEED | C09 | 4 | 4 |
-| INFEED | C10 | 4 | 4 |
+| INFEED | C10 | 6 | 6 |
 | INFEED | C11 | 4 | 5 |
 | INFEED | C12 | 8 | 16 |
 | INFEED | C13 | 10 | 10 |
@@ -94,7 +94,7 @@
 | CRANE | E09 | 8 | 11 |
 | CRANE | E10 | 12 | 24 |
 | CRANE | E11 | 14 | 26 |
-| CRANE | E12 | 16 | 26 |
+| CRANE | E12 | 20 | 30 |
 | CRANE | I90 | 4 | 6 |
 | CRANE | I91 | 3 | 4 |
 | CRANE | I92 | 4 | 5 |
@@ -277,20 +277,21 @@
 | COUNTER | R05 | 4 | 13 |
 | COUNTER | R06 | 2 | 5 |
 | COUNTER | R07 | 3 | 6 |
+| COUNTER | R08 | 2 | 5 |
 | LAMP | W01 | 3 | 3 |
-| LAMP | W02 | 2 | 2 |
+| LAMP | W02 | 3 | 5 |
 | LAMP | W03 | 2 | 2 |
 
 | 프로그램 | 렁 수 | 스텝(추정, END 포함) |
 |---|---|---|
-| COMMON | 20 | 252 |
+| COMMON | 20 | 283 |
 | RFID | 18 | 220 |
-| INFEED | 22 | 274 |
-| CRANE | 44 | 429 |
+| INFEED | 22 | 276 |
+| CRANE | 44 | 433 |
 | SORT1 | 23 | 195 |
 | INSPECT | 34 | 413 |
 | RETEST | 44 | 465 |
 | DRIVE | 62 | 539 |
-| COUNTER | 6 | 46 |
-| LAMP | 3 | 8 |
-| **합계** | 276 | 2841 |
+| COUNTER | 7 | 51 |
+| LAMP | 3 | 11 |
+| **합계** | 277 | 2886 |

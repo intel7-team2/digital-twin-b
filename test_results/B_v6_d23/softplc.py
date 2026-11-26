@@ -184,7 +184,7 @@ def io_in():
         if ar == "di": B[n] = bool(d[a])
         else: W[n] = ((r[a] + 32768) % 65536) - 32768
     for k, v in FORCE.items(): B[k] = v
-    estop_tick()
+    estop_tick(); hook_tick()
 import collections, os
 # 11-25 비상정지 · 정지 시험: ESTOP="X1500@D1640=11|X1502@D1750=12" — 조건이 되면 그 버튼을 6초 누름(NC라 OFF) → 뗌 → 2초 뒤 시작 버튼 1.5초. 한 건씩 차례로
 ESTOP = [tuple(re.split("[@=]", x)) for x in os.environ.get("ESTOP", "").split("|") if x]; _es = {"t": None, "n": 0}
@@ -200,6 +200,26 @@ def estop_tick():
         elif 8 <= d < 9.5: B["X1501"] = True
         elif d >= 9.5:
             B["X1501"] = False; _es["t"] = None; _es["n"] += 1; print(f"{now-T0:6.1f}s ** 다시 시작 M1950={B.get('M1950')}", flush=True)
+# 11-26 고장 · 조작 시험 훅
+#  PRESS="X1503@M1952=1:1.5|Y19F1@D1900=2:4" — 조건이 된 뒤 3초 지나 그 비트를 hold초 동안 ON(차례로 한 건씩). 조작반 버튼 · 시험 씬의 시험용 코일
+#  FAULT="D1515=9999@M1952" — 그 비트가 처음 켜질 때까지 입력 워드를 그 값으로 덮음(RFID 읽기 오류 흉내)
+PRESS = [(a.split("@")[0],) + tuple(a.split("@")[1].split(":")[0].split("=")) + (float(a.split(":")[1]) if ":" in a else 1.0,) for a in os.environ.get("PRESS", "").split("|") if a]
+FAULT = [[a.split("=")[0], int(a.split("=")[1].split("@")[0]), a.split("@")[1], True] for a in os.environ.get("FAULT", "").split("|") if a]
+_hk = {"n": 0, "t": None}
+def hook_tick():
+    now = time.time()
+    for f in FAULT:
+        if f[3]:
+            if B.get(f[2]): f[3] = False; print(f"{now-T0:6.1f}s ** 고장 주입 끝 ({f[0]}, {f[2]} 켜짐)", flush=True)
+            else: W[f[0]] = f[1]
+    if _hk["n"] < len(PRESS):
+        b, w, v, hold = PRESS[_hk["n"]]
+        if _hk["t"] is None:
+            if (int(bool(B.get(w))) if w[0] in "MXY" else W.get(w, 0)) == int(v): _hk["t"] = now; print(f"{now-T0:6.1f}s ** 조건 {w}={v} → 3초 뒤 {b} ON {hold}초", flush=True)
+        else:
+            d = now - _hk["t"]
+            if 3 <= d < 3 + hold: B[b] = True
+            elif d >= 3 + hold: B[b] = False; _hk["t"] = None; _hk["n"] += 1; print(f"{now-T0:6.1f}s ** {b} 뗌", flush=True)
 OUT_DELAY = float(os.environ.get('OUT_DELAY', '0')); _q = collections.deque(); OUT_ONLY = set(filter(None, os.environ.get('OUT_ONLY', '').split(',')))
 def io_out():
     co = {}; hr = {}
@@ -233,6 +253,7 @@ def io_out():
 # ---------------- 바깥(투입 · 검사 엔진) 대신 ----------------
 import os
 TSCALE = float(os.environ.get("TSCALE", "1"))   # Factory I/O 툴바 Time Scale과 같은 값(2 · 3 · 4). 타이머만 그만큼 빨리 감
+BWATCH = [x for x in os.environ.get("BWATCH", "").split(",") if x]
 STOPAT = [(x.split("=")[0], int(x.split("=")[1])) for x in os.environ.get("STOPAT", "").split("|") if x]   # 예: STOPAT=D1760=10 (그 순간 멈춰 화면 확인)
 FORCE = {k: v == "1" for k, v in (x.split("=") for x in os.environ.get("FORCE", "").split(",") if x)}   # 예: FORCE=X1511=1 (씬에 없는 센서 대신)
 T0 = time.time()
@@ -382,6 +403,8 @@ try:
         for w in watch:
             v = W.get(w, 0)
             if prev.get(w) != v: prev[w] = v; log(f"  {w} = {v}")
+        for a in BWATCH:                                  # 11-26: BWATCH="Y1692,M1671" — 비트가 바뀔 때 기록
+            if bool(B.get(a)) != prev.get("b_" + a): prev["b_" + a] = bool(B.get(a)); log(f"  {a} = {int(bool(B.get(a)))}")
         for a in ("M1951", "M1952", "M1953", "M1954", "M1955", "M1956", "M1957"):
             if B.get(a) and not prev.get(a): log(f"  알람 {a}")
             prev[a] = B.get(a)
