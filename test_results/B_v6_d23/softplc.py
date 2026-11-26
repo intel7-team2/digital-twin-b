@@ -3,13 +3,13 @@ GX Simulator2 ↔ MX OPC는 쓰기 1회 약 0.2초라 입고점 0.15초 제동 �
 시험 스크립트가 C 인계(투입)와 검사 엔진(Python serve) 응답을 대신함.
 사용: softplc.py <씬> <시나리오: 판정 목록, 예 1,2,3> [제한 초]
   판정 1 = GOOD, 2 = RETEST(재검사에서 GOOD), 3 = NG(메인 NG → 재검사 라인 → NG OUT), H = 입고 뒤 발열 접수(격리). 뒤에 L을 붙이면 Large(6S, D1518 = 6)"""
-import sys, re, time, io
+import sys, re, time, io, os
 sys.path.insert(0, r"D:\seojung\digital-twin-b\computer_use")
 sys.path.insert(0, r"D:\seojung\digital-twin-b\test_results\a28_1123")   # pyModbusTCP 대체 모듈
 import fio_scene as F
 from pyModbusTCP.client import ModbusClient
 
-SRC = r"D:\seojung\digital-twin-b\plc\ladder_mnemonic_v6.txt"
+SRC = os.environ.get("LADDER", r"D:\seojung\digital-twin-b\plc\ladder_mnemonic_v6.txt")   # v2: plc/v2/ladder_mnemonic_v2.txt
 scene, plan = sys.argv[1], sys.argv[2].split(",")
 LIMIT = float(sys.argv[3]) if len(sys.argv) > 3 else 600
 
@@ -39,6 +39,8 @@ def addr(tok):
         n = int(num, 16) + (Z[zi] if zi else 0); return f"{kind}{n:X}"
     n = int(num) + (Z[zi] if zi else 0); return f"{kind}{n}"
 def val(tok):
+    km = re.match(r"^K(\d)M(\d+)$", tok)                       # K2M1774 = 비트 8개를 수로
+    if km: return sum(1 << i for i in range(4 * int(km.group(1))) if B.get(f"M{int(km.group(2)) + i}"))
     if tok.startswith("K"): return int(tok[1:])
     if tok.startswith("Z"): return Z[tok]
     if tok.startswith("T"): return int(T.get(tok, [0.0, False])[0] * 10 + 1e-6)   # 타이머 현재값(100 ms 단위, GX와 같음)
@@ -82,8 +84,22 @@ def cond_of(key, conds):
 
 def run_outs(key, cnd, outs, mc, dt):
     """mc=False: MC 안에서 끔(OUT·타이머 OFF, 나머지 실행 안 함)"""
+    mps, blk = [], []                                  # 11-25: 출력 뒤로 이어지는 접점 · MPS/MRD/MPP 분기
     for j, o in enumerate(outs):
         op = o[0]
+        if op == "MPS": mps.append(cnd); continue
+        if op == "MRD": cnd = mps[-1]; continue
+        if op == "MPP": cnd = mps.pop(); continue
+        if op == "ANB": cnd = blk.pop() and cnd; continue
+        if op == "ORB": cnd = blk.pop() or cnd; continue
+        m = re.match(r"^(LD|AND|OR)(=|<>|>=|<=|>|<)$", op)
+        if m or op in ("LD", "LDI", "AND", "ANI", "OR", "ORI"):
+            v = CMP[m.group(2)](val(o[1]), val(o[2])) if m else (bit(o[1]) != (op in ("LDI", "ANI", "ORI")))
+            kind = m.group(1) if m else {"LD": "LD", "LDI": "LD", "AND": "AND", "ANI": "AND", "OR": "OR", "ORI": "OR"}[op]
+            if kind == "LD": blk.append(cnd); cnd = v
+            elif kind == "AND": cnd = cnd and v
+            else: cnd = cnd or v
+            continue
         if op in ("OUT", "OUTH"):
             if o[1].startswith("T"):
                 t = T.setdefault(o[1], [0.0, False])
@@ -103,6 +119,10 @@ def run_outs(key, cnd, outs, mc, dt):
         if not (cnd and mc): continue
         if op == "SET": B[addr(o[1])] = True
         elif op == "RST": B[addr(o[1])] = False
+        elif op == "BKRST":
+            for i in range(val(o[2])): B[f"M{int(o[1][1:]) + i}"] = False
+        elif op == "/":
+            a, b = val(o[1]), val(o[2]); d = addr(o[3]); q = int(a / b) if b else 0; W[d] = q; W[f"D{int(d[1:])+1}"] = a - q * b
         elif op == "MOV": setw(o[2], val(o[1]))
         elif op == "INC": setw(o[1], val(o[1]) + 1)
         elif op == "DEC": setw(o[1], val(o[1]) - 1)
@@ -118,6 +138,9 @@ def run_outs(key, cnd, outs, mc, dt):
             a, b = l32(o[1]), l32(o[2]); d = addr(o[3]); n = int(d[1:])
             q = int(a / b) if b else 0; r = a - q * b if b else 0
             W[d] = q & 0xFFFF; W[f"D{n+1}"] = (q >> 16) & 0xFFFF; W[f"D{n+2}"] = r & 0xFFFF; W[f"D{n+3}"] = (r >> 16) & 0xFFFF
+        elif op == "BMOV":
+            s_, d_ = int(addr(o[1])[1:]), int(addr(o[2])[1:]); v_ = [W.get(f"D{s_+i}", 0) for i in range(val(o[3]))]
+            for i, x in enumerate(v_): W[f"D{d_+i}"] = x
         elif op == "FMOV":
             d = addr(o[2]); n = int(d[1:])
             for i in range(val(o[3])): W[f"D{n+i}"] = val(o[1])
@@ -170,7 +193,7 @@ def estop_tick():
     if _es["t"] is None:
         if _es["n"] < len(ESTOP):
             b, w, v = ESTOP[_es["n"]]
-            if W.get(w, 0) == int(v): _es["t"] = now; _es["b"] = b; print(f"{now-T0:6.1f}s ** {b} 누름 ({w}={v})", flush=True)
+            if (int(bool(B.get(w))) if w[0] in "MXY" else W.get(w, 0)) == int(v): _es["t"] = now; _es["b"] = b; print(f"{now-T0:6.1f}s ** {b} 누름 ({w}={v})", flush=True)
     if _es["t"] is not None:
         d = now - _es["t"]
         if d < 6: B[_es["b"]] = False
@@ -197,6 +220,11 @@ def io_out():
                     else: hr[a] = hr0.get(a, 0)
         else:
             co, hr = co0, hr0
+    import fio_interlock                                  # 11-25 턴테이블 현장 즉시정지(중계와 같음)
+    ct = fio_interlock.cuts(lambda n: B.get(n, False), lambda n: any(co.get(a_) for n_, ar_, a_ in outs_ if n_ == n and ar_ == "coil")); zw = fio_interlock.zero_words(lambda n: B.get(n, True)); co = dict(co); hr = dict(hr)
+    for n, ar, a in outs_:
+        if ar == "coil" and n in ct: co[a] = False
+        if ar != "coil" and n in zw: hr[a] = 0
     if co:
         lo, hi = min(co), max(co); c.write_multiple_coils(lo, [co.get(i, False) for i in range(lo, hi + 1)])
     if hr:
@@ -209,12 +237,32 @@ STOPAT = [(x.split("=")[0], int(x.split("=")[1])) for x in os.environ.get("STOPA
 FORCE = {k: v == "1" for k, v in (x.split("=") for x in os.environ.get("FORCE", "").split(",") if x)}   # 예: FORCE=X1511=1 (씬에 없는 센서 대신)
 T0 = time.time()
 def log(m): print(f"{time.time()-T0:6.1f}s {m}", flush=True)
+V2 = "ladder_mnemonic_v6" not in os.path.basename(SRC)   # v2는 스텝이 M 릴레이라 D1541이 없음 → 접수 비트만 봄
+if os.environ.get("T2F"): plan = [x for x in os.environ["T2F"].split(",") if x]
 pack_ids = list(range(101, 101 + len(plan)))
 fed = 0; judged = {}; watch = ["D1525", "D1535", "D1558", "D1568", "D1750", "D1760", "D1517"]
 prev = {}
+# 11-26: 2층만 시험(T2F="3,1L,..." 계획 코드) — 1층 팩 없이, 픽앤플레이스가 비면 시험 씬의 Emitter(Y19F0)로
+# E1 2층 출구 롤러에 팔레트+상자를 내보내고 2층 단계(M1592)를 바로 시작. GOOD/NG(M1982) · L(M1748)도 여기서 줌
+T2F = [x for x in os.environ.get("T2F", "").split(",") if x]
+_t2 = {"i": 0, "t": None, "prev": {}}
+def t2f_tick():
+    s = _t2; now = time.time()
+    for b in ("X1918", "Y191A", "X1917", "Y1921", "Y1925", "X1925", "Y192A"):
+        if s["prev"].get(b) != B.get(b): s["prev"][b] = B.get(b); log(f"  {b} = {int(bool(B.get(b)))}")
+    if s["t"] is not None:
+        if now - s["t"] > 0.5: B["Y19F0"] = False; s["t"] = None
+        return
+    if s["i"] < len(T2F) and now - T0 > 5 and B.get("M1950") and B.get("M1591") and not B.get("M1592") and not B.get("X1917"):
+        code = T2F[s["i"]]; L = code.endswith("L")
+        W["D1986"] = 2; W["D1985"] = 4 if L else 2; B["Y19F0"] = True; s["t"] = now
+        B["M1982"] = code.rstrip("L") in ("1", "2"); B["M1748"] = L; B["M1592"] = True; B["M1591"] = False
+        log(f"2층 시험: PACK {pack_ids[s['i']]} 계획 {code} 내보냄"); s["i"] += 1
+
 def outside():
     global fed
-    if fed < len(plan) and W.get("D1541", 0) == 0 and not B.get("M1510") and time.time() - T0 > 3:
+    if T2F: t2f_tick(); return
+    if fed < len(plan) and (V2 or W.get("D1541", 0) == 0) and not B.get("M1510") and time.time() - T0 > 3:
         B["M1510"] = True; W["D1516"] = pack_ids[fed]; W["D1518"] = 6 if plan[fed].endswith("L") else 4; W["D1542"] = 1480; log(f"C 인계: PACK {pack_ids[fed]} 판정 계획 {plan[fed]}"); fed += 1
     # 메인 검사 핸드셰이크 D1710~D1714 ↔ D1700~D1703
     if W.get("D1710") == 1 and W.get("D1713", 0) == 0:

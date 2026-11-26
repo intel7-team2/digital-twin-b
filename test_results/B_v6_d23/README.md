@@ -75,10 +75,25 @@ SHOTS=D:/seojung/fio_shots/run1 SHOT_EVERY=2 PYTHONIOENCODING=utf-8 python softp
 - **11-25 결과: `V6_plc_18` + 래더 386회로로 실제 PLC 경로 6팩 2회 모두 GOOD 4 · NG 1 · 격리 1, 알람 0**(논의 문서 15-12). `opc_outside.py`는 여러 값을 한 번에 씀.
 - **11-25 최종: `V6_plc_19` + 래더 387회로 6팩 1회 GOOD 4 · NG 1 · 격리 1, 알람 0(약 13분).** 남은 한계는 논의 문서 15-12.
 - **11-25 턴테이블: `V6_plc_21` + 래더 405회로 6팩 1회 GOOD 4 · NG 1 · 격리 1, 알람 0(13분 30초).** 논의 문서 15-13.
+- **11-25 저녁: 래더 압축 276회로 실제 PLC 6팩 통과, v2(`B_v6_v2/B_v6_v2.gxw`, `--v2`) 6팩 2회 GOOD 4 · NG 1 · 격리 1, 알람 0**(논의 문서 15-14). 턴테이블 · 입고점 현장 즉시정지는 `fio_interlock.py`(중계 · 소프트 PLC가 같이 씀)
 - 비상정지 · 정지 시험: `opc_outside.py … --estop "X1500@D1640=11|X1502@D1750=12"`(실제 PLC) · `ESTOP="…" python softplc.py …`(소프트 PLC). 번지가 그 값이 되면 버튼을 6초 누르고 떼었다가 시작 버튼을 누름.
 - 시험 중에는 `bash watch_run.sh <로그> 45`: 끝 · 알람 · 라이선스 오류 · 정체(로그가 45초 안 늘어남)면 바로 돌아옴. Factory I/O가 `(Unlicensed)`가 되면 라이선스 서버 응답 초과이니 다시 실행.
 - 느린 재생 시험: `py make_timescale.py 2`(타이머 2배 사본 → `x2/` CSV) + Factory I/O 콘솔(`\`) `scene.time_scale = 0.5` + 툴바 Time Scale. 사본은 시험용이라 커밋하지 않음.
 - 중지할 때는 `opc_outside.py` · `opc_shots.py` 프로세스가 남지 않게 확인(두 개가 같이 돌면 C 인계가 섞임).
+
+## V7(1층 검사 + 2층 분류) 시험 (11-26 · 논의 문서 15-15)
+
+```bash
+cd /d/seojung/digital-twin-b/test_results/a28_1123; D=../../factoryio_test
+python build_v7_2f.py $D/V6_plc_19_base.factoryio $D/V7_plc_1_base.factoryio && python add_factory_look.py $D/V7_plc_1_base.factoryio $D/V7_plc_1.factoryio   # 운전 씬
+TEST2F=1 python build_v7_2f.py $D/V6_plc_19_base.factoryio $D/V7_2f_test_base.factoryio && python add_factory_look.py $D/V7_2f_test_base.factoryio $D/V7_2f_test.factoryio   # 2층 시험 씬(커밋 안 함)
+cd ../..; python plc/v3/make_v3.py && python plc/mnemonic_to_gxw_csv.py plc/v3/ladder_mnemonic_v3.txt test_results/B_v7/V3.csv   # 래더 · GX CSV(바뀐 프로그램만 GX에 읽기)
+```
+
+- 소프트 PLC 6팩: `LADDER=../../plc/v3/ladder_mnemonic_v3.txt OUT_DELAY=1.0 python softplc.py "D:/seojung/digital-twin-b/factoryio_test/V7_plc_1.factoryio" 2L,1,3L,H,1L,1 1150`
+- **2층만(1 ~ 2분)**: `LADDER=… T2F=3,1,3L,1L python softplc.py "D:/seojung/digital-twin-b/factoryio_test/V7_2f_test.factoryio" - 300` — 1층 없이 E1 2층 출구에 팔레트 + 상자를 하나씩 내보내고 2층 단계부터 시작. 계획 코드는 위와 같음(H 없음). 2층만 바꿨을 때는 이것만 돌림
+- 실제 PLC: MX OPC 실행 프로젝트 `test_results/MXOPC_B_v7.mdb`(태그 428, 위 1번처럼 레지스트리 · 서비스 재시작), GX `test_results/B_v7/B_v7.gxw`, `py -3.12 opc_reset.py ../MXOPC_B_v7.mdb`, `py -3.12 opc_outside.py 1,2L,3,H,1L,2 1200 --v2 --bridge "D:/seojung/digital-twin-b/factoryio_test/V7_plc_1.factoryio"`(비상정지 시험은 `--estop "X1500@Y1914=1|X1500@Y191A=1|X1500@Y1923=1|X1502@Y1664=1"`)
+- 11-26 결과: 실제 PLC 6팩 + 비상정지 3 · 정지 1 → GOOD 4 · NG 1 · 격리 1, 알람 0(15분). 중계는 입력 변화를 최소 2초 붙잡아 PLC에 보임(`HOLD`)
 
 ## 11-24 시험 도구
 

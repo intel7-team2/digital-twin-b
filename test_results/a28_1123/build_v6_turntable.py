@@ -40,7 +40,7 @@ roller(2, 156, 137, "N", "Y1800"); retro(156, 133, "Z", "X1800"); curve(152, 122
 rstop(133, 118, "W", "Y1730", 3); retro(137, 118, "X", "X1730"); rfid(136, 122, "N", 1530); retro(131, 118, "X", "X1731")
 tt(122, 118, ("Y1733", "Y1734", "Y1735", "X1735", "X1737", "X1733", "X1734"), "TT3")
 # 재검사 GOOD → TT5 (54칸 = 2 m + 4 m · 2 m, 끝을 1칸 물려 붙이고 4 m · 2 m는 8칸 겹침)
-roller(2, 122, 134, "S", "Y1731"); roller(4, 122, 157, "S", "Y1736"); roller(2, 122, 173, "S", "Y1736"); retro(122, 179, "Z", "X1906")
+roller(2, 122, 134, "S", "Y1731"); roller(4, 122, 157, "S", "Y1736"); roller(2, 122, 173, "S", "Y1736")
 O.append(place("DiffusePhotoelectricSensor", 127, 5, 153, "N", extra=lambda o: re.sub(r'(<BinaryInput Name=")[^"]*', r'\g<1>X1736', o).replace("<FinePosition>0<", "<FinePosition>-0.0625<")))
 # NG
 curve(118, 103, "S", "Y1732"); roller(2, 103, 99, "W", "Y1901"); retro(106, 99, "X", "X1901"); remover(98, 99)

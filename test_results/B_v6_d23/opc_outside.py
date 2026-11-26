@@ -99,15 +99,21 @@ if "--bridge" in sys.argv:                                  # Factory I/O(Modbus
         while not BR["stop"]:
             d = Mw.read_discrete_inputs(0, BR["di_n"]); r = Mw.read_input_registers(0, BR["ir_n"])
             if not d or r is None: time.sleep(0.02); continue
-            ch = []
+            ch = []; now_ = time.time()
             for n, ar, a in BR["in"]:
                 v = bool(d[a]) if ar == "di" else ((r[a] + 32768) % 65536) - 32768
+                if ar == "di":                                      # 11-26 짧은 신호 보존: 쓰는 동안 붙잡아 둔 변화를 먼저, 바뀐 값은 최소 HOLD초 유지
+                    with ILK: v = BR["pend"].get(n, v)
+                    if BR["sent"].get(n) is not None and BR["sent"][n] != v and now_ - BR["sent_t"].get(n, 0) < HOLD: continue
                 v = OVR.get(n, v)                                   # 11-25 비상정지 · 정지 시험: 버튼 입력을 대신 넣음
                 if BR["sent"].get(n) != v: ch.append((n, v))
             if not ch: time.sleep(0.01); continue
             bad = Lw.write_many(ch)
             for n, v in ch:
-                if n not in bad: BR["sent"][n] = v
+                if n not in bad:
+                    BR["sent"][n] = v; BR["sent_t"][n] = time.time()
+                    with ILK:
+                        if BR["pend"].get(n) == v: BR["pend"].pop(n, None)
             if bad: log(f"  중계 쓰기 실패 {len(bad)}개: {bad[:8]}")
     def _out_loop():
         Lr = Link(device=DEV, source=P.OPC_DS_CACHE); Mr = ModbusClient("127.0.0.1", 502); last_co = {}; last_hr = {}
@@ -117,18 +123,44 @@ if "--bridge" in sys.argv:                                  # Factory I/O(Modbus
                 if ar == "coil": co[a] = bool(O.get(n))
                 else: hr[a] = (O.get(n) or 0) & 0xFFFF
             # 11-24: 바뀐 출력만 씀(같은 값을 초당 50번 다시 쓰면 Factory I/O 롤러가 떨려 팔레트가 메인 라인에서 돌아가는지 확인)
-            cw = [(a, v) for a, v in co.items() if last_co.get(a) != v]
-            for a, v in cw: Mr.write_single_coil(a, v); last_co[a] = v
-            hw = [(a, v) for a, v in hr.items() if last_hr.get(a) != v]
-            for a, v in hw: Mr.write_single_register(a, v); last_hr[a] = v
+            with ILK:                                                # 인터록이 끊은 롤은 켜지 않음(11-25)
+                BR["want"] = co
+                cw = [(a, v and a not in BR["cut"]) for a, v in co.items() if last_co.get(a) != (v and a not in BR["cut"])]
+                for a, v in cw: Mr.write_single_coil(a, v); last_co[a] = v
+            with ILK:
+                hw = [(a, 0 if a in BR["zero"] else v) for a, v in hr.items() if last_hr.get(a) != (0 if a in BR["zero"] else v)]
+                for a, v in hw: Mr.write_single_register(a, v); last_hr[a] = v
             time.sleep(0.02)
-    for f in (_in_loop, _out_loop): threading.Thread(target=f, daemon=True).start()
+    # 11-25 턴테이블 현장 즉시정지: 진행 쪽 끝 센서가 켜지면 롤을 바로 끊음(fio_interlock.py). OPC를 거치지 않음
+    import fio_interlock
+    ILK = threading.Lock(); BR["cut"] = set(); BR["zero"] = set(); BR["want"] = {}; BR["pend"] = {}; BR["sent_t"] = {}
+    HOLD = 2.0                                                       # 11-26: 입력 한 상태를 PLC에 최소 2초 보임(중계 한 바퀴 최대 약 1.4초)
+    _xa = {n: a for n, ar, a in BR["in"] if ar == "di"}; _ya = {n: a for n, ar, a in BR["out"] if ar == "coil"}; _wa = {n: a for n, ar, a in BR["out"] if ar != "coil"}
+    def _ilk_loop():
+        Mi = ModbusClient("127.0.0.1", 502)
+        while not BR["stop"]:
+            d = Mi.read_discrete_inputs(0, BR["di_n"])
+            if not d: time.sleep(0.02); continue
+            with ILK:                                                # 11-26: 보낸 값과 달라진 첫 변화를 붙잡아 둠(입력 루프가 쓰는 0.6초 사이의 짧은 신호)
+                for n, a in _xa.items():
+                    if n not in BR["pend"] and BR["sent"].get(n) is not None and bool(d[a]) != BR["sent"][n]: BR["pend"][n] = bool(d[a])
+            now = {_ya[y] for y in fio_interlock.cuts(lambda n: n in _xa and d[_xa[n]], lambda n: n in _ya and bool(BR["want"].get(_ya[n]))) if y in _ya}
+            zr = {_wa[w] for w in fio_interlock.zero_words(lambda n: n not in _xa or d[_xa[n]]) if w in _wa}
+            new, newz = now - BR["cut"], zr - BR["zero"]
+            if now != BR["cut"] or zr != BR["zero"]:
+                with ILK:
+                    BR["cut"], BR["zero"] = now, zr
+                    for a in newz: Mi.write_single_register(a, 0)
+                    for a in new:
+                        if BR["want"].get(a): Mi.write_single_coil(a, False)
+            time.sleep(0.01)
+    for f in (_in_loop, _out_loop, _ilk_loop): threading.Thread(target=f, daemon=True).start()
     log("중계 스레드 시작(입력 쓰기 · 출력 읽기 따로)")
 def log(m): print(f"{time.time()-T0:6.1f}s {m}", flush=True)
 WATCH = ["M1950", "M1500", "D1640", "D1641", "D1656", "D1541", "D1750", "D1760", "D1525", "D1535", "D1558", "D1568", "D1900", "D1901", "D1902"] + [f"M{1951+i}" for i in range(7)]
 HS = ["M1510", "D1710", "D1711", "D1713", "D1740", "D1741", "D1743", "D1650", "D1651", "D1652", "D1653"]
 RACK = [f"D{1660+k}" for k in range(24)] + [f"D{1810+k}" for k in range(24)]
-ALL = WATCH + HS + RACK
+ALL = WATCH + HS + RACK + [w for _, w, _ in ESTOP if w not in WATCH + HS + RACK]
 pack_ids = list(range(101, 101 + len(plan))); fed = 0; judged = set(); prev = {}
 
 # 시작: X1501은 Factory I/O 씬 버튼이라 OPC로 써도 Factory I/O가 덮음 → 운전 비트 M1950을 직접 SET(래더 A02와 같은 결과)
@@ -149,7 +181,7 @@ while time.time() - T0 < LIMIT:
     if ESTOP or _es["t"]:                                   # 비상정지 · 정지 시험
         if _es["t"] is None and _es["n"] < len(ESTOP):
             b, w, v = ESTOP[_es["n"]]
-            if V.get(w) == int(v): _es.update(t=t, b=b); OVR[b] = False; log(f"** {b} 누름 ({w}={v})")
+            if V.get(w) is not None and int(V[w]) == int(v): _es.update(t=t, b=b); OVR[b] = False; log(f"** {b} 누름 ({w}={v})")
         elif _es["t"]:
             d = t - _es["t"]
             if d >= 6: OVR.pop(_es["b"], None)
@@ -158,7 +190,7 @@ while time.time() - T0 < LIMIT:
     # C 인계
     if pend["C"] and V["M1510"]: pend["C"] = "seen"
     if pend["C"] == "seen" and not V["M1510"]: pend["C"] = False          # 래더가 M1510을 받아 내린 뒤에만 다음 인계
-    if fed < len(plan) and not pend["C"] and V["D1541"] == 0 and not V["M1510"] and time.time() - T0 > 3:
+    if fed < len(plan) and not pend["C"] and ("--v2" in sys.argv or V["D1541"] == 0) and not V["M1510"] and time.time() - T0 > 3:
         pend["C"] = True; L.write_many([("D1516", pack_ids[fed]), ("D1518", 6 if plan[fed].endswith("L") else 4), ("D1542", 1480), ("M1510", 1)])   # 11-25: 한 번에 씀(한 건씩 쓰면 건당 0.6 s라 그동안 PLC 출력 갱신이 밀려 크레인 B가 내려놓기 전에 포크를 당김)
         log(f"C 인계: PACK {pack_ids[fed]} 판정 계획 {plan[fed]}"); fed += 1
     # 메인 검사 핸드셰이크

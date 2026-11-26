@@ -1,4 +1,4 @@
-﻿<FactoryIO Type="MySavedScene" Year="2026" Month="11" Day="25" Hour="15" Minute="8" Second="47" Version="2.5.10" GUID="00000000-0000-0000-0000-000000000000">
+﻿<FactoryIO Type="MySavedScene" Year="2026" Month="11" Day="25" Hour="16" Minute="23" Second="31" Version="2.5.10" GUID="00000000-0000-0000-0000-000000000000">
   <Description Data="Project B v6 line (roller + curve + turntable)" />
   <Camera>
     <CameraPosition Name="Current" Type="OrbitCamera">
@@ -522,7 +522,7 @@
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Turntable" Key="860a2161-0174-4ac7-aa6e-8ead03321105">
+    <Proxy PrefabName="Turntable" Key="1913cf80-d192-4a77-baef-5ddd76d2953a">
       <Position X="219" Y="2" Z="184" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -534,30 +534,30 @@
     <ComponentIO Index="177" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_Turntable_OM_Monostable_NAME">
       <GroupIO Description="roll">
-        <BinaryOutput Name="Y1662" Address="16" Key="b5ef11c2-de15-4c56-bbe9-9f28d38f5355" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1662" Address="16" Key="463126d9-b825-41da-ba94-f09ec32e580f" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="reverse">
-        <BinaryOutput Name="Y1663" Address="17" Key="a6dbfed5-5e85-44f5-b2c8-62cc4397b6d4" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1663" Address="17" Key="3c039071-e71b-4dae-a313-ace2db1d9a6c" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="turn">
-        <BinaryOutput Name="Y1664" Address="18" Key="57a1d1a9-b5ed-4611-9cb7-d209735b11c6" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1664" Address="18" Key="5ebb3d16-94f8-4420-a4ac-1d07b65088e8" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="limitSwitch0">
-        <BinaryInput Name="X1664" Address="19" Key="ffcf3abd-c7f9-477d-b979-02a3ebb9ebc5" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1664" Address="19" Key="a2cd5be7-7809-42f5-9adb-ace473c7287c" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="limitSwitch90">
-        <BinaryInput Name="X1668" Address="20" Key="6b4eadb0-10a8-4286-aa61-a5dbd6e6467d" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1668" Address="20" Key="f95d3e3a-7312-453f-a1b5-61191d201169" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="frontLimit">
-        <BinaryInput Name="X1662" Address="21" Key="1455d2f0-60fc-428a-b288-28ad73ab9ae9" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1662" Address="21" Key="ac693f0e-7f0f-4f06-83b4-1d7ee4396d24" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="backLimit">
-        <BinaryInput Name="X1663" Address="22" Key="e735557f-a719-4bef-8696-8070e1712f61" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1663" Address="22" Key="4df1847a-6e28-4149-9a43-eabcbdf86053" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="de2825b6-2dc2-4a39-9a42-79680f25e646">
+    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="79c55f78-8810-46ff-a0ad-7e5339a5416e">
       <Position X="228" Y="5" Z="189" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -569,13 +569,13 @@
     <ComponentIO Index="178" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_DefaultSensor_OM_Binary_NAME">
       <GroupIO Description="Default">
-        <BinaryInput Name="X1660" Address="23" Key="956a3645-e5b6-4142-91ea-88b82a5d7f02" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1660" Address="23" Key="f1644ed9-ff2f-4365-a788-d3d46b0ba52c" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Sensor Range="6" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectiveMirror" Key="0f1b1f24-8590-46ad-8169-d33e91de4d8d">
+    <Proxy PrefabName="RetroreflectiveMirror" Key="d9c903e1-4f78-45c1-b1bf-54d72adee7e5">
       <Position X="228" Y="5" Z="179" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -587,7 +587,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RollerConveyor2M" Key="c7424469-5792-4576-9610-f30082472c74">
+    <Proxy PrefabName="RollerConveyor2M" Key="656afbf8-0240-4f97-a7c0-d4541fc06a82">
       <Position X="219" Y="2" Z="200" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -599,13 +599,13 @@
     <ComponentIO Index="180" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_RollerConveyor_OM_SingleBinary_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1690" Address="19" Key="432fb2df-c5b6-4fd6-96a6-e117b0f7fa70" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
+        <BinaryOutput Name="Y1690" Address="19" Key="32c5e7e7-907f-40e9-ab1d-ca68b0e8593e" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="017b5005-2113-48fa-aa39-b5544dbc1254">
+    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="1ec2ca44-6941-4330-903c-9f242be89e7a">
       <Position X="224" Y="5" Z="197" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -617,13 +617,13 @@
     <ComponentIO Index="181" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_DefaultSensor_OM_Binary_NAME">
       <GroupIO Description="Default">
-        <BinaryInput Name="X1902" Address="24" Key="03b12185-ba0e-435a-b71b-7f4ddff9f1c7" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1902" Address="24" Key="268d17f0-4d28-46ad-bc6a-997f56446921" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Sensor Range="6" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectiveMirror" Key="45de1bf7-84af-4206-b19d-b5850183ba5f">
+    <Proxy PrefabName="RetroreflectiveMirror" Key="de031447-288a-460a-aeda-e10018cb7b03">
       <Position X="214" Y="5" Z="197" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -635,7 +635,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Remover" Key="7dd1616d-8e22-4535-b915-2ace8b48776a">
+    <Proxy PrefabName="Remover" Key="4ec5faaf-395a-43d6-b0a4-0d4eaffdd3ec">
       <Position X="219" Y="6" Z="205" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -647,7 +647,7 @@
     <ComponentIO Index="183" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_Remover_OM_Default_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Remover 1" Address="20" Key="a5f1e8d0-5625-493e-8f51-4b50a009603f" OpenCircuit="False" ShortCircuit="False" UseForcedValue="True" ForcedValue="True" />
+        <BinaryOutput Name="Remover 1" Address="20" Key="b7abca3e-697d-43f7-a472-437a4e040352" OpenCircuit="False" ShortCircuit="False" UseForcedValue="True" ForcedValue="True" />
       </GroupIO>
     </OperatingMode>
     <Remover>
@@ -656,7 +656,7 @@
     </Remover>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RollerConveyor2M" Key="6489aca2-2c64-482b-ba48-801e62f2746e">
+    <Proxy PrefabName="RollerConveyor2M" Key="3041ffdb-a890-4665-88cf-e9cc38c33f5a">
       <Position X="219" Y="2" Z="168" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -668,13 +668,13 @@
     <ComponentIO Index="184" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_RollerConveyor_OM_SingleBinary_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1700" Address="21" Key="490c0715-3f79-48da-917b-258383574fa0" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
+        <BinaryOutput Name="Y1700" Address="21" Key="85626c8b-4b87-4379-842e-69c206547d4a" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="2b42e011-44c2-493d-ba47-c3f5fafb043d">
+    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="7e783daf-22bf-4587-8dd7-1b7b64df2a9d">
       <Position X="224" Y="5" Z="162" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -686,13 +686,13 @@
     <ComponentIO Index="185" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_DefaultSensor_OM_Binary_NAME">
       <GroupIO Description="Default">
-        <BinaryInput Name="X1666" Address="25" Key="499a5ee6-0c3a-4dad-bea0-6b8049520caa" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1666" Address="25" Key="19430f17-c884-43a3-bc4e-73d9e166b146" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Sensor Range="6" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectiveMirror" Key="934824c4-5dc3-4769-9805-49b6c52fe941">
+    <Proxy PrefabName="RetroreflectiveMirror" Key="09139f57-d4ca-4689-8ca8-4a0ab7de4e4d">
       <Position X="214" Y="5" Z="162" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -704,7 +704,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Turntable" Key="99df163d-f045-438a-a32c-a0b28836eb2e">
+    <Proxy PrefabName="Turntable" Key="af619237-5211-42de-82dc-bf21c6b48974">
       <Position X="219" Y="2" Z="153" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -716,30 +716,30 @@
     <ComponentIO Index="187" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_Turntable_OM_Monostable_NAME">
       <GroupIO Description="roll">
-        <BinaryOutput Name="Y1665" Address="22" Key="647650e6-8798-4c81-8d42-b3a295e864c7" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1665" Address="22" Key="7dde8940-ad04-4ea3-a90c-d90c8af53102" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="reverse">
-        <BinaryOutput Name="TTM Unload" Address="23" Key="ee494b66-83ef-4143-8950-32133771f230" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="TTM Unload" Address="23" Key="ab253fb3-caa2-40c6-8f06-823e9c8941e0" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="turn">
-        <BinaryOutput Name="Y1666" Address="24" Key="e9c90312-30ff-4866-a7db-d63b9065ce79" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1666" Address="24" Key="dbecd861-a552-49bf-9455-47dd86376de3" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="limitSwitch0">
-        <BinaryInput Name="X1667" Address="26" Key="931a9868-5c39-4dd2-981c-08c8cb91e71a" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1667" Address="26" Key="985d2374-3631-4871-ac67-1e9d3b36de05" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="limitSwitch90">
-        <BinaryInput Name="X1669" Address="27" Key="3f8b7346-1f66-4380-ac1c-e8e9c6e25281" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1669" Address="27" Key="c33171ac-848e-44dc-813c-9bcc6dd55630" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="frontLimit">
-        <BinaryInput Name="X1665" Address="28" Key="849ff264-20dc-482e-af05-ff2cdf4ad4c2" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1665" Address="28" Key="c9cf7881-f834-4987-8a18-a7647f8fe8a4" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="backLimit">
-        <BinaryInput Name="TTM At back" Address="29" Key="a7112c2e-a75e-4602-85e5-f5e4eba82ab2" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="TTM At back" Address="29" Key="b43c0fe5-f3d7-44af-a16e-5c3700971399" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RollerConveyor4M" Key="51efde35-bbe9-4742-bdba-00e7642fa77f">
+    <Proxy PrefabName="RollerConveyor4M" Key="70a1ba3b-2c8c-46e7-8196-2531e25e287c">
       <Position X="195" Y="2" Z="153" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -751,13 +751,13 @@
     <ComponentIO Index="188" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_RollerConveyor_OM_SingleBinary_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1700" Address="25" Key="efe2e244-e2ef-478c-9899-1815eaa8a47e" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1700" Address="25" Key="d4cd8f1a-5645-4ad6-9009-891b982cfd74" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RollerStop" Key="823f2345-beb4-442c-956b-9b41f308a270">
+    <Proxy PrefabName="RollerStop" Key="76d9451d-29cb-4f20-b18f-e05d8dba1e6b">
       <Position X="183" Y="3" Z="153" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -769,12 +769,12 @@
     <ComponentIO Index="189" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_OM_Default_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1701" Address="26" Key="c435fab0-3d89-41bf-ae9c-8853a38b280a" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1701" Address="26" Key="ad5f8c4b-2735-4aa8-b6b2-4a3597a9dba1" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="87c16690-a284-4bb6-87be-9af926d5fc62">
+    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="072119cf-82cc-4024-8c96-7fbebaf6b76a">
       <Position X="187" Y="5" Z="158" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -786,13 +786,13 @@
     <ComponentIO Index="190" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_DefaultSensor_OM_Binary_NAME">
       <GroupIO Description="Default">
-        <BinaryInput Name="X1700" Address="30" Key="5ac04dc0-f8a4-427a-9169-febc2a367313" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1700" Address="30" Key="5d9ed836-9826-4a3d-9fe9-a5765a4b5d0f" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Sensor Range="6" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectiveMirror" Key="188e8888-dcf5-4d9d-985d-04f62391ad78">
+    <Proxy PrefabName="RetroreflectiveMirror" Key="daeb5233-7ba6-4e1d-97f5-b2c8839c545f">
       <Position X="187" Y="5" Z="148" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -804,7 +804,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RFIDReader" Key="64919bba-fb99-4c7c-aba0-74516d3045c3">
+    <Proxy PrefabName="RFIDReader" Key="594f77a2-de84-46d1-9d03-6304176090e2">
       <Position X="186" Y="4" Z="157" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -816,21 +816,21 @@
     <ComponentIO Index="192" CurrentOperatingMode="0" />
     <OperatingMode Description="Default">
       <GroupIO Description="GroupIO1">
-        <BinaryOutput Name="M1521" Address="27" Key="845752a6-eab7-4493-a222-516a5da543a8" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
-        <IntInput Name="D1524" Address="3" Key="66003494-c0c2-4f71-b79c-ab12a760cd02" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
-        <IntInput Name="D1523" Address="4" Key="fa01910d-40ab-4165-8299-2ac22f9273e1" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
-        <IntOutput Name="D1520" Address="7" Key="6e852cf9-1192-4521-ac5c-92e3307222b3" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <BinaryOutput Name="M1521" Address="27" Key="450e487a-3ce2-45ce-b65d-ead53271986a" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <IntInput Name="D1524" Address="3" Key="8118f939-64c3-4c43-9ff4-8deb23721a7f" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <IntInput Name="D1523" Address="4" Key="78fac166-5e77-4c62-8937-e5a417b9e71a" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <IntOutput Name="D1520" Address="7" Key="51e18cc9-ea94-40b1-ac2d-7bb4ca56fbf7" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
       </GroupIO>
       <GroupIO Description="GroupIO2">
-        <IntInput Name="D1525" Address="5" Key="2db1aea7-b239-4795-860e-0656bbd9d9c8" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
-        <IntOutput Name="D1522" Address="8" Key="089a22a4-eb9b-44b6-b393-eb430cd550b5" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
-        <IntOutput Name="D1521" Address="9" Key="a475355d-e419-4caa-b817-9fd07f0a2626" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <IntInput Name="D1525" Address="5" Key="f48f7195-beaa-46ff-9c7a-4f5794940c40" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <IntOutput Name="D1522" Address="8" Key="3fe25ce0-d9ff-48c6-8b71-4c260e3e74c9" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <IntOutput Name="D1521" Address="9" Key="8aad61d7-ced5-44d8-8116-96943c898337" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
       </GroupIO>
     </OperatingMode>
     <Sensor Range="1.0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RollerConveyor2M" Key="3c4ca315-69b9-480e-96c3-51c10c76e73c">
+    <Proxy PrefabName="RollerConveyor2M" Key="cdb796af-9f8c-4968-88e2-c00094ee0c54">
       <Position X="171" Y="2" Z="153" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -842,13 +842,13 @@
     <ComponentIO Index="193" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_RollerConveyor_OM_SingleBinary_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1702" Address="28" Key="aeb6053d-e594-47d1-8e11-9c88ccd32bab" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
+        <BinaryOutput Name="Y1702" Address="28" Key="cb9f4210-bbfd-43d2-ba70-07a7c1529201" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="ff36b55b-ea14-4fba-9c11-a9bf617e47c4">
+    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="4b81eb97-1e32-42a6-8b7f-69cef5de637b">
       <Position X="165" Y="5" Z="158" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -860,13 +860,13 @@
     <ComponentIO Index="194" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_DefaultSensor_OM_Binary_NAME">
       <GroupIO Description="Default">
-        <BinaryInput Name="X1720" Address="31" Key="5b01e6bb-6b7b-46eb-b416-f04121d35b04" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1720" Address="31" Key="6c797ce1-2b7b-4cc8-a6b3-6c222e16f201" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Sensor Range="6" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectiveMirror" Key="885a98d5-a2b9-4b29-b2bc-d61a4cd3171b">
+    <Proxy PrefabName="RetroreflectiveMirror" Key="c7126ba0-08ac-4d8c-b759-c03853906c81">
       <Position X="165" Y="5" Z="148" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -878,7 +878,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Turntable" Key="f5440fdc-ec7b-4260-b805-5374bf1b26c2">
+    <Proxy PrefabName="Turntable" Key="3b2598fa-c9df-4b40-8cc1-0e0ffa0e9ea3">
       <Position X="156" Y="2" Z="153" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -890,30 +890,30 @@
     <ComponentIO Index="196" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_Turntable_OM_Monostable_NAME">
       <GroupIO Description="roll">
-        <BinaryOutput Name="Y1722" Address="29" Key="d340b8e2-c3b1-4e44-8a0e-6d4876fff561" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1722" Address="29" Key="45893850-162d-4131-9295-1b3a6adcb42b" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="reverse">
-        <BinaryOutput Name="Y1723" Address="30" Key="4eed5d48-7135-4fe7-9647-a93a09022e0c" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1723" Address="30" Key="b1f3f443-19c4-4f03-bbff-79f7961ed77b" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="turn">
-        <BinaryOutput Name="Y1724" Address="31" Key="f6652e4d-d919-4837-975e-5ab2837a21ab" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1724" Address="31" Key="f778e44e-2372-4401-bd0a-1885587f3416" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="limitSwitch0">
-        <BinaryInput Name="X1725" Address="32" Key="650a3058-267a-4482-9752-23975c97145b" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1725" Address="32" Key="a0d92287-679d-42ff-9ce3-1c4fc3e58a99" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="limitSwitch90">
-        <BinaryInput Name="X1726" Address="33" Key="303c9b3c-4131-4ae8-96ee-0aac61f02719" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1726" Address="33" Key="5993479b-3a18-4626-a504-44d6bab63fd1" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="frontLimit">
-        <BinaryInput Name="X1723" Address="34" Key="39ec2b43-cdb4-44f4-b718-5aade70c7b58" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1723" Address="34" Key="1ae3f532-bd9d-4c34-8d27-4a7073b375e8" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="backLimit">
-        <BinaryInput Name="X1724" Address="35" Key="371e13ad-d0fa-4c97-b8f8-8ab5343ae58d" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1724" Address="35" Key="e47a428d-ec25-4955-b876-124a80301383" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RollerConveyor2M" Key="6bc67572-1b02-4c9c-87c8-4d8496d97122">
+    <Proxy PrefabName="RollerConveyor2M" Key="a37d311c-a20d-471c-8df2-eca380689321">
       <Position X="156" Y="2" Z="169" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -925,13 +925,13 @@
     <ComponentIO Index="197" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_RollerConveyor_OM_SingleBinary_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1703" Address="32" Key="f415c394-f451-4e72-91df-49b2a5fd7b6f" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
+        <BinaryOutput Name="Y1703" Address="32" Key="b2d52534-ca8a-4f73-87c9-db6e13e7248d" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="CurvedRollerConveyor" Key="880d52b6-7d5b-488a-93da-227cd7c46414">
+    <Proxy PrefabName="CurvedRollerConveyor" Key="ad0595fb-5abc-4bc3-a6ea-a15d986d1f67">
       <Position X="152" Y="2" Z="184" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -943,13 +943,13 @@
     <ComponentIO Index="198" CurrentOperatingMode="1" />
     <OperatingMode Description="$C_CurvedRollerConveyor_OM_CCW_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1703" Address="33" Key="338a2b92-a46e-49c3-8df3-4fc9af2889b7" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1703" Address="33" Key="cb96f870-0c08-41c2-b29c-5663c5270437" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RollerConveyor2M" Key="bbb6d021-6297-4d8e-9d7f-bf7dcd962956">
+    <Proxy PrefabName="RollerConveyor2M" Key="0967ab75-e5d2-4154-b531-3806e7c6f4d9">
       <Position X="137" Y="2" Z="188" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -961,13 +961,13 @@
     <ComponentIO Index="199" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_RollerConveyor_OM_SingleBinary_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1703" Address="34" Key="071f3480-83dd-438c-846b-c5c993f2c9a6" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
+        <BinaryOutput Name="Y1703" Address="34" Key="0fd3af54-3a4f-4288-9209-3f73fc270a05" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="aed2bf96-12f1-4d2b-a01e-49a1324aa235">
+    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="9a032924-45ae-4ad9-aeb9-a86d6af9e3bf">
       <Position X="131" Y="5" Z="193" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -979,13 +979,13 @@
     <ComponentIO Index="200" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_DefaultSensor_OM_Binary_NAME">
       <GroupIO Description="Default">
-        <BinaryInput Name="X1903" Address="36" Key="56184f8c-09b0-4e8d-8616-b0868651ff65" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1903" Address="36" Key="6e848c13-293c-4d6c-9554-079d4550f4fb" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Sensor Range="6" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectiveMirror" Key="6eb110ca-b170-4ff0-8e72-0dec3cd42be3">
+    <Proxy PrefabName="RetroreflectiveMirror" Key="0c7c0a2f-e319-486c-9542-d6a6437e03d1">
       <Position X="131" Y="5" Z="183" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -997,7 +997,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Turntable" Key="ec8f66a9-5754-4ff4-a0d3-05e0ac604ea7">
+    <Proxy PrefabName="Turntable" Key="0b418652-00e2-4050-9247-a8234d21d7f5">
       <Position X="122" Y="2" Z="188" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1009,30 +1009,30 @@
     <ComponentIO Index="202" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_Turntable_OM_Monostable_NAME">
       <GroupIO Description="roll">
-        <BinaryOutput Name="Y1904" Address="35" Key="49d6fddd-322e-449e-8f20-d618fb7114a7" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1904" Address="35" Key="67aa81e3-807b-464e-9fd1-4cd2a2ae4d51" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="reverse">
-        <BinaryOutput Name="Y1906" Address="36" Key="8d862f80-4c03-459f-98a6-4cc47c293cc7" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1906" Address="36" Key="9bf9c140-b4b1-4e0a-b758-69906defc310" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="turn">
-        <BinaryOutput Name="Y1905" Address="37" Key="96ef8673-c5cd-4ffe-a135-d7fbac4b5a9b" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1905" Address="37" Key="06bce5fc-a7ba-4f38-9738-8da4a0a9a0ba" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="limitSwitch0">
-        <BinaryInput Name="X1907" Address="37" Key="5256d2fe-0e9b-41b9-8481-4e978469b889" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1907" Address="37" Key="25f4e088-5aaa-46d4-99c8-b1b54464da25" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="limitSwitch90">
-        <BinaryInput Name="X1908" Address="38" Key="97e81930-7804-4655-946a-2a94d80eb793" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1908" Address="38" Key="1895d8b3-1f32-4661-a48f-5d395bb09407" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="frontLimit">
-        <BinaryInput Name="X1904" Address="39" Key="2200c707-b2b9-4845-98ba-b4c212703a8e" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1904" Address="39" Key="24393cf3-2e00-427a-a22f-5a269e190ded" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="backLimit">
-        <BinaryInput Name="X1905" Address="40" Key="4b9b4b62-5f09-450e-b703-427dcb9d4556" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1905" Address="40" Key="df78da07-e340-4dfe-bb3e-89cc44b0f369" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RollerConveyor4M" Key="80a55395-e4d1-4cfd-9720-cbaa9919fbd7">
+    <Proxy PrefabName="RollerConveyor4M" Key="e9e4ef51-a0b4-4027-a4ef-4a2679151a5d">
       <Position X="98" Y="2" Z="188" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1044,13 +1044,13 @@
     <ComponentIO Index="203" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_RollerConveyor_OM_SingleBinary_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1900" Address="38" Key="402c2e83-d3ac-4dbf-ab6a-f8a40836e7d1" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1900" Address="38" Key="b1ed2b7d-d583-4629-b25b-e0afd77e4f97" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="87692d95-98d5-4420-886d-472c37f48a58">
+    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="fa02cb0c-3b6d-458b-90fa-cdc1be4ad293">
       <Position X="94" Y="5" Z="193" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1062,13 +1062,13 @@
     <ComponentIO Index="204" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_DefaultSensor_OM_Binary_NAME">
       <GroupIO Description="Default">
-        <BinaryInput Name="X1900" Address="41" Key="ff2e2c84-7d57-4348-9f09-d5e26a477a22" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1900" Address="41" Key="743ec32e-7588-456d-a1e5-b83c102a82af" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Sensor Range="6" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectiveMirror" Key="aed6d4e8-8542-4777-b4ce-11d401312bff">
+    <Proxy PrefabName="RetroreflectiveMirror" Key="3adde3c1-cbb0-4250-a2c9-9f5d20bd9e5b">
       <Position X="94" Y="5" Z="183" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1080,7 +1080,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Remover" Key="380e8893-4e33-4a43-b263-bbc3c19f22ca">
+    <Proxy PrefabName="Remover" Key="a5dbd87e-3f1f-4913-8bfd-ad7f8a125cf1">
       <Position X="85" Y="6" Z="188" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -1092,7 +1092,7 @@
     <ComponentIO Index="206" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_Remover_OM_Default_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Remover 2" Address="39" Key="23ddf3b7-9d1f-4883-90eb-8a134ba4a1cc" OpenCircuit="False" ShortCircuit="False" UseForcedValue="True" ForcedValue="True" />
+        <BinaryOutput Name="Remover 2" Address="39" Key="39d5e61f-4fd5-4050-a7ac-1875c1339e66" OpenCircuit="False" ShortCircuit="False" UseForcedValue="True" ForcedValue="True" />
       </GroupIO>
     </OperatingMode>
     <Remover>
@@ -1101,7 +1101,7 @@
     </Remover>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RollerConveyor2M" Key="f0e46d96-f9ca-4239-b92e-0a13f94c4995">
+    <Proxy PrefabName="RollerConveyor2M" Key="a2e6b0e3-99b1-47a2-900b-7e1820e689b0">
       <Position X="156" Y="2" Z="137" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -1113,13 +1113,13 @@
     <ComponentIO Index="207" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_RollerConveyor_OM_SingleBinary_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1800" Address="40" Key="73e0b5fc-ca73-4619-a2e2-29b29644dd3a" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
+        <BinaryOutput Name="Y1800" Address="40" Key="c5ba13e9-5a5e-4519-91a4-dd1267895a63" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="7c9bedfa-0bfd-4af1-8aff-fe8506f5908c">
+    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="7e19aed5-b629-469b-97e8-200f826d82a7">
       <Position X="161" Y="5" Z="133" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -1131,13 +1131,13 @@
     <ComponentIO Index="208" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_DefaultSensor_OM_Binary_NAME">
       <GroupIO Description="Default">
-        <BinaryInput Name="X1800" Address="42" Key="db3a07c4-9d73-4318-9f58-eb60fed3d79b" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1800" Address="42" Key="7e2a271d-e5cd-453b-a89b-80d5a48fcc60" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Sensor Range="6" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectiveMirror" Key="a16a8694-67a2-4ed0-85f6-4de6fd63efd1">
+    <Proxy PrefabName="RetroreflectiveMirror" Key="3fc6e455-3d35-4435-9d47-e3d809e324d8">
       <Position X="151" Y="5" Z="133" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -1149,7 +1149,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="CurvedRollerConveyor" Key="9aa81b7e-090e-4c34-93f8-c0b7a939c6bc">
+    <Proxy PrefabName="CurvedRollerConveyor" Key="ee6796bb-2e03-4a79-a534-06ba0ecd0da8">
       <Position X="152" Y="2" Z="122" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -1161,13 +1161,13 @@
     <ComponentIO Index="210" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_CurvedRollerConveyor_OM_CW_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1800" Address="41" Key="058da73f-9b17-4b34-a6f1-44cb986f736f" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1800" Address="41" Key="26b6845f-1829-4bcd-8e9d-1840fbb807dc" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RollerConveyor2M" Key="5bf964f4-0e78-44e3-ab5c-3b669f3d4814">
+    <Proxy PrefabName="RollerConveyor2M" Key="a4d54ea1-2e16-48db-93d4-e3bcbc433610">
       <Position X="137" Y="2" Z="118" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1179,13 +1179,13 @@
     <ComponentIO Index="211" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_RollerConveyor_OM_SingleBinary_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1800" Address="42" Key="3b9fc914-88ee-4ee6-942f-4417318f4730" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
+        <BinaryOutput Name="Y1800" Address="42" Key="da0846bb-f384-4c8e-ac39-5f8d42587032" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RollerStop" Key="27b632df-d4f2-4e86-80ed-cc9cf7d2c34b">
+    <Proxy PrefabName="RollerStop" Key="018f2858-d901-4419-a69e-c700a870a459">
       <Position X="133" Y="3" Z="118" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1197,12 +1197,12 @@
     <ComponentIO Index="212" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_OM_Default_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1730" Address="43" Key="c66ab3bd-c8b7-4b23-83e1-6a442fa03a92" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1730" Address="43" Key="3384df9c-ea91-4a56-9e71-ec947fe4e1b2" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="b5d470d3-3865-4d62-bb00-22af9ce14563">
+    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="b37f3b73-57ae-43b8-9aa2-4901e21070f5">
       <Position X="137" Y="5" Z="123" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1214,13 +1214,13 @@
     <ComponentIO Index="213" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_DefaultSensor_OM_Binary_NAME">
       <GroupIO Description="Default">
-        <BinaryInput Name="X1730" Address="43" Key="0f456845-74e1-4d8b-8c0b-4c3e2369532c" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1730" Address="43" Key="ae810e33-8d03-4445-8672-8f3325bff3c1" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Sensor Range="6" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectiveMirror" Key="73cb7817-e25d-40f3-9372-e7a4116d6838">
+    <Proxy PrefabName="RetroreflectiveMirror" Key="b0740696-81a5-4207-8183-0602caa645a9">
       <Position X="137" Y="5" Z="113" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1232,7 +1232,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RFIDReader" Key="09928be6-adce-4f25-88ed-5d8cf227dd2f">
+    <Proxy PrefabName="RFIDReader" Key="0a97e304-9ac9-41f0-83e1-cd833fe9454f">
       <Position X="136" Y="4" Z="122" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -1244,21 +1244,21 @@
     <ComponentIO Index="215" CurrentOperatingMode="0" />
     <OperatingMode Description="Default">
       <GroupIO Description="GroupIO1">
-        <BinaryOutput Name="M1531" Address="44" Key="aa2e20e9-fa6e-4c96-82f9-10d47225aecd" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
-        <IntInput Name="D1534" Address="6" Key="1fa98973-119d-48b3-8a7b-c1039c7f191d" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
-        <IntInput Name="D1533" Address="7" Key="5c5d4f2c-cbb4-4b6f-8150-ecdeb6fa7155" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
-        <IntOutput Name="D1530" Address="10" Key="acda626f-73fc-48ff-b83e-b62867a25e8a" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <BinaryOutput Name="M1531" Address="44" Key="a2aace7b-7e2a-4f4b-9dca-e92d96db4c66" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <IntInput Name="D1534" Address="6" Key="906e58e9-5720-42bf-8b74-200013697edd" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <IntInput Name="D1533" Address="7" Key="25939676-4fdc-4de9-b8b2-dc4495c20cc4" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <IntOutput Name="D1530" Address="10" Key="2701c85b-fc29-4fbb-aff3-c66b2580df99" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
       </GroupIO>
       <GroupIO Description="GroupIO2">
-        <IntInput Name="D1535" Address="8" Key="e44a9096-71b2-41e3-95e3-80588d62a4c2" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
-        <IntOutput Name="D1532" Address="11" Key="d9a6736f-7f09-4ea5-ac92-22128e9c78c7" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
-        <IntOutput Name="D1531" Address="12" Key="43595d2a-fbd6-448c-80fe-6ff0e6ca6c5c" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <IntInput Name="D1535" Address="8" Key="0efff4a1-f23e-4842-bb7e-aa986c666ab9" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <IntOutput Name="D1532" Address="11" Key="396c37b8-cdf1-43a6-aadb-ca229baa8901" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <IntOutput Name="D1531" Address="12" Key="953f46a7-30a2-4481-b0cd-21c90aef73b1" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
       </GroupIO>
     </OperatingMode>
     <Sensor Range="1.0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="d158c5a5-e047-42af-b3fa-6762244d7959">
+    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="f7156db2-1f2d-45a0-af90-79754ebfbcd4">
       <Position X="131" Y="5" Z="123" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1270,13 +1270,13 @@
     <ComponentIO Index="216" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_DefaultSensor_OM_Binary_NAME">
       <GroupIO Description="Default">
-        <BinaryInput Name="X1731" Address="44" Key="726bd9f6-1815-4928-bdb2-38d8645a6b9e" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1731" Address="44" Key="9108bd5f-686b-4fa0-9204-48a2599a300f" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Sensor Range="6" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectiveMirror" Key="804ffbb1-f655-4c6b-b63e-e59d5a9c1d2e">
+    <Proxy PrefabName="RetroreflectiveMirror" Key="7bc7f2eb-7f71-47dc-ab1b-45e48e8aead9">
       <Position X="131" Y="5" Z="113" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1288,7 +1288,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Turntable" Key="108afe3f-0f66-43c7-b8b5-387ae84cae8d">
+    <Proxy PrefabName="Turntable" Key="550a4765-9492-4995-adcf-261d735db779">
       <Position X="122" Y="2" Z="118" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1300,30 +1300,30 @@
     <ComponentIO Index="218" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_Turntable_OM_Monostable_NAME">
       <GroupIO Description="roll">
-        <BinaryOutput Name="Y1733" Address="45" Key="635655a1-b8b5-4415-85df-ec25c70e2f4c" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1733" Address="45" Key="694ecc15-df07-44cf-ab49-8bb0d2a52d64" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="reverse">
-        <BinaryOutput Name="Y1734" Address="46" Key="1b9af5ad-623b-48e6-8e04-38bfed4177bc" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1734" Address="46" Key="a9a2ea1e-6fbb-48b1-8739-55f5b9476e85" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="turn">
-        <BinaryOutput Name="Y1735" Address="47" Key="8abb1079-3086-42f2-854e-1a7a2e636367" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1735" Address="47" Key="4f853276-85ff-4984-8e5f-fab66179df75" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="limitSwitch0">
-        <BinaryInput Name="X1735" Address="45" Key="bf9133aa-ef83-40ce-8974-1fde6392b91c" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1735" Address="45" Key="a022be23-3a2c-477b-b665-ffa3888d914a" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="limitSwitch90">
-        <BinaryInput Name="X1737" Address="46" Key="3420d8c9-2cff-479b-904f-48eea1f76325" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1737" Address="46" Key="e5c77fda-cbb1-4ede-8306-1e6f8bbe0d3a" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="frontLimit">
-        <BinaryInput Name="X1733" Address="47" Key="0c4146f9-0019-46ef-a387-ec63ea0bf6fe" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1733" Address="47" Key="0b41256d-5405-431e-8b59-39280c321f16" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="backLimit">
-        <BinaryInput Name="X1734" Address="48" Key="503c5b9b-f5cd-4f16-8f6b-955f8caee07f" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1734" Address="48" Key="130119b6-5712-4f4d-828c-2030b0b9857d" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RollerConveyor2M" Key="d42d1290-a348-4b92-a00c-e0a1392c9248">
+    <Proxy PrefabName="RollerConveyor2M" Key="3c0b6c8e-99f4-4d39-b051-89fa0f439ea2">
       <Position X="122" Y="2" Z="134" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -1335,13 +1335,13 @@
     <ComponentIO Index="219" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_RollerConveyor_OM_SingleBinary_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1731" Address="48" Key="44362796-fdcb-4c2d-a34b-383f7c8a13fd" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
+        <BinaryOutput Name="Y1731" Address="48" Key="af58ef72-fc77-42b4-b6d5-33fc28325b88" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RollerConveyor4M" Key="4b0d5ed6-e9a1-477e-9b5d-c2087e4c46e7">
+    <Proxy PrefabName="RollerConveyor4M" Key="69946161-a213-4c9e-b658-8d2a53de46a8">
       <Position X="122" Y="2" Z="157" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -1353,13 +1353,13 @@
     <ComponentIO Index="220" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_RollerConveyor_OM_SingleBinary_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1736" Address="49" Key="d1fcd7ee-ef6d-4026-bd74-b97c65498763" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1736" Address="49" Key="ef7d0b42-443d-4a25-8dfa-3ecbbd5656d4" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RollerConveyor2M" Key="df20730a-2333-4321-a741-686ea5c5f255">
+    <Proxy PrefabName="RollerConveyor2M" Key="b2d4647f-0fdc-4d38-b456-9767da84aea0">
       <Position X="122" Y="2" Z="173" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -1371,43 +1371,13 @@
     <ComponentIO Index="221" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_RollerConveyor_OM_SingleBinary_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1736" Address="50" Key="89bdad48-d252-42b8-9b55-1d39795d716b" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
+        <BinaryOutput Name="Y1736" Address="50" Key="083d41e4-b11a-4f4c-8cc0-370a130cae56" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="dc67b2b0-01b4-4910-99c9-c4b53b747d7f">
-      <Position X="127" Y="5" Z="179" />
-      <Rotation X="0" Y="1" Z="0" W="0" />
-      <FineRotation>0</FineRotation>
-      <FinePosition>-0.0625</FinePosition>
-      <Forward X="0" Y="0" Z="-1" />
-      <Up X="0" Y="1" Z="0" />
-      <Right X="-1" Y="0" Z="0" />
-    </Proxy>
-    <ComponentIO Index="222" CurrentOperatingMode="0" />
-    <OperatingMode Description="$C_DefaultSensor_OM_Binary_NAME">
-      <GroupIO Description="Default">
-        <BinaryInput Name="X1906" Address="49" Key="9c3fa827-1f1d-44f3-b3e9-2004fd2c6e87" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
-      </GroupIO>
-    </OperatingMode>
-    <Sensor Range="6" />
-  </Object>
-  <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectiveMirror" Key="cb491513-6eb5-4b04-89a2-d6bbf3b75660">
-      <Position X="117" Y="5" Z="179" />
-      <Rotation X="0" Y="1" Z="0" W="0" />
-      <FineRotation>0</FineRotation>
-      <FinePosition>-0.0625</FinePosition>
-      <Forward X="0" Y="0" Z="-1" />
-      <Up X="0" Y="1" Z="0" />
-      <Right X="-1" Y="0" Z="0" />
-    </Proxy>
-    <ComponentIO Index="-1" CurrentOperatingMode="0" />
-  </Object>
-  <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="DiffusePhotoelectricSensor" Key="8a19b9db-78a2-41ff-837d-d91a730edaea">
+    <Proxy PrefabName="DiffusePhotoelectricSensor" Key="da3787a2-ca37-4653-a56c-7fce6938e2c5">
       <Position X="127" Y="5" Z="153" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>4.696403</FineRotation>
@@ -1416,16 +1386,16 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="-1" Y="0" Z="0" />
     </Proxy>
-    <ComponentIO Index="224" CurrentOperatingMode="0" />
+    <ComponentIO Index="222" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_DefaultSensor_OM_Binary_NAME">
       <GroupIO Description="Default">
-        <BinaryInput Name="X1736" Address="50" Key="30ee353f-0838-4dc5-a5e4-365726dd2e05" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1736" Address="49" Key="523ada4c-31b2-4239-a6bd-cb778d9d22ae" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Sensor Range="0.4809875" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="CurvedRollerConveyor" Key="b49d87bf-86a4-4623-a7c8-a358ac92920b">
+    <Proxy PrefabName="CurvedRollerConveyor" Key="661fa49b-1276-4175-8817-72eecc04da62">
       <Position X="118" Y="2" Z="103" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -1434,16 +1404,16 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="1" Y="0" Z="0" />
     </Proxy>
-    <ComponentIO Index="225" CurrentOperatingMode="0" />
+    <ComponentIO Index="223" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_CurvedRollerConveyor_OM_CW_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1732" Address="51" Key="5ed586f1-e008-4c5e-a7fa-e886f7ee455f" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="Y1732" Address="51" Key="e9568d8e-07f1-4f88-ad58-a9d46a0464a8" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RollerConveyor2M" Key="02139319-dee9-445f-bd55-6a4e535682a8">
+    <Proxy PrefabName="RollerConveyor2M" Key="2909742c-7c16-454e-916a-69060c31ad6a">
       <Position X="103" Y="2" Z="99" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1452,16 +1422,16 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="0" Y="0" Z="1" />
     </Proxy>
-    <ComponentIO Index="226" CurrentOperatingMode="0" />
+    <ComponentIO Index="224" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_RollerConveyor_OM_SingleBinary_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Y1901" Address="52" Key="8f9c10eb-99e0-4148-9e04-ef6362b0b271" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
+        <BinaryOutput Name="Y1901" Address="52" Key="a985a78b-1d36-4b91-adbf-fe442ab02668" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
       </GroupIO>
     </OperatingMode>
     <Encoder Enabled="False" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="8c79660e-a1c7-4496-a01b-5536ff19d593">
+    <Proxy PrefabName="RetroreflectivePhotoelectricSensor" Key="8804d2a2-0e76-486e-9314-5be8026292ae">
       <Position X="106" Y="5" Z="104" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1470,16 +1440,16 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="0" Y="0" Z="-1" />
     </Proxy>
-    <ComponentIO Index="227" CurrentOperatingMode="0" />
+    <ComponentIO Index="225" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_DefaultSensor_OM_Binary_NAME">
       <GroupIO Description="Default">
-        <BinaryInput Name="X1901" Address="51" Key="13ab0d6b-ca78-4499-9fff-b061ccd31ff1" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="X1901" Address="50" Key="d62cde8b-b999-42c9-8e40-80533282866d" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
     <Sensor Range="6" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="RetroreflectiveMirror" Key="af88b135-3779-446d-bbf7-357fce0a0baa">
+    <Proxy PrefabName="RetroreflectiveMirror" Key="9d41dace-17be-4e34-b499-23a43efcac0f">
       <Position X="106" Y="5" Z="94" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1491,7 +1461,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Remover" Key="8a6f62fe-b895-4680-a97e-158fc3b857da">
+    <Proxy PrefabName="Remover" Key="8a0bbe9d-b2aa-4aa8-ad9b-43eda3306c6a">
       <Position X="98" Y="6" Z="99" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -1500,10 +1470,10 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="1" Y="0" Z="0" />
     </Proxy>
-    <ComponentIO Index="229" CurrentOperatingMode="0" />
+    <ComponentIO Index="227" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_Remover_OM_Default_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="Remover 3" Address="53" Key="f68ec1f0-682c-43a2-9975-f2fcb7b26920" OpenCircuit="False" ShortCircuit="False" UseForcedValue="True" ForcedValue="True" />
+        <BinaryOutput Name="Remover 3" Address="53" Key="0209c7e2-833c-4fa4-a037-5ccd06f5ad35" OpenCircuit="False" ShortCircuit="False" UseForcedValue="True" ForcedValue="True" />
       </GroupIO>
     </OperatingMode>
     <Remover>
@@ -1512,7 +1482,7 @@
     </Remover>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="47c74e5a-580d-4473-a624-ccad077c6090">
+    <Proxy PrefabName="SafeguardL" Key="c17ffb65-f917-491f-95f5-074cfb4a96c4">
       <Position X="308" Y="10" Z="100" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -1524,7 +1494,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="753397a9-2fe2-4872-89e4-835246ed49dd">
+    <Proxy PrefabName="SafeguardL" Key="d19a55e5-3a47-43ac-aad8-529c12b3a901">
       <Position X="239" Y="10" Z="100" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -1536,7 +1506,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="0ea1a8c0-e877-4f98-b33f-5cac6606c672">
+    <Proxy PrefabName="SafeguardL" Key="be4ad4fd-bf8f-488c-b148-52b26baafdd9">
       <Position X="308" Y="10" Z="117" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -1548,7 +1518,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="ceef99b3-fd35-4e57-a767-812971ee1710">
+    <Proxy PrefabName="SafeguardL" Key="d43f0c91-75f3-4b4a-b2d8-f702d4f4a0de">
       <Position X="239" Y="10" Z="117" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -1560,7 +1530,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="0868f85b-6d24-44df-ae80-5dc244a8bb18">
+    <Proxy PrefabName="SafeguardL" Key="97d8be2d-86f7-49a5-bcb1-6acaa575ffeb">
       <Position X="308" Y="10" Z="134" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -1572,7 +1542,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="62ce65cb-c89a-489f-898a-0b3fd1c02288">
+    <Proxy PrefabName="SafeguardL" Key="0e906fdb-4ef6-4408-8f46-55ce58c66242">
       <Position X="239" Y="10" Z="134" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -1584,7 +1554,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="3eb07906-cb7f-404b-8d8d-30c9c33c4ecf">
+    <Proxy PrefabName="SafeguardL" Key="edb9ca8b-913c-43b6-a6ba-6099630f209a">
       <Position X="308" Y="10" Z="151" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -1596,7 +1566,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="c9012983-8061-471c-bf0d-304e9179e1b8">
+    <Proxy PrefabName="SafeguardL" Key="af47ff7f-927b-4406-af77-22b68fb0f097">
       <Position X="239" Y="10" Z="151" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -1608,7 +1578,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="8de44e19-efed-4daa-8297-86ab4388ace1">
+    <Proxy PrefabName="SafeguardL" Key="1e100429-bbab-4726-bf7a-25d45d3055e5">
       <Position X="308" Y="10" Z="168" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -1620,7 +1590,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="775bc328-2be3-4678-87ab-e139ae0f86a5">
+    <Proxy PrefabName="SafeguardL" Key="9621f026-9330-4b36-9306-89dbf36a61db">
       <Position X="239" Y="10" Z="168" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -1632,7 +1602,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="414ee655-56ff-4830-bf7e-d722a1e0b18a">
+    <Proxy PrefabName="SafeguardL" Key="a675b8f3-15c3-440e-a6a3-b6fbea6c9079">
       <Position X="308" Y="10" Z="202" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -1644,7 +1614,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="478f1e82-93f7-4ac8-be55-499dc12a701d">
+    <Proxy PrefabName="SafeguardL" Key="a27a5e32-b270-4981-88b5-b42b44340d19">
       <Position X="239" Y="10" Z="202" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -1656,7 +1626,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="c6050d63-d0ac-48e0-9c5f-d092dc55b7c4">
+    <Proxy PrefabName="SafeguardL" Key="dab15f84-e92f-4056-b485-6037e8303b2a">
       <Position X="299" Y="10" Z="91" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1668,7 +1638,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="7399c065-e710-4303-a040-670dcc6746b9">
+    <Proxy PrefabName="SafeguardL" Key="2fb4143c-e3c8-4fd9-9242-c9df3fa4e3c6">
       <Position X="282" Y="10" Z="91" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1680,7 +1650,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="c557fd67-a958-433f-8a22-7d5b55b16095">
+    <Proxy PrefabName="SafeguardL" Key="d6eff6c1-c13e-43db-85e0-57223ee9af2a">
       <Position X="265" Y="10" Z="91" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1692,7 +1662,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="da1c1178-2fa7-4c36-a7a8-ebf2484813e3">
+    <Proxy PrefabName="SafeguardL" Key="3b3c8df7-a254-42b4-b23c-75e8163c69da">
       <Position X="248" Y="10" Z="91" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1704,7 +1674,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="a2974b77-bed9-434b-a3cb-b08f98fe8311">
+    <Proxy PrefabName="SafeguardL" Key="a62abc27-9f48-4c9c-813d-99b843924eae">
       <Position X="282" Y="10" Z="211" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1716,7 +1686,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="e4273ebf-fdfd-4999-a858-231557a7f0da">
+    <Proxy PrefabName="SafeguardL" Key="004fc5c6-8d0a-4b97-877b-f3983119b4b4">
       <Position X="265" Y="10" Z="211" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1728,7 +1698,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="78f2d3bf-3936-409c-a6ae-5c6ae73289c4">
+    <Proxy PrefabName="SafeguardL" Key="f5084c2e-a4c9-4b64-8486-8ff00b2b0def">
       <Position X="248" Y="10" Z="211" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1740,7 +1710,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="LightCurtainEmitter" Key="933182b7-fa7a-417f-8e13-8dc1b7ac7c19">
+    <Proxy PrefabName="LightCurtainEmitter" Key="b911625b-00e9-419e-96e9-ad30bc6c4062">
       <Position X="293" Y="9" Z="211" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -1749,36 +1719,36 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="-1" Y="0" Z="0" />
     </Proxy>
-    <ComponentIO Index="250" CurrentOperatingMode="1" />
+    <ComponentIO Index="248" CurrentOperatingMode="1" />
     <OperatingMode Description="$C_LightCurtainEmitter_OM_Binary_NAME">
       <GroupIO Description="beam0">
-        <BinaryInput Name="deco - 52" Address="52" Key="b439dede-432e-4776-a745-1e184b92669a" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="deco - 51" Address="51" Key="0539da37-7058-4fec-8466-7d036b3c275d" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="beam1">
-        <BinaryInput Name="deco - 53" Address="53" Key="88718e92-d7b9-418d-a986-68c253d1583f" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="deco - 52" Address="52" Key="861e8c46-ad11-4804-b9fe-bf65cc54fa1b" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="beam2">
-        <BinaryInput Name="deco - 54" Address="54" Key="76850ced-f6ab-4cd3-bc39-57e711169902" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="deco - 53" Address="53" Key="2fdf02d8-f31d-44da-a49f-3c37456f1056" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="beam3">
-        <BinaryInput Name="deco - 55" Address="55" Key="5ce6689d-dae3-4fd1-afb6-0ff2050cdfa3" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="deco - 54" Address="54" Key="94894413-774f-458d-9dd6-05377f617a22" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="beam4">
-        <BinaryInput Name="deco High box 56" Address="56" Key="2e44ca92-556c-445e-8de2-b85773653ff1" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="deco High box 55" Address="55" Key="a9a60f31-ea09-45e4-a1da-93ea610b2ab1" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="beam5">
-        <BinaryInput Name="deco - 57" Address="57" Key="61ae3ca8-3a12-4151-bd77-ecf10b580b20" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="deco - 56" Address="56" Key="cb3ad794-4ff0-4507-9c5d-354af03b1dba" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="beam6">
-        <BinaryInput Name="deco Low box 58" Address="58" Key="0f658f9a-ae75-4d39-b5ea-3fb392cb1a10" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="deco Low box 57" Address="57" Key="e3c3cba8-244d-4b4c-b105-b1f8d0b959da" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="beam7">
-        <BinaryInput Name="deco - 59" Address="59" Key="88ddb9bd-557d-436f-b260-00fd375a4490" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="deco - 58" Address="58" Key="b16d33c2-6b4b-42bf-be22-22c7dcebfd04" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="LightCurtainReceiver" Key="e31499da-9c6b-4d93-ae6d-ed2485aad819">
+    <Proxy PrefabName="LightCurtainReceiver" Key="66716f5d-7814-4737-ace8-3937e133665d">
       <Position X="303" Y="9" Z="211" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -1790,7 +1760,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="c61bb5c9-7988-4dc4-a2bd-e71f5f51aa78">
+    <Proxy PrefabName="SafeguardL" Key="a08f3480-3f60-4a5c-9203-5e9cf2234c65">
       <Position X="202" Y="10" Z="166" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1802,7 +1772,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="820a60a4-e102-461d-96b5-d1c4f22bfac5">
+    <Proxy PrefabName="SafeguardL" Key="88131410-6352-4bb3-8065-3760e9b7bdc4">
       <Position X="202" Y="10" Z="140" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1814,7 +1784,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="6a90003c-6135-451b-8731-20f9e194d788">
+    <Proxy PrefabName="SafeguardL" Key="e41d1c6f-8bc4-4e35-a690-fa7afb1f70fb">
       <Position X="185" Y="10" Z="166" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1826,7 +1796,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="0a4beaec-4436-413d-8e6b-cffd1373da2a">
+    <Proxy PrefabName="SafeguardL" Key="1aebf6f0-c058-4edb-8c5f-c9a22db1e030">
       <Position X="185" Y="10" Z="140" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1838,7 +1808,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="d7cc6375-925b-466d-9108-0091a438652a">
+    <Proxy PrefabName="SafeguardL" Key="a8797d90-3c9e-45fb-bd54-a1e4c686c252">
       <Position X="145" Y="10" Z="107" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1850,7 +1820,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="0425b78f-9a0f-4379-93e6-015a18bfd7b8">
+    <Proxy PrefabName="SafeguardL" Key="e9409920-cc9d-4e80-bd33-0ba6184b7e6e">
       <Position X="162" Y="10" Z="107" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1862,7 +1832,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="f0d16a1b-d743-45b9-9e73-4e43240bf395">
+    <Proxy PrefabName="SafeguardL" Key="71a5e1cd-2d8d-4c94-ad53-e94ee15e159b">
       <Position X="171" Y="10" Z="116" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -1874,7 +1844,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="38ba23a1-1f8b-49d5-87cf-4ff95365be72">
+    <Proxy PrefabName="SafeguardL" Key="17fbb421-0d7a-466f-b740-4e1300601988">
       <Position X="229" Y="10" Z="204" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -1886,7 +1856,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="71d379a2-9eb5-40b8-bf46-9e013f4bef72">
+    <Proxy PrefabName="SafeguardL" Key="913c0e72-8d2d-46be-b364-d6156ce40ffc">
       <Position X="209" Y="10" Z="204" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -1898,7 +1868,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="SafeguardL" Key="78b97eaa-3a89-4868-92d3-d299786a2541">
+    <Proxy PrefabName="SafeguardL" Key="8b3c1c0b-003f-4956-93ab-a6fa67cbb127">
       <Position X="219" Y="10" Z="213" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1910,7 +1880,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="48799bc6-826b-4690-9701-ad3da11dbe0b">
+    <Proxy PrefabName="Safeguard" Key="6e63a465-2a16-4980-99dd-169510f907f3">
       <Position X="84" Y="6" Z="83" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1922,7 +1892,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="d84db19d-ad60-4061-9967-f9cd1f143afb">
+    <Proxy PrefabName="Safeguard" Key="5804d28c-9392-40df-b633-41c3d7044fe6">
       <Position X="84" Y="6" Z="220" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1934,7 +1904,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="4485dcb2-c4a8-4e2b-899c-148bd7e38d9b">
+    <Proxy PrefabName="Safeguard" Key="0d292d30-2bf7-4389-af69-cf3a9c388982">
       <Position X="101" Y="6" Z="83" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1946,7 +1916,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="70522deb-b6df-4a88-8317-be3db7c3da92">
+    <Proxy PrefabName="Safeguard" Key="9883412d-58d1-4605-bdc6-cea93aa6b62a">
       <Position X="101" Y="6" Z="220" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1958,7 +1928,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="87dd678e-dab2-4b13-ae9c-bc736ab093a4">
+    <Proxy PrefabName="Safeguard" Key="fc302c45-6247-4c20-ba33-2e90edeae525">
       <Position X="118" Y="6" Z="83" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1970,7 +1940,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="b5e13aba-8659-4081-b254-e07daac7a1ee">
+    <Proxy PrefabName="Safeguard" Key="946aa3b8-39fb-44c8-a663-27e3421eb980">
       <Position X="118" Y="6" Z="220" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1982,7 +1952,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="6899829b-9434-43b5-a3d1-517d6fa4ca33">
+    <Proxy PrefabName="Safeguard" Key="9da32f57-3885-49b2-bffc-c826ba19b45e">
       <Position X="135" Y="6" Z="83" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -1994,7 +1964,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="823c37a5-d982-4433-9521-f1242cbd55d0">
+    <Proxy PrefabName="Safeguard" Key="3d654684-bd56-474c-a4a5-c99f08c17ea4">
       <Position X="135" Y="6" Z="220" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2006,7 +1976,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="31fcd573-fc18-4b41-84c8-86eed7fb1d9f">
+    <Proxy PrefabName="Safeguard" Key="91d23ce8-721a-425b-af24-9a3169828740">
       <Position X="152" Y="6" Z="83" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2018,7 +1988,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="21981f55-f085-404a-b4ae-f5e6f5c3dbfd">
+    <Proxy PrefabName="Safeguard" Key="2dddc331-1963-45b9-a0fd-f03551b0903f">
       <Position X="152" Y="6" Z="220" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2030,7 +2000,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="77f65cf0-2672-4b9e-830c-ba6f43171fcb">
+    <Proxy PrefabName="Safeguard" Key="09844a9b-6900-498d-b13a-849c823cc16a">
       <Position X="169" Y="6" Z="83" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2042,7 +2012,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="4549f45a-4316-4f70-bbc6-f6bbc3e22ce0">
+    <Proxy PrefabName="Safeguard" Key="194ceaaa-1972-48f0-be16-b94c4d54b3a9">
       <Position X="169" Y="6" Z="220" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2054,7 +2024,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="beb7f5b4-c465-42eb-8227-e9fc92e9c923">
+    <Proxy PrefabName="Safeguard" Key="a3c25ea1-09c1-4590-aafc-12dc57380fc1">
       <Position X="186" Y="6" Z="83" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2066,7 +2036,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="b318b22b-b514-4cfc-831b-2bb537f795b1">
+    <Proxy PrefabName="Safeguard" Key="c000173f-573a-4a41-a99b-2d5a2556387f">
       <Position X="203" Y="6" Z="83" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2078,7 +2048,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="3ac17bca-394c-4d4f-bd37-e743eacc448c">
+    <Proxy PrefabName="Safeguard" Key="cf465b15-6891-4c97-8a81-d032e467f5fa">
       <Position X="203" Y="6" Z="220" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2090,7 +2060,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="05426936-af7a-44e6-8a64-2380b6c5f633">
+    <Proxy PrefabName="Safeguard" Key="774615a0-5431-409d-ad9a-d8f6d043a69e">
       <Position X="220" Y="6" Z="83" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2102,7 +2072,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="dc64281f-f3e1-4a0a-bea8-fd9015c2fb41">
+    <Proxy PrefabName="Safeguard" Key="49c924be-8dee-4b14-835c-80155ef43012">
       <Position X="220" Y="6" Z="220" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2114,7 +2084,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="d728a2cc-6db0-4882-b673-43f01df3dcaa">
+    <Proxy PrefabName="Safeguard" Key="93a3ca7b-5b21-4cb0-a5bf-e49ff0add3e8">
       <Position X="237" Y="6" Z="83" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2126,7 +2096,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="161f0abf-9e22-47e7-8f31-fa104d66ff75">
+    <Proxy PrefabName="Safeguard" Key="3cf9281b-66e3-49ec-ae59-e3b5f714bf42">
       <Position X="237" Y="6" Z="220" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2138,7 +2108,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="2cc19b40-8d9f-4eb4-9105-bf46481e017a">
+    <Proxy PrefabName="Safeguard" Key="85dc1ed7-a04f-46e7-83b4-c6509774dc12">
       <Position X="254" Y="6" Z="83" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2150,7 +2120,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="7ff77b24-676c-4020-bef6-cc79ef9ff17c">
+    <Proxy PrefabName="Safeguard" Key="3be51786-b827-4aca-a399-f6fff08c13f0">
       <Position X="254" Y="6" Z="220" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2162,7 +2132,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="4080370b-71d8-41f6-bd3c-1b86c5c705ca">
+    <Proxy PrefabName="Safeguard" Key="83303443-5026-4c27-aa48-45688d0f6d9f">
       <Position X="271" Y="6" Z="83" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2174,7 +2144,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="eb399e71-96a7-452a-a3da-e9668b74c896">
+    <Proxy PrefabName="Safeguard" Key="18f56d06-f534-454b-8648-4a73017b552c">
       <Position X="271" Y="6" Z="220" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2186,7 +2156,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="d45350f9-f41c-44fc-9409-83ae4fed536c">
+    <Proxy PrefabName="Safeguard" Key="85133b24-56db-4601-8adb-42e3b92de8d9">
       <Position X="288" Y="6" Z="83" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2198,7 +2168,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="aa4bada5-5a12-40f1-bf2d-9e58f5b5baea">
+    <Proxy PrefabName="Safeguard" Key="6cc146de-f7d4-47ce-bb73-85db12474d2d">
       <Position X="288" Y="6" Z="220" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2210,7 +2180,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="672e1ef7-3b61-4ba2-b09b-3c8018b26204">
+    <Proxy PrefabName="Safeguard" Key="b443afa2-b379-4b8a-9fd4-fa5bc7ba284e">
       <Position X="305" Y="6" Z="83" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2222,7 +2192,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="c85e4eb9-456d-402f-898d-2cbd2a41a423">
+    <Proxy PrefabName="Safeguard" Key="8cb0ae5d-7286-4688-bd52-6de454dd5841">
       <Position X="305" Y="6" Z="220" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2234,7 +2204,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="8a9d67cb-88c8-4d1e-a8d7-e770e29ccb8b">
+    <Proxy PrefabName="Safeguard" Key="71b00b70-af90-4fb9-bcb0-507c9d53061d">
       <Position X="322" Y="6" Z="83" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2246,7 +2216,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="0f6f0ced-a653-48bf-b150-d1a66ff12c57">
+    <Proxy PrefabName="Safeguard" Key="fd91a76a-018d-4e06-b741-fd215b76a734">
       <Position X="322" Y="6" Z="220" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2258,7 +2228,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="b8db1a08-9608-4437-908d-6e2804f162d4">
+    <Proxy PrefabName="Safeguard" Key="3589b7e8-bdd8-4c7f-abb5-39f3a3b355dd">
       <Position X="339" Y="6" Z="83" />
       <Rotation X="0" Y="0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2270,7 +2240,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="05875d7f-b13b-4798-9eed-fd71ef3a0497">
+    <Proxy PrefabName="Safeguard" Key="c8d660d9-bba8-4a7e-b1d0-700ece27eca0">
       <Position X="339" Y="6" Z="220" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2282,7 +2252,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="8c6474a0-274c-4ab7-8bc4-de0f4e853cf4">
+    <Proxy PrefabName="Safeguard" Key="9fa88122-1f8c-4829-905f-d19e9cfa1fcb">
       <Position X="348" Y="6" Z="92" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -2294,7 +2264,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="3408f3e5-0fae-42f0-9197-25e0665f7d9b">
+    <Proxy PrefabName="Safeguard" Key="92f07921-b36d-4432-acb2-9849fa26bbcf">
       <Position X="75" Y="6" Z="92" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2306,7 +2276,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="77e41e77-818a-4b05-bcf2-8651657748ff">
+    <Proxy PrefabName="Safeguard" Key="834a775a-eab8-4a74-b3cb-828825e76f28">
       <Position X="348" Y="6" Z="109" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -2318,7 +2288,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="70b12f5d-178c-45ad-9acc-3d2f413770ea">
+    <Proxy PrefabName="Safeguard" Key="8ce3a024-e126-44e2-8d52-8fdb3a8c2d38">
       <Position X="75" Y="6" Z="109" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2330,7 +2300,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="1628e355-d23b-4598-913d-32f668b2bd60">
+    <Proxy PrefabName="Safeguard" Key="5df0d3cc-c383-487e-9983-eba795b682e9">
       <Position X="348" Y="6" Z="126" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -2342,7 +2312,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="921ae31a-e8e2-4c44-8bab-406706fd40b6">
+    <Proxy PrefabName="Safeguard" Key="c6d2f046-3167-44f1-b5eb-01999c585742">
       <Position X="75" Y="6" Z="126" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2354,7 +2324,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="fad05565-bb9b-4541-97bf-48aaa9370e65">
+    <Proxy PrefabName="Safeguard" Key="14f10d14-2f7c-4b45-ab2a-af6e2cab1804">
       <Position X="75" Y="6" Z="143" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2366,7 +2336,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="a3b6a6de-9b70-4b53-9299-40acc503ec0f">
+    <Proxy PrefabName="Safeguard" Key="847487f9-3e7d-48ab-8c79-ae1494a93f6d">
       <Position X="348" Y="6" Z="160" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -2378,7 +2348,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="15423dce-89e7-44a3-abeb-4b8396acfbf7">
+    <Proxy PrefabName="Safeguard" Key="82645a6d-93da-44c9-8643-4b7e442214da">
       <Position X="75" Y="6" Z="160" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2390,7 +2360,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="1ee7ecc6-9223-4374-a20b-2efabc8ae01a">
+    <Proxy PrefabName="Safeguard" Key="47d19276-5520-4699-ba22-30bedec7b844">
       <Position X="348" Y="6" Z="177" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -2402,7 +2372,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="14610bd3-a2f0-4cfe-ab7a-c9d4d71885c1">
+    <Proxy PrefabName="Safeguard" Key="7e1a4877-c2b3-46ba-af1f-e6caeba6193d">
       <Position X="75" Y="6" Z="177" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2414,7 +2384,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="65898db7-00d2-419c-93af-1ff801461f2e">
+    <Proxy PrefabName="Safeguard" Key="cdc16af5-0822-4c3e-b7ad-97bc68cc55fb">
       <Position X="348" Y="6" Z="194" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -2426,7 +2396,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="c1b72af8-fa81-41ea-a15b-902b9b84ada9">
+    <Proxy PrefabName="Safeguard" Key="d9fec991-1a88-4b5f-8e2e-969c19ffcbbb">
       <Position X="75" Y="6" Z="194" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2438,7 +2408,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="bdb7c3ee-df89-4772-93c6-f29d3fdf86f5">
+    <Proxy PrefabName="Safeguard" Key="d0d4f87f-cee6-4ad1-8cd3-fcb49aea69ea">
       <Position X="348" Y="6" Z="211" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -2450,7 +2420,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Safeguard" Key="2a057804-da68-4fbd-86e4-6f350e6cba69">
+    <Proxy PrefabName="Safeguard" Key="9dd764e7-0998-401c-97b2-678ab9ae59ff">
       <Position X="75" Y="6" Z="211" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2462,7 +2432,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="PlatformL" Key="ec1bc127-08c5-4e22-bf78-df5d06b9ec54">
+    <Proxy PrefabName="PlatformL" Key="305b381e-4309-499e-9d84-bbe95b7aee7a">
       <Position X="125" Y="11" Z="206" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2474,7 +2444,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="HandrailXL" Key="5029885d-26b2-49fe-9a7f-c9e6c8e924cd">
+    <Proxy PrefabName="HandrailXL" Key="e7992da0-01bc-45c2-83bc-6d6afb8ef0cd">
       <Position X="125" Y="16" Z="198" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2486,7 +2456,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="HandrailXL" Key="4793b752-1ab6-463d-a5bb-8667d3cb99d9">
+    <Proxy PrefabName="HandrailXL" Key="ed107535-e7c6-4893-a2f3-5a157c506b11">
       <Position X="125" Y="16" Z="213" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2498,7 +2468,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="PlatformL" Key="bc4419d9-c5c7-48f8-94f6-497ad4cbd204">
+    <Proxy PrefabName="PlatformL" Key="c5225443-270c-4fb7-a7c7-d70f4008bcc6">
       <Position X="147" Y="11" Z="206" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2510,7 +2480,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="HandrailXL" Key="38738efa-c0bd-4092-a239-fc6bbb8b0373">
+    <Proxy PrefabName="HandrailXL" Key="a702d7da-606e-4e3d-ab8b-67242c38ea93">
       <Position X="147" Y="16" Z="198" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2522,7 +2492,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="HandrailXL" Key="b406d085-8331-4d97-aa77-2dc02bc4cac9">
+    <Proxy PrefabName="HandrailXL" Key="8e7df72a-0d08-4eb5-badb-41b4eee78fc5">
       <Position X="147" Y="16" Z="213" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2534,7 +2504,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="PlatformL" Key="58d376b2-6b36-42b9-96aa-5def9b6e8c98">
+    <Proxy PrefabName="PlatformL" Key="9def6a3a-e3d1-453a-ab52-91d4b55f56ea">
       <Position X="169" Y="11" Z="206" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2546,7 +2516,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="HandrailXL" Key="aad9d63a-f0a4-4ee4-9187-007790c3d7ad">
+    <Proxy PrefabName="HandrailXL" Key="7724586c-de1a-409f-86df-cfc291832b74">
       <Position X="169" Y="16" Z="198" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2558,7 +2528,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="HandrailXL" Key="6ac54274-b60e-4870-88fa-edb183b38332">
+    <Proxy PrefabName="HandrailXL" Key="d5019890-4053-47cd-bd56-08b2b413ecc6">
       <Position X="169" Y="16" Z="213" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2570,7 +2540,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="PlatformPillar" Key="12c3d31e-b688-4993-98cb-96eb810e9858">
+    <Proxy PrefabName="PlatformPillar" Key="19533eb0-b30a-4ae2-bfb3-bb5b41081c50">
       <Position X="114" Y="5" Z="199" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2582,7 +2552,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="PlatformPillar" Key="7b602046-c0a9-402e-8c09-910bbe313b10">
+    <Proxy PrefabName="PlatformPillar" Key="73124bbc-7378-443a-927a-b272a7a94db9">
       <Position X="114" Y="5" Z="213" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2594,7 +2564,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="PlatformPillar" Key="fcbb9538-1ac0-427c-ae14-cc68dbba0255">
+    <Proxy PrefabName="PlatformPillar" Key="079d8bf0-f934-4952-b5dd-fbf45da26d6f">
       <Position X="136" Y="5" Z="199" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2606,7 +2576,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="PlatformPillar" Key="5f73e32c-7ce4-4eac-873e-3f440dd04241">
+    <Proxy PrefabName="PlatformPillar" Key="4860ec41-3127-4cc5-b958-36f7b4c4c36e">
       <Position X="136" Y="5" Z="213" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2618,7 +2588,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="PlatformPillar" Key="652ccb96-4649-4747-855e-91b584d817eb">
+    <Proxy PrefabName="PlatformPillar" Key="31ddcc09-f031-41e3-b791-e1eb0a1a2011">
       <Position X="158" Y="5" Z="199" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2630,7 +2600,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="PlatformPillar" Key="8048d74c-ab30-4345-a366-3e7f3576a823">
+    <Proxy PrefabName="PlatformPillar" Key="69f46d5f-fb16-4ef8-b479-0e7f164f030a">
       <Position X="158" Y="5" Z="213" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2642,7 +2612,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="PlatformPillar" Key="fb173808-b48c-401c-b383-61411e0d21ae">
+    <Proxy PrefabName="PlatformPillar" Key="87b5c33f-2f10-43ae-ab0a-edea53c06065">
       <Position X="179" Y="5" Z="199" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2654,7 +2624,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="PlatformPillar" Key="56638bf2-5dad-4070-b459-c935aae8e38a">
+    <Proxy PrefabName="PlatformPillar" Key="512482e2-d5e4-4509-b7dd-8fde3a1ac097">
       <Position X="179" Y="5" Z="213" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2666,7 +2636,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="HandrailM" Key="c8391588-555d-400a-ad46-35980e865c2f">
+    <Proxy PrefabName="HandrailM" Key="2a4df15e-8d44-4ad4-b169-3469da13eac8">
       <Position X="114" Y="15" Z="202" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2678,7 +2648,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="HandrailM" Key="67b4f73c-60cf-4d77-8b9b-8033073418f8">
+    <Proxy PrefabName="HandrailM" Key="a77dddc5-4e44-4b76-a912-bc6df6d382f9">
       <Position X="114" Y="15" Z="210" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2690,7 +2660,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="PlatformM" Key="315b7ba6-8fbf-4742-a22d-8f6a3a22f95c">
+    <Proxy PrefabName="PlatformM" Key="0d26e6b9-2246-464f-a47d-bead2264e969">
       <Position X="184" Y="11" Z="202" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2702,7 +2672,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="PlatformPillar" Key="00988032-3a6b-4d19-a0a5-c8208c165e35">
+    <Proxy PrefabName="PlatformPillar" Key="c6ee885f-288b-4070-bd2d-824136b0fd45">
       <Position X="187" Y="5" Z="199" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2714,7 +2684,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Stairs" Key="7c617635-f193-4c34-9b53-02c760543d0b">
+    <Proxy PrefabName="Stairs" Key="fa9a7e4c-6bcb-4456-822f-3b80cd0c633f">
       <Position X="185" Y="10" Z="207" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -2726,7 +2696,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="StairsHandrail" Key="e13bc339-2d48-4f7b-870a-734884fe5e66">
+    <Proxy PrefabName="StairsHandrail" Key="b33f34fa-8911-4e6e-bbb3-0484181564ac">
       <Position X="181" Y="11" Z="214" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -2738,7 +2708,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="StairsHandrail" Key="5c444ec6-fa10-4ef0-9361-24559cf1fb79">
+    <Proxy PrefabName="StairsHandrail" Key="490b1cd0-aa48-4b87-81c6-286537f514c6">
       <Position X="188" Y="11" Z="214" />
       <Rotation X="0" Y="1" Z="0" W="0" />
       <FineRotation>0</FineRotation>
@@ -2750,7 +2720,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="CornerHandrail" Key="c7da26a3-445c-453d-a61d-8ce227a1b32f">
+    <Proxy PrefabName="CornerHandrail" Key="f6335b33-aa25-460e-aa75-73eb59113642">
       <Position X="184" Y="16" Z="201" />
       <Rotation X="0" Y="-0.7071068" Z="0" W="0.7071068" />
       <FineRotation>0</FineRotation>
@@ -2762,7 +2732,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" Color="7" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Column" Key="a30c22de-6778-415a-9d91-23f06403c90d">
+    <Proxy PrefabName="Column" Key="1822c047-705c-432c-b739-9e2415868578">
       <Position X="194" Y="8" Z="178" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2774,7 +2744,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="ElectricSwitchboard" Key="e4a4ae28-dff3-4b13-9315-e31661258ca3">
+    <Proxy PrefabName="ElectricSwitchboard" Key="26d67747-3b5d-44ed-91e1-22ff3a0cadbd">
       <Position X="195" Y="12" Z="178" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2786,7 +2756,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="DigitalDisplay" Key="3c1cf22b-ef7c-4f31-b288-7879f16681b7">
+    <Proxy PrefabName="DigitalDisplay" Key="f256984e-f4c5-46a1-80be-4668727d4a38">
       <Position X="197" Y="12" Z="178" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2795,15 +2765,15 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="1" Y="0" Z="0" />
     </Proxy>
-    <ComponentIO Index="335" CurrentOperatingMode="2" />
+    <ComponentIO Index="333" CurrentOperatingMode="2" />
     <OperatingMode Description="$C_DigitalDisplay_OM_Int_NAME">
       <GroupIO Description="Default">
-        <IntOutput Name="deco Timer 13" Address="13" Key="877eed1a-6a71-4d2b-8033-6d167aae4eb0" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <IntOutput Name="deco Timer 13" Address="13" Key="1e916d65-4b9e-4126-a100-11ec65c53ce6" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Column" Key="3ae014ab-401a-4cf7-95fe-ed38417d898d">
+    <Proxy PrefabName="Column" Key="da27c959-ebd9-4f46-b5eb-666fd5f62e9c">
       <Position X="150" Y="8" Z="101" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2815,7 +2785,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="ElectricSwitchboard" Key="49e251e9-93d4-4c93-8079-ba429a01b246">
+    <Proxy PrefabName="ElectricSwitchboard" Key="543407a0-5c8a-4b18-a9ab-4a6231916b85">
       <Position X="151" Y="12" Z="101" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2827,7 +2797,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="DigitalDisplay" Key="6aeddf99-a69d-41a8-9f75-d430925b63b7">
+    <Proxy PrefabName="DigitalDisplay" Key="441af1bd-93a7-44e7-afbc-a77d72ccb496">
       <Position X="153" Y="12" Z="101" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2836,15 +2806,15 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="1" Y="0" Z="0" />
     </Proxy>
-    <ComponentIO Index="338" CurrentOperatingMode="2" />
+    <ComponentIO Index="336" CurrentOperatingMode="2" />
     <OperatingMode Description="$C_DigitalDisplay_OM_Int_NAME">
       <GroupIO Description="Default">
-        <IntOutput Name="deco Timer 14" Address="14" Key="077713b0-a652-48f3-be83-e9b924e4288b" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <IntOutput Name="deco Timer 14" Address="14" Key="a50e6a2a-bd36-4b97-9ae6-b5c67e857ff5" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Column" Key="860276a3-1801-4ed7-8aa0-d07b4181bf06">
+    <Proxy PrefabName="Column" Key="4013e6e9-f90c-4542-915e-e683e3f36ddf">
       <Position X="202" Y="8" Z="206" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2856,7 +2826,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="ElectricSwitchboard" Key="3a5bf825-ddbe-46f5-8154-5d29888fd331">
+    <Proxy PrefabName="ElectricSwitchboard" Key="1f9d31bf-1dda-473b-951c-07c148fd7e72">
       <Position X="203" Y="12" Z="206" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2868,7 +2838,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="DigitalDisplay" Key="fd7db88b-a346-4a47-b2fd-a866c3c5052e">
+    <Proxy PrefabName="DigitalDisplay" Key="09a8d5e4-63db-437d-abaf-e8cc2857b010">
       <Position X="205" Y="12" Z="206" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2877,15 +2847,15 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="1" Y="0" Z="0" />
     </Proxy>
-    <ComponentIO Index="341" CurrentOperatingMode="2" />
+    <ComponentIO Index="339" CurrentOperatingMode="2" />
     <OperatingMode Description="$C_DigitalDisplay_OM_Int_NAME">
       <GroupIO Description="Default">
-        <IntOutput Name="deco Timer 15" Address="15" Key="4fe8d2ec-4ceb-4186-b93e-552a9cebce6d" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <IntOutput Name="deco Timer 15" Address="15" Key="9bdaa356-2fe5-4116-ace1-b627797d9aab" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Column" Key="7800dc23-8ca8-4d2a-b3a7-9f56f33e4426">
+    <Proxy PrefabName="Column" Key="5ed19530-4e0f-44d1-beae-2d540769eb28">
       <Position X="314" Y="8" Z="205" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2897,7 +2867,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="ElectricSwitchboard" Key="5a308c78-d475-45ad-bc48-27310f63e564">
+    <Proxy PrefabName="ElectricSwitchboard" Key="47b8eb50-6929-4774-828a-1cba7a6d4d89">
       <Position X="315" Y="12" Z="205" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2909,7 +2879,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="DigitalDisplay" Key="1073df65-a00b-457f-b5f5-c86ff36b4561">
+    <Proxy PrefabName="DigitalDisplay" Key="6b18f6c8-e9ca-45a9-8176-66ff218b077a">
       <Position X="317" Y="12" Z="205" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2918,15 +2888,15 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="1" Y="0" Z="0" />
     </Proxy>
-    <ComponentIO Index="344" CurrentOperatingMode="2" />
+    <ComponentIO Index="342" CurrentOperatingMode="2" />
     <OperatingMode Description="$C_DigitalDisplay_OM_Int_NAME">
       <GroupIO Description="Default">
-        <IntOutput Name="deco Timer 16" Address="16" Key="461cb18c-47ae-4032-9282-7900d124c45a" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <IntOutput Name="deco Timer 16" Address="16" Key="ce260327-a2e7-47a0-8baa-94d70dcb2f33" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Column" Key="a3c91380-ed0c-4b44-bd62-da78fcfe1ab6">
+    <Proxy PrefabName="Column" Key="828c0304-c514-425d-92fb-d81b33660e0a">
       <Position X="235" Y="8" Z="212" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2938,7 +2908,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="WarningLight" Key="66e7b190-7a96-4a26-bc8b-adcdf5335363">
+    <Proxy PrefabName="WarningLight" Key="756c3f72-e2d0-4a22-98e4-ffdac5895b38">
       <Position X="235" Y="17" Z="212" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2947,15 +2917,15 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="1" Y="0" Z="0" />
     </Proxy>
-    <ComponentIO Index="346" CurrentOperatingMode="0" />
+    <ComponentIO Index="344" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_OM_Default_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="deco Warning light 54" Address="54" Key="fcde2c4b-f430-4b08-9bc0-ba3410a153f9" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="deco Warning light 54" Address="54" Key="14e3eea0-c6db-4b5c-a881-aee1b415c2d3" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Column" Key="17ac574c-d9d9-4a29-a671-1e566564f380">
+    <Proxy PrefabName="Column" Key="5971bd0c-9d7c-4c12-a851-495618e6d17a">
       <Position X="311" Y="8" Z="214" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2967,7 +2937,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="WarningLight" Key="2fd332bb-bb1c-41b9-a436-7e04749aeca9">
+    <Proxy PrefabName="WarningLight" Key="cab339a6-5abf-4ebb-b252-46e4678dbf28">
       <Position X="311" Y="17" Z="214" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2976,15 +2946,15 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="1" Y="0" Z="0" />
     </Proxy>
-    <ComponentIO Index="348" CurrentOperatingMode="0" />
+    <ComponentIO Index="346" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_OM_Default_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="deco Warning light 55" Address="55" Key="db2a719e-68c3-404f-ab8d-9c70e6f36627" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="deco Warning light 55" Address="55" Key="cc3e0359-fb34-4ea3-9c27-90bd5aa09c94" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Column" Key="5cce9163-a3a3-4c42-a7d6-910edb1a417b">
+    <Proxy PrefabName="Column" Key="f6196a81-bc42-4fbc-89a2-2501c0a9c8ea">
       <Position X="184" Y="8" Z="175" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -2996,7 +2966,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="WarningLight" Key="ed0f57f7-64aa-4d30-ad58-f37236147c0d">
+    <Proxy PrefabName="WarningLight" Key="1a1ad51b-3f57-42ff-8835-ccc97e634f0f">
       <Position X="184" Y="17" Z="175" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -3005,15 +2975,15 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="1" Y="0" Z="0" />
     </Proxy>
-    <ComponentIO Index="350" CurrentOperatingMode="0" />
+    <ComponentIO Index="348" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_OM_Default_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="deco Warning light 56" Address="56" Key="53a6bded-76a4-4bd9-860a-6359d61f8e46" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="deco Warning light 56" Address="56" Key="94f8a6b9-26e9-49b4-b0d9-d885c295bfbf" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Column" Key="11f9bd4e-4704-44f5-b2bd-4e8228b2f16d">
+    <Proxy PrefabName="Column" Key="57db711e-6572-4fad-9743-61a5022a8732">
       <Position X="176" Y="8" Z="122" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -3025,7 +2995,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="WarningLight" Key="5ce2e9b0-d935-4abd-a343-ab416ba72787">
+    <Proxy PrefabName="WarningLight" Key="d93027bf-5dcb-4526-a5e3-867b00f4cf88">
       <Position X="176" Y="17" Z="122" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -3034,15 +3004,15 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="1" Y="0" Z="0" />
     </Proxy>
-    <ComponentIO Index="352" CurrentOperatingMode="0" />
+    <ComponentIO Index="350" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_OM_Default_NAME">
       <GroupIO Description="Default">
-        <BinaryOutput Name="deco Warning light 57" Address="57" Key="287cb8ca-3984-4999-8c7b-b98612b3a7bb" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="deco Warning light 57" Address="57" Key="bae55d52-e2b9-426d-ad9e-fa8d03d314cb" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Rack" Key="964e8f9c-92a9-4f6f-b61e-dcf450f7abc1">
+    <Proxy PrefabName="Rack" Key="dcf228c5-0d25-4d70-aef3-85c06c47ddea">
       <Position X="400" Y="25" Z="110" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -3054,7 +3024,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Rack" Key="1571f4e4-3264-459d-baba-99383b975990">
+    <Proxy PrefabName="Rack" Key="a6151280-a9e1-44f3-a5a9-5c9dea1eddf1">
       <Position X="400" Y="25" Z="137" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -3066,7 +3036,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Rack" Key="47a43f04-a249-4f34-b6ec-cdbb5a0797a9">
+    <Proxy PrefabName="Rack" Key="170dbf27-fd97-433c-9901-7256e2b82e3f">
       <Position X="400" Y="25" Z="164" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -3078,7 +3048,7 @@
     <ComponentIO Index="-1" CurrentOperatingMode="0" />
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="MachiningCenter" Key="d9d5d864-1ac1-4410-8487-98f8e7fa4af9">
+    <Proxy PrefabName="MachiningCenter" Key="43aa9031-05d8-4ce9-91f7-71825e368731">
       <Position X="42" Y="9" Z="110" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -3087,36 +3057,36 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="1" Y="0" Z="0" />
     </Proxy>
-    <ComponentIO Index="356" CurrentOperatingMode="0" />
+    <ComponentIO Index="354" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_OM_Default_NAME">
       <GroupIO Description="produceLids">
-        <BinaryOutput Name="deco Lids center (produce lids) 58" Address="58" Key="5fb88e82-66f7-435f-aaf2-6e74e812dce7" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
+        <BinaryOutput Name="deco Lids center (produce lids) 58" Address="58" Key="1411a6f7-f75c-4b81-9192-ec2b7f41bb01" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
       </GroupIO>
       <GroupIO Description="start">
-        <BinaryOutput Name="deco Lids center (start) 59" Address="59" Key="c73e988e-2ee7-46d3-a4a7-c756c401095b" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="deco Lids center (start) 59" Address="59" Key="55905749-8947-453e-b469-6f851da9b95f" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="stop">
-        <BinaryOutput Name="deco Lids center (stop) 60" Address="60" Key="3af51842-e640-473f-8338-f98b58cb3664" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="deco Lids center (stop) 60" Address="60" Key="87e99438-2da8-4dba-9749-4e577bb81661" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="reset">
-        <BinaryOutput Name="deco Lids center (reset) 61" Address="61" Key="285b4f15-8aa6-4321-a749-93793c76a51f" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="deco Lids center (reset) 61" Address="61" Key="cedba552-51f4-4535-86cf-90243a01a8ad" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="isBusy">
-        <BinaryInput Name="deco Lids center (busy) 60" Address="60" Key="b3d7315e-6144-40f1-9019-22a76a8180e5" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="deco Lids center (busy) 59" Address="59" Key="2e43a23c-921c-4ac7-a431-71708ea89843" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="hasError">
-        <BinaryInput Name="deco Lids center (has error) 61" Address="61" Key="ea4981af-eee8-410e-8c75-59e89b2635be" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="deco Lids center (has error) 60" Address="60" Key="26c4d4a2-f808-4c46-b090-a43cc6910275" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="door">
-        <BinaryInput Name="deco Machining Center 1 (Opened) 62" Address="62" Key="9bcd465b-ee16-4b91-91b6-6a1e4afb066a" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="deco Machining Center 1 (Opened) 61" Address="61" Key="51bae802-f24c-4920-9f17-ea7588ba5371" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="progress">
-        <IntInput Name="deco Machining Center 1 (Progress) 9" Address="9" Key="807cdf55-f41e-4147-ad04-c50c4c1bda00" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <IntInput Name="deco Machining Center 1 (Progress) 9" Address="9" Key="2d24c729-6dc3-46da-9d7f-f52d38a80b0c" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="MachiningCenter" Key="0ebe44e9-d05f-4017-bf9c-34294ef27941">
+    <Proxy PrefabName="MachiningCenter" Key="6dc707d4-23ad-4496-9a7a-7ea6fe30c4fe">
       <Position X="42" Y="9" Z="150" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -3125,36 +3095,36 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="1" Y="0" Z="0" />
     </Proxy>
-    <ComponentIO Index="357" CurrentOperatingMode="0" />
+    <ComponentIO Index="355" CurrentOperatingMode="0" />
     <OperatingMode Description="$C_OM_Default_NAME">
       <GroupIO Description="produceLids">
-        <BinaryOutput Name="deco Lids center (produce lids) 62" Address="62" Key="68d979e9-14a9-4c3d-b070-e5efff13e829" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
+        <BinaryOutput Name="deco Lids center (produce lids) 62" Address="62" Key="b505ebc8-4871-4813-a400-39f76265a647" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="True" />
       </GroupIO>
       <GroupIO Description="start">
-        <BinaryOutput Name="deco Lids center (start) 63" Address="63" Key="69ebc5f3-dfe1-4cf0-8900-b4708b7f9af6" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="deco Lids center (start) 63" Address="63" Key="1866fd33-d724-4576-b4f6-c59f7ce1426a" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="stop">
-        <BinaryOutput Name="deco Lids center (stop) 64" Address="64" Key="d4c260e9-57fa-44fa-b4a1-819589487f66" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="deco Lids center (stop) 64" Address="64" Key="6f6c5b40-9dfa-41f9-b4ba-8fe1396ccafa" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="reset">
-        <BinaryOutput Name="deco Lids center (reset) 65" Address="65" Key="d3d13dae-81e6-45a1-965b-cbb93e2e3739" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="deco Lids center (reset) 65" Address="65" Key="4dca0bfd-3cc2-44d0-beb5-1349689f7abf" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="isBusy">
-        <BinaryInput Name="deco Lids center (busy) 63" Address="63" Key="adddb4a2-18c0-4711-b628-04e757875955" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="deco Lids center (busy) 62" Address="62" Key="771ea5db-c6c6-4bf0-8daa-d982a6a9474b" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="hasError">
-        <BinaryInput Name="deco Lids center (has error) 64" Address="64" Key="6c434860-1a85-47a0-981b-05471a07cdef" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="deco Lids center (has error) 63" Address="63" Key="543506d0-2851-4c34-8e4e-a5d797a248d2" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="door">
-        <BinaryInput Name="deco Machining Center 1 (Opened) 65" Address="65" Key="6da531b3-9bb4-4880-98ae-a2ae1173bc5d" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryInput Name="deco Machining Center 1 (Opened) 64" Address="64" Key="9cb22d3b-e3e7-4c75-84e5-a402f0e1f7fb" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="progress">
-        <IntInput Name="deco Machining Center 1 (Progress) 10" Address="10" Key="d4143734-6a08-455a-bf82-a9e8df9cb90b" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
+        <IntInput Name="deco Machining Center 1 (Progress) 10" Address="10" Key="d7a4c49d-6d87-487c-a4f1-b0111819ce29" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="0" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Tank" Key="ab4d09dd-f934-441e-ba81-3028d41c1b35">
+    <Proxy PrefabName="Tank" Key="0204a459-b295-4dfb-adfe-3f65b3debd2e">
       <Position X="400" Y="18" Z="215" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -3163,18 +3133,18 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="1" Y="0" Z="0" />
     </Proxy>
-    <ComponentIO Index="358" CurrentOperatingMode="1" />
+    <ComponentIO Index="356" CurrentOperatingMode="1" />
     <OperatingMode Description="$C_Tank_OM_Binary_NAME">
       <GroupIO Description="Fill Valve">
-        <BinaryOutput Name="deco Fill valve 66" Address="66" Key="0124eda0-9a1c-49e3-9b51-1a95e671759d" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="deco Fill valve 66" Address="66" Key="6cf190d7-1c17-4b2c-bf6c-61fa2415c529" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="Discharge Valve">
-        <BinaryOutput Name="deco Discharge valve 67" Address="67" Key="c40e11e3-a9c0-4e0b-a80c-ded1c3c9e655" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="deco Discharge valve 67" Address="67" Key="6ec53eaf-6171-4ebf-a757-48f2dfe89188" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
   </Object>
   <Object Locked="False" GroupKey="00000000-0000-0000-0000-000000000000">
-    <Proxy PrefabName="Tank" Key="6251c107-649a-4ce3-aaf0-a62a2879390c">
+    <Proxy PrefabName="Tank" Key="e0d6537b-36ec-4a34-84ce-258c014bbddd">
       <Position X="372" Y="18" Z="215" />
       <Rotation X="0" Y="0" Z="0" W="1" />
       <FineRotation>0</FineRotation>
@@ -3183,13 +3153,13 @@
       <Up X="0" Y="1" Z="0" />
       <Right X="1" Y="0" Z="0" />
     </Proxy>
-    <ComponentIO Index="359" CurrentOperatingMode="1" />
+    <ComponentIO Index="357" CurrentOperatingMode="1" />
     <OperatingMode Description="$C_Tank_OM_Binary_NAME">
       <GroupIO Description="Fill Valve">
-        <BinaryOutput Name="deco Fill valve 68" Address="68" Key="32c068a9-cfb4-40ee-9d13-295590f13e09" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="deco Fill valve 68" Address="68" Key="1ced3c3b-2bd7-476e-b315-78517967309f" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
       <GroupIO Description="Discharge Valve">
-        <BinaryOutput Name="deco Discharge valve 69" Address="69" Key="fbc4dba0-f969-445f-a7c9-26f4beee8841" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
+        <BinaryOutput Name="deco Discharge valve 69" Address="69" Key="92aef4ad-a7cd-4ba2-a2b6-2ebde330da0f" OpenCircuit="False" ShortCircuit="False" UseForcedValue="False" ForcedValue="False" />
       </GroupIO>
     </OperatingMode>
   </Object>
@@ -3245,7 +3215,7 @@
       <Properties ReadCoils="False" ReadHoldingRegisters="False" ScaleFactor="100" />
     </ModbusTCPClient>
     <ModbusTCPServer>
-      <PointIOCount BitInputCount="52" BitOutputCount="52" FloatInputCount="0" FloatOutputCount="0" IntInputCount="0" IntOutputCount="0" NumericInputCount="9" NumericOutputCount="15" />
+      <PointIOCount BitInputCount="51" BitOutputCount="52" FloatInputCount="0" FloatOutputCount="0" IntInputCount="0" IntOutputCount="0" NumericInputCount="9" NumericOutputCount="15" />
       <PointIOOffset BitInputOffset="0" BitOutputOffset="0" FloatInputOffset="0" FloatOutputOffset="0" IntInputOffset="0" IntOutputOffset="0" NumericInputOffset="0" NumericOutputOffset="0" />
       <BitInput0 PointIOKey="04e2df95-16ec-4fe3-90cb-ee19bbf2d277" />
       <BitInput1 PointIOKey="b85ff5ee-225c-4f1c-abfd-c565ca339640" />
@@ -3266,39 +3236,38 @@
       <BitInput16 PointIOKey="20a3ebe6-dfe0-4fda-8f6e-7461b624d636" />
       <BitInput17 PointIOKey="4ebb63d3-d5e1-4b2f-8103-4c1aaf8fcbb2" />
       <BitInput18 PointIOKey="8ec38425-feee-4a23-ab0d-f09febcfb151" />
-      <BitInput19 PointIOKey="ffcf3abd-c7f9-477d-b979-02a3ebb9ebc5" />
-      <BitInput20 PointIOKey="6b4eadb0-10a8-4286-aa61-a5dbd6e6467d" />
-      <BitInput21 PointIOKey="1455d2f0-60fc-428a-b288-28ad73ab9ae9" />
-      <BitInput22 PointIOKey="e735557f-a719-4bef-8696-8070e1712f61" />
-      <BitInput23 PointIOKey="956a3645-e5b6-4142-91ea-88b82a5d7f02" />
-      <BitInput24 PointIOKey="03b12185-ba0e-435a-b71b-7f4ddff9f1c7" />
-      <BitInput25 PointIOKey="499a5ee6-0c3a-4dad-bea0-6b8049520caa" />
-      <BitInput26 PointIOKey="931a9868-5c39-4dd2-981c-08c8cb91e71a" />
-      <BitInput27 PointIOKey="3f8b7346-1f66-4380-ac1c-e8e9c6e25281" />
-      <BitInput28 PointIOKey="849ff264-20dc-482e-af05-ff2cdf4ad4c2" />
-      <BitInput29 PointIOKey="a7112c2e-a75e-4602-85e5-f5e4eba82ab2" />
-      <BitInput30 PointIOKey="5ac04dc0-f8a4-427a-9169-febc2a367313" />
-      <BitInput31 PointIOKey="5b01e6bb-6b7b-46eb-b416-f04121d35b04" />
-      <BitInput32 PointIOKey="650a3058-267a-4482-9752-23975c97145b" />
-      <BitInput33 PointIOKey="303c9b3c-4131-4ae8-96ee-0aac61f02719" />
-      <BitInput34 PointIOKey="39ec2b43-cdb4-44f4-b718-5aade70c7b58" />
-      <BitInput35 PointIOKey="371e13ad-d0fa-4c97-b8f8-8ab5343ae58d" />
-      <BitInput36 PointIOKey="56184f8c-09b0-4e8d-8616-b0868651ff65" />
-      <BitInput37 PointIOKey="5256d2fe-0e9b-41b9-8481-4e978469b889" />
-      <BitInput38 PointIOKey="97e81930-7804-4655-946a-2a94d80eb793" />
-      <BitInput39 PointIOKey="2200c707-b2b9-4845-98ba-b4c212703a8e" />
-      <BitInput40 PointIOKey="4b9b4b62-5f09-450e-b703-427dcb9d4556" />
-      <BitInput41 PointIOKey="ff2e2c84-7d57-4348-9f09-d5e26a477a22" />
-      <BitInput42 PointIOKey="db3a07c4-9d73-4318-9f58-eb60fed3d79b" />
-      <BitInput43 PointIOKey="0f456845-74e1-4d8b-8c0b-4c3e2369532c" />
-      <BitInput44 PointIOKey="726bd9f6-1815-4928-bdb2-38d8645a6b9e" />
-      <BitInput45 PointIOKey="bf9133aa-ef83-40ce-8974-1fde6392b91c" />
-      <BitInput46 PointIOKey="3420d8c9-2cff-479b-904f-48eea1f76325" />
-      <BitInput47 PointIOKey="0c4146f9-0019-46ef-a387-ec63ea0bf6fe" />
-      <BitInput48 PointIOKey="503c5b9b-f5cd-4f16-8f6b-955f8caee07f" />
-      <BitInput49 PointIOKey="9c3fa827-1f1d-44f3-b3e9-2004fd2c6e87" />
-      <BitInput50 PointIOKey="30ee353f-0838-4dc5-a5e4-365726dd2e05" />
-      <BitInput51 PointIOKey="13ab0d6b-ca78-4499-9fff-b061ccd31ff1" />
+      <BitInput19 PointIOKey="a2cd5be7-7809-42f5-9adb-ace473c7287c" />
+      <BitInput20 PointIOKey="f95d3e3a-7312-453f-a1b5-61191d201169" />
+      <BitInput21 PointIOKey="ac693f0e-7f0f-4f06-83b4-1d7ee4396d24" />
+      <BitInput22 PointIOKey="4df1847a-6e28-4149-9a43-eabcbdf86053" />
+      <BitInput23 PointIOKey="f1644ed9-ff2f-4365-a788-d3d46b0ba52c" />
+      <BitInput24 PointIOKey="268d17f0-4d28-46ad-bc6a-997f56446921" />
+      <BitInput25 PointIOKey="19430f17-c884-43a3-bc4e-73d9e166b146" />
+      <BitInput26 PointIOKey="985d2374-3631-4871-ac67-1e9d3b36de05" />
+      <BitInput27 PointIOKey="c33171ac-848e-44dc-813c-9bcc6dd55630" />
+      <BitInput28 PointIOKey="c9cf7881-f834-4987-8a18-a7647f8fe8a4" />
+      <BitInput29 PointIOKey="b43c0fe5-f3d7-44af-a16e-5c3700971399" />
+      <BitInput30 PointIOKey="5d9ed836-9826-4a3d-9fe9-a5765a4b5d0f" />
+      <BitInput31 PointIOKey="6c797ce1-2b7b-4cc8-a6b3-6c222e16f201" />
+      <BitInput32 PointIOKey="a0d92287-679d-42ff-9ce3-1c4fc3e58a99" />
+      <BitInput33 PointIOKey="5993479b-3a18-4626-a504-44d6bab63fd1" />
+      <BitInput34 PointIOKey="1ae3f532-bd9d-4c34-8d27-4a7073b375e8" />
+      <BitInput35 PointIOKey="e47a428d-ec25-4955-b876-124a80301383" />
+      <BitInput36 PointIOKey="6e848c13-293c-4d6c-9554-079d4550f4fb" />
+      <BitInput37 PointIOKey="25f4e088-5aaa-46d4-99c8-b1b54464da25" />
+      <BitInput38 PointIOKey="1895d8b3-1f32-4661-a48f-5d395bb09407" />
+      <BitInput39 PointIOKey="24393cf3-2e00-427a-a22f-5a269e190ded" />
+      <BitInput40 PointIOKey="df78da07-e340-4dfe-bb3e-89cc44b0f369" />
+      <BitInput41 PointIOKey="743ec32e-7588-456d-a1e5-b83c102a82af" />
+      <BitInput42 PointIOKey="7e2a271d-e5cd-453b-a89b-80d5a48fcc60" />
+      <BitInput43 PointIOKey="ae810e33-8d03-4445-8672-8f3325bff3c1" />
+      <BitInput44 PointIOKey="9108bd5f-686b-4fa0-9204-48a2599a300f" />
+      <BitInput45 PointIOKey="a022be23-3a2c-477b-b665-ffa3888d914a" />
+      <BitInput46 PointIOKey="e5c77fda-cbb1-4ede-8306-1e6f8bbe0d3a" />
+      <BitInput47 PointIOKey="0b41256d-5405-431e-8b59-39280c321f16" />
+      <BitInput48 PointIOKey="130119b6-5712-4f4d-828c-2030b0b9857d" />
+      <BitInput49 PointIOKey="523ada4c-31b2-4239-a6bd-cb778d9d22ae" />
+      <BitInput50 PointIOKey="d62cde8b-b999-42c9-8e40-80533282866d" />
       <BitOutput0 PointIOKey="7376d687-c662-4d96-86dc-cc57e7f27d2b" />
       <BitOutput1 PointIOKey="dc46cbc8-bcb2-430c-b448-2c816d96f0ba" />
       <BitOutput2 PointIOKey="eb3a07af-b0b8-4761-8ca0-a52bf4ab81ad" />
@@ -3315,51 +3284,51 @@
       <BitOutput13 PointIOKey="cbe943e3-ddcd-44dc-bd49-b10500ba6313" />
       <BitOutput14 PointIOKey="c5dbcf72-52ee-4785-b877-c3838e226ab1" />
       <BitOutput15 PointIOKey="a4094f57-f814-4777-9032-de4f5609ca5c" />
-      <BitOutput16 PointIOKey="b5ef11c2-de15-4c56-bbe9-9f28d38f5355" />
-      <BitOutput17 PointIOKey="a6dbfed5-5e85-44f5-b2c8-62cc4397b6d4" />
-      <BitOutput18 PointIOKey="57a1d1a9-b5ed-4611-9cb7-d209735b11c6" />
-      <BitOutput19 PointIOKey="432fb2df-c5b6-4fd6-96a6-e117b0f7fa70" />
-      <BitOutput20 PointIOKey="490c0715-3f79-48da-917b-258383574fa0" />
-      <BitOutput21 PointIOKey="647650e6-8798-4c81-8d42-b3a295e864c7" />
-      <BitOutput22 PointIOKey="ee494b66-83ef-4143-8950-32133771f230" />
-      <BitOutput23 PointIOKey="e9c90312-30ff-4866-a7db-d63b9065ce79" />
-      <BitOutput24 PointIOKey="efe2e244-e2ef-478c-9899-1815eaa8a47e" />
-      <BitOutput25 PointIOKey="c435fab0-3d89-41bf-ae9c-8853a38b280a" />
-      <BitOutput26 PointIOKey="845752a6-eab7-4493-a222-516a5da543a8" />
-      <BitOutput27 PointIOKey="aeb6053d-e594-47d1-8e11-9c88ccd32bab" />
-      <BitOutput28 PointIOKey="d340b8e2-c3b1-4e44-8a0e-6d4876fff561" />
-      <BitOutput29 PointIOKey="4eed5d48-7135-4fe7-9647-a93a09022e0c" />
-      <BitOutput30 PointIOKey="f6652e4d-d919-4837-975e-5ab2837a21ab" />
-      <BitOutput31 PointIOKey="f415c394-f451-4e72-91df-49b2a5fd7b6f" />
-      <BitOutput32 PointIOKey="338a2b92-a46e-49c3-8df3-4fc9af2889b7" />
-      <BitOutput33 PointIOKey="071f3480-83dd-438c-846b-c5c993f2c9a6" />
-      <BitOutput34 PointIOKey="49d6fddd-322e-449e-8f20-d618fb7114a7" />
-      <BitOutput35 PointIOKey="8d862f80-4c03-459f-98a6-4cc47c293cc7" />
-      <BitOutput36 PointIOKey="96ef8673-c5cd-4ffe-a135-d7fbac4b5a9b" />
-      <BitOutput37 PointIOKey="402c2e83-d3ac-4dbf-ab6a-f8a40836e7d1" />
-      <BitOutput38 PointIOKey="73e0b5fc-ca73-4619-a2e2-29b29644dd3a" />
-      <BitOutput39 PointIOKey="058da73f-9b17-4b34-a6f1-44cb986f736f" />
-      <BitOutput40 PointIOKey="3b9fc914-88ee-4ee6-942f-4417318f4730" />
-      <BitOutput41 PointIOKey="c66ab3bd-c8b7-4b23-83e1-6a442fa03a92" />
-      <BitOutput42 PointIOKey="aa2e20e9-fa6e-4c96-82f9-10d47225aecd" />
-      <BitOutput43 PointIOKey="635655a1-b8b5-4415-85df-ec25c70e2f4c" />
-      <BitOutput44 PointIOKey="1b9af5ad-623b-48e6-8e04-38bfed4177bc" />
-      <BitOutput45 PointIOKey="8abb1079-3086-42f2-854e-1a7a2e636367" />
-      <BitOutput46 PointIOKey="44362796-fdcb-4c2d-a34b-383f7c8a13fd" />
-      <BitOutput47 PointIOKey="d1fcd7ee-ef6d-4026-bd74-b97c65498763" />
-      <BitOutput48 PointIOKey="89bdad48-d252-42b8-9b55-1d39795d716b" />
-      <BitOutput49 PointIOKey="5ed586f1-e008-4c5e-a7fa-e886f7ee455f" />
-      <BitOutput50 PointIOKey="8f9c10eb-99e0-4148-9e04-ef6362b0b271" />
+      <BitOutput16 PointIOKey="463126d9-b825-41da-ba94-f09ec32e580f" />
+      <BitOutput17 PointIOKey="3c039071-e71b-4dae-a313-ace2db1d9a6c" />
+      <BitOutput18 PointIOKey="5ebb3d16-94f8-4420-a4ac-1d07b65088e8" />
+      <BitOutput19 PointIOKey="32c5e7e7-907f-40e9-ab1d-ca68b0e8593e" />
+      <BitOutput20 PointIOKey="85626c8b-4b87-4379-842e-69c206547d4a" />
+      <BitOutput21 PointIOKey="7dde8940-ad04-4ea3-a90c-d90c8af53102" />
+      <BitOutput22 PointIOKey="ab253fb3-caa2-40c6-8f06-823e9c8941e0" />
+      <BitOutput23 PointIOKey="dbecd861-a552-49bf-9455-47dd86376de3" />
+      <BitOutput24 PointIOKey="d4cd8f1a-5645-4ad6-9009-891b982cfd74" />
+      <BitOutput25 PointIOKey="ad5f8c4b-2735-4aa8-b6b2-4a3597a9dba1" />
+      <BitOutput26 PointIOKey="450e487a-3ce2-45ce-b65d-ead53271986a" />
+      <BitOutput27 PointIOKey="cb9f4210-bbfd-43d2-ba70-07a7c1529201" />
+      <BitOutput28 PointIOKey="45893850-162d-4131-9295-1b3a6adcb42b" />
+      <BitOutput29 PointIOKey="b1f3f443-19c4-4f03-bbff-79f7961ed77b" />
+      <BitOutput30 PointIOKey="f778e44e-2372-4401-bd0a-1885587f3416" />
+      <BitOutput31 PointIOKey="b2d52534-ca8a-4f73-87c9-db6e13e7248d" />
+      <BitOutput32 PointIOKey="cb96f870-0c08-41c2-b29c-5663c5270437" />
+      <BitOutput33 PointIOKey="0fd3af54-3a4f-4288-9209-3f73fc270a05" />
+      <BitOutput34 PointIOKey="67aa81e3-807b-464e-9fd1-4cd2a2ae4d51" />
+      <BitOutput35 PointIOKey="9bf9c140-b4b1-4e0a-b758-69906defc310" />
+      <BitOutput36 PointIOKey="06bce5fc-a7ba-4f38-9738-8da4a0a9a0ba" />
+      <BitOutput37 PointIOKey="b1ed2b7d-d583-4629-b25b-e0afd77e4f97" />
+      <BitOutput38 PointIOKey="c5ba13e9-5a5e-4519-91a4-dd1267895a63" />
+      <BitOutput39 PointIOKey="26b6845f-1829-4bcd-8e9d-1840fbb807dc" />
+      <BitOutput40 PointIOKey="da0846bb-f384-4c8e-ac39-5f8d42587032" />
+      <BitOutput41 PointIOKey="3384df9c-ea91-4a56-9e71-ec947fe4e1b2" />
+      <BitOutput42 PointIOKey="a2aace7b-7e2a-4f4b-9dca-e92d96db4c66" />
+      <BitOutput43 PointIOKey="694ecc15-df07-44cf-ab49-8bb0d2a52d64" />
+      <BitOutput44 PointIOKey="a9a2ea1e-6fbb-48b1-8739-55f5b9476e85" />
+      <BitOutput45 PointIOKey="4f853276-85ff-4984-8e5f-fab66179df75" />
+      <BitOutput46 PointIOKey="af58ef72-fc77-42b4-b6d5-33fc28325b88" />
+      <BitOutput47 PointIOKey="ef7d0b42-443d-4a25-8dfa-3ecbbd5656d4" />
+      <BitOutput48 PointIOKey="083d41e4-b11a-4f4c-8cc0-370a130cae56" />
+      <BitOutput49 PointIOKey="e9568d8e-07f1-4f88-ad58-a9d46a0464a8" />
+      <BitOutput50 PointIOKey="a985a78b-1d36-4b91-adbf-fe442ab02668" />
       <BitOutput51 PointIOKey="547c8fb1-2ffa-4dce-aeb7-e5d32a9dd216" />
       <NumericInput0 PointIOKey="51e8769a-436e-438e-8d5c-908b86435d32" />
       <NumericInput1 PointIOKey="c63324ad-97fd-4ac7-a1a1-ddc72fd7674d" />
       <NumericInput2 PointIOKey="057083dd-5b57-41cd-8256-2996944b9127" />
-      <NumericInput3 PointIOKey="66003494-c0c2-4f71-b79c-ab12a760cd02" />
-      <NumericInput4 PointIOKey="fa01910d-40ab-4165-8299-2ac22f9273e1" />
-      <NumericInput5 PointIOKey="2db1aea7-b239-4795-860e-0656bbd9d9c8" />
-      <NumericInput6 PointIOKey="1fa98973-119d-48b3-8a7b-c1039c7f191d" />
-      <NumericInput7 PointIOKey="5c5d4f2c-cbb4-4b6f-8150-ecdeb6fa7155" />
-      <NumericInput8 PointIOKey="e44a9096-71b2-41e3-95e3-80588d62a4c2" />
+      <NumericInput3 PointIOKey="8118f939-64c3-4c43-9ff4-8deb23721a7f" />
+      <NumericInput4 PointIOKey="78fac166-5e77-4c62-8937-e5a417b9e71a" />
+      <NumericInput5 PointIOKey="f48f7195-beaa-46ff-9c7a-4f5794940c40" />
+      <NumericInput6 PointIOKey="906e58e9-5720-42bf-8b74-200013697edd" />
+      <NumericInput7 PointIOKey="25939676-4fdc-4de9-b8b2-dc4495c20cc4" />
+      <NumericInput8 PointIOKey="0efff4a1-f23e-4842-bb7e-aa986c666ab9" />
       <NumericOutput0 PointIOKey="0bd768df-7d9d-4b47-9708-df24174cf741" />
       <NumericOutput1 PointIOKey="d18f4859-c471-4502-ad6d-f0650f8b9e30" />
       <NumericOutput2 PointIOKey="1ac5cfd4-0040-496e-9705-e831d998293b" />
@@ -3369,12 +3338,12 @@
       <NumericOutput6 PointIOKey="f95af7b7-a0d7-4caa-b546-587d0b543a63" />
       <NumericOutput7 PointIOKey="abb24b1a-dae3-42bf-a0cc-0a414650e5ed" />
       <NumericOutput8 PointIOKey="bfc99a08-7d5b-4a03-9850-392048cf9e3e" />
-      <NumericOutput9 PointIOKey="6e852cf9-1192-4521-ac5c-92e3307222b3" />
-      <NumericOutput10 PointIOKey="089a22a4-eb9b-44b6-b393-eb430cd550b5" />
-      <NumericOutput11 PointIOKey="a475355d-e419-4caa-b817-9fd07f0a2626" />
-      <NumericOutput12 PointIOKey="acda626f-73fc-48ff-b83e-b62867a25e8a" />
-      <NumericOutput13 PointIOKey="d9a6736f-7f09-4ea5-ac92-22128e9c78c7" />
-      <NumericOutput14 PointIOKey="43595d2a-fbd6-448c-80fe-6ff0e6ca6c5c" />
+      <NumericOutput9 PointIOKey="51e18cc9-ea94-40b1-ac2d-7bb4ca56fbf7" />
+      <NumericOutput10 PointIOKey="3fe25ce0-d9ff-48c6-8b71-4c260e3e74c9" />
+      <NumericOutput11 PointIOKey="8aad61d7-ced5-44d8-8116-96943c898337" />
+      <NumericOutput12 PointIOKey="2701c85b-fc29-4fbb-aff3-c66b2580df99" />
+      <NumericOutput13 PointIOKey="396c37b8-cdf1-43a6-aadb-ca229baa8901" />
+      <NumericOutput14 PointIOKey="953f46a7-30a2-4481-b0cd-21c90aef73b1" />
       <Properties ReadInputDiscretes="False" WriteCoils="False" ReadInputRegisters="False" WriteHoldingRegisters="False" ScaleFactor="100" />
     </ModbusTCPServer>
     <OPCClientDA>

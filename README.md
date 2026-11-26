@@ -36,6 +36,7 @@ STEP 04  GOOD 직진 → GOOD OUT / RETEST · NG → M1720 → 재검사 라인(
 STEP 05  게이트 카운터(D1900~D1904) · HMI(Pro-face)     ← 프로젝트 범위는 여기까지 (NG 팩은 NG 라인 배출로 끝)
 ```
 
+- **11-26 현재 Factory I/O 씬은 V7**(`factoryio_test/V7_plc_1.factoryio`): 1층 검사 라인 위에 2층 분류 라인을 겹친 ㄷ자. 엘리베이터로 2층에 올려 픽앤플레이스가 상자만 집고, NG 상자는 NG 벨트 · GOOD 상자는 팔레타이저(2개 = 한 팔레트), 빈 팔레트는 따로 배출. 래더는 `plc/v3`(276회로), 실제 PLC 6팩 통과 → [확인필요_및_논의사항.md 15-15](확인필요_및_논의사항.md)
 - 판정 코드: 1 PASS · 2 RETEST · 3 NG-ΔV · 4 NG-IR · 5 NG-TEMP (재검사는 1회까지)
 - 레이아웃 그림: [layout/layout_v6.png](layout/layout_v6.png)
 - 자세한 구조 · 판정 기준 · 디바이스 표 · DB 스키마: [확인필요_및_논의사항.md 0장](확인필요_및_논의사항.md)
@@ -90,7 +91,7 @@ python hmi_mc_relay.py --backend opc               # Pro-face HMI(WinGP) 중계 
 | `hmi/` | Pro-face HMI 화면 시안 v2(1024×768, WinGP 작화 가능 여부 확인 반영): `hmi_mockup.html`(`#s1`~`#s4`, `-bg` 배경만, `-guide` 부품 위치, `#parts` 부품 목록), 완성 시안 PNG 4장, **배경 이미지 `bg/` 4장**, 부품 위치 `guide/` 4장, 부품 목록 `hmi_parts_v2.csv`. 내용 · 번지 · 작화 순서는 `확인필요_및_논의사항.md` 14장 | 브라우저로 열기 · GP-Pro EX에 배경 PNG 배치 |
 | `layout/` | 상면 레이아웃 그림. **`layout_v6`(현재안)만 남김** (이전 판은 Git 이력에 있음) | `.drawio`는 draw.io(app.diagrams.net)에서 수정, `.png`는 미리보기, `make_layout_v6.py`로 다시 생성 |
 | `computer_use/` | **월요일(11-23) Computer Use 작업 준비**: 지시서 `README.md`, 점검 `preflight.py`, Factory I/O 씬 XML 도구 `fio_scene.py`(시험 씬 · 태그 이름 · Modbus/OPC 연결), Modbus 조작 `fio_modbus.py`(크레인 · RFID), 핸드셰이크 확인 `plc_side_check.py`, MX OPC 프로젝트 DB 도구 `mxopc_db.py`, 센서 · 액추에이터 번지 안 `fio_io_map_v6.csv`, 그림 `img/` | `python computer_use/preflight.py --opc`<br>`python computer_use/fio_scene.py tests` (시험 씬 다시 만들기)<br>`python computer_use/make_guides.py` (그림) |
-| `plc/` | **v6 공정 PLC 래더 설계서(초안)** `ladder_design_v6.md`: STEP 01~05 스텝 표(시작 조건 · 출력 · 끝 조건 · 타이머 · 번지)와 GX Works2 입력용 명령어 목록. 번지 안(확정 전)과 번지 없는 내부 디바이스(자리 표시, 안건 A30)를 구분해 적음. GX Works2 입력 · 시뮬레이션 전. `ladder_alloc_v6.csv`는 내부 번지 배정 초안(A30, 확정 전), `ladder_mnemonic_v6.txt`는 그 초안으로 치환한 입력용 목록(자동 생성). `check_ladder_design.py`는 설계서의 번지가 0-4 표 · 번지 안에 있는지, 배정이 겹치지 않는지 대조 | `python plc/check_ladder_design.py`<br>`--apply plc/ladder_mnemonic_v6.txt` (치환 목록 다시 만들기) |
+| `plc/` | **v6 공정 PLC 래더 설계서(초안)** `ladder_design_v6.md`: STEP 01~05 스텝 표(시작 조건 · 출력 · 끝 조건 · 타이머 · 번지)와 GX Works2 입력용 명령어 목록. 번지 안(확정 전)과 번지 없는 내부 디바이스(자리 표시, 안건 A30)를 구분해 적음. GX Works2 입력 · 시뮬레이션 전. `ladder_alloc_v6.csv`는 내부 번지 배정 초안(A30, 확정 전), `ladder_mnemonic_v6.txt`는 그 초안으로 치환한 입력용 목록(자동 생성). `check_ladder_design.py`는 설계서의 번지가 0-4 표 · 번지 안에 있는지, 배정이 겹치지 않는지 대조 | `python plc/check_ladder_design.py`<br>`--apply plc/ladder_mnemonic_v6.txt` (치환 목록 다시 만들기)<br>`plc/v2/` v2 래더(규칙 `radder_v2.md`, `python plc/v2/make_v2.py`) · `plc/v3/` V7 씬용 v3 래더(`python plc/v3/make_v3.py` → 명령어 목록 · IL · 스텝 표) |
 | `test_results/` | Computer Use 테스트 결과(스크린샷 · 로그 · `Computer_Use_테스트결과.md`) · GX Works2 테스트 프로젝트 `W_test.gxw` | – |
 | `확인필요_및_논의사항.md` | 현재 구조 · 결정(D#) · 검증 결과 · 확인 필요 사항 · 논의 안건(A#) · 테스트 지시서 · 결과 기록 | – |
 | `README.md` · `AGENTS.md` · `CLAUDE.md` | 저장소 안내 · AI 에이전트 공통 지침 · Claude Code 지침 | – |

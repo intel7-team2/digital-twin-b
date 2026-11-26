@@ -117,7 +117,7 @@ J13  LD= D#13 K20 | AND= D1713 K0  =>  MOV D1526 D1711 | MOV D1527 D1712 | MOV K
 | 17 | `X1730` · `Y1730` · `X1731` · `Y1731` · `Y1732` | 재검사 정위치 · Roller Stop · TT3 입구 빔 · 재검사 GOOD 레일 앞부분 · NG 라인 롤러 | N · P · V |
 | 17 | `Y1733` · `Y1734` · `Y1735` · `X1735` · `X1737` · `X1733` · `X1734` · `Y1736` · `X1736` | TT3 롤(+) NG · 롤(−) GOOD · 회전 · 0° · 90° · 앞 · 뒤 센서 · 합류 대기 레일 · 대기 레일 센서(확산 반사) | P · Q |
 | 18 | `Y1800` · `X1800` | 재검사 라인 롤러(직선 · 곡선 · 4 m 한 묶음) · 입구 센서(가림 3초 = 만차) | L · V |
-| 19 | `Y1900` · `Y1901` · `X1903` · `Y1904` · `Y1906` · `Y1905` · `X1906` · `X1907` · `X1908` · `X1904` · `X1905` | GOOD OUT · NG OUT 롤러 · TT5 메인 입구 빔 · 롤(+) · 롤(−) · 회전 · 재검사 입구 빔 · 0° · 90° · 앞 · 뒤 센서 | V · Q |
+| 19 | `Y1900` · `Y1901` · `X1903` · `Y1904` · `Y1906` · `Y1905` · `X1907` · `X1908` · `X1904` · `X1905` | GOOD OUT · NG OUT 롤러 · TT5 메인 입구 빔 · 롤(+) · 롤(−) · 회전 · 0° · 90° · 앞 · 뒤 센서 | V · Q |
 
 - **11-23 D23:** 반사형 센서(`X1510` · `X1511` · `X1512` · `X1513` · `X1610` · `X1660` · `X1700` · `X1720` · `X1730` · `X1731` · `X1800` · `X1900~X1903`)는 Factory I/O에서 **가리면 OFF**입니다. 5장은 "팩 있음" = `LDI` · `ANI`, 팩이 들어옴 = `LDF`로 씁니다. CT 도착(정전용량) · 크레인 신호 · 버튼은 그대로(ON = 있음).
 
@@ -206,17 +206,17 @@ J13  LD= D#13 K20 | AND= D1713 K0  =>  MOV D1526 D1711 | MOV D1527 D1712 | MOV K
 | `T#02` · `T#06` · `T#10` | K20 | RFID 응답 제한 2초 | `T#20` | K80 | 크레인 B 리프트 올림 |
 | `T#03` · `T#07` · `T#11` | K2 | RFID 상태 · 읽은 값 안정 | `T#21` | K30 | 크레인 B 이동 시작 대기(복귀) |
 | `T#04` · `T#08` · `T#12` | K5 | RFID 재시도 간격 | `T#22` | K80 | 크레인 B 리프트 내림 |
-| `T#13` | K5 | Emitter 투입 펄스 | `T#23` · `T#24` | K5 · K15 | TT1 올라온 뒤 0.5초 더 굴림(`T#33` · `T#43` · `T#45` · `T#46` 같음) · 센서를 지난 뒤 내보내기(`T#34` · `T#44` · `T#47` · `T#48` 같음) |
+| `T#13` | K5 | Emitter 투입 펄스 | `T#23` · `T#24` | K15 · K15 | TT1 롤러가 선 뒤 쉬기(`T#33` · `T#43` · `T#45` · `T#46` 같음) · 센서를 지난 뒤 내보내기(`T#34` · `T#44` · `T#47` · `T#48` 같음) |
 | `T#14` | K10 | RFID ① 정위치 안정(이 1초 동안 입고 롤러를 더 돌려 Roller Stop에 닿게 함) | `T#25` | K50 | 격리 기록 응답 제한 5초 |
 | `T#15` | K80 | 크레인 A 리프트 올림 | `T#26` · `T#30` | K10 | 메인 · 재검사 정위치: 센서(블레이드 0.5 m 앞)가 가린 뒤 1초 더 라인을 돌려 Roller Stop에 닿게 함(0.3초면 리더가 태그를 못 읽음, 11-23). `T#30`은 `<A22>` 자리 |
 | `T#16` | K30 | 크레인 A 이동 시작 대기(칸으로) | `T#27` · `T#31` | K50 | 메인 · 재검사 Python 응답 제한 5초 |
 | `T#17` | K80 | 크레인 A 리프트 내림 | `T#28` · `T#32` | K20 | 메인 · 재검사 팩이 빠진 뒤 스토퍼 올림 |
 | `T#18` | K30 | 크레인 A 이동 시작 대기(복귀) | `T#29` | K30 | 재검사 라인 입구 `X1800` 가림 3초 → `M1800` |
-| `T#33` · `T#34` | K5 · K15 | TT3 | `T#35` · `T#36` | K25 · K30 | TT5에 메인 GOOD 없음 2.5초 · 메인 GOOD 구간이 멈출 때까지 3초 |
+| `T#33` · `T#34` | K15 · K15 | TT3 | `T#35` · `T#36` | K25 · K30 | TT5에 메인 GOOD 없음 2.5초 · 메인 GOOD 구간이 멈출 때까지 3초 |
 | `T#37` · `T#38` | K20 · K15(고속 10 ms) | 입고 로딩 컨베이어: 감속 전 2초 · 역회전 −2 V 0.15초 | `T#39` · `T#40` | K5 · K5 | 크레인 A 칸 · 대기 위치에 0.5초 멈춤 = 도착 |
-| `T#41` · `T#42` | K5 · K5 | 크레인 B 칸 · 대기 위치에 0.5초 멈춤 = 도착 | `T#43` · `T#44` | K5 · K15 | TT2 |
-| `T#45` · `T#48` | K5 · K15 | TT5 | `T#46` · `T#47` | K5 · K15 | 메인 코너 TTM |
-| `T#52` · `T#53` | K10 · K10 | RFID ② · ③ 다시 읽기 전 대기 1초 | `T#49` · `T#50` · `T#51` · `T#54` · `T#55` | K15 | 턴테이블 롤러가 선 뒤 쉬기: TT1 · TTM · TT2 · TT3 · TT5 |
+| `T#41` · `T#42` | K5 · K5 | 크레인 B 칸 · 대기 위치에 0.5초 멈춤 = 도착 | `T#43` · `T#44` | K15 · K15 | TT2 |
+| `T#45` · `T#48` | K15 · K15 | TT5 | `T#46` · `T#47` | K15 · K15 | 메인 코너 TTM |
+| `T#52` · `T#53` | K10 · K10 | RFID ② · ③ 다시 읽기 전 대기 1초 | | | |
 
 ### 3-6. 내부 번지 배정 초안 (A30 · 확정 전)
 
@@ -350,11 +350,11 @@ J13  LD= D#13 K20 | AND= D1713 K0  =>  MOV D1526 D1711 | MOV D1527 D1712 | MOV K
 
 | 구분 | 시작 조건 | 동작(출력) | 끝 조건 | 타이머 | 쓰는 번지 |
 |---|---|---|---|---|---|
-| TT1 0 → 10 → 20 | `X1660` 가림 · 0°(`X1664`) | 롤(+) `Y1662` | `X1660`이 다시 트인 뒤 0.5초(`T#23`) → 20 | `T#23` | `X1660`, `X1664`, `Y1662` |
-| TT1 20 쉬기 | – | – | 1.5초 → 온도 `D#38` = 0 · 메인 라인 1 구동 · TTM 쉼(`D#44` = 0)이면 30 / ≠ 0이면 `D#39` ← `D#37`, `D#40` ← `D#38`, 40 | `T#49` | `D#38`, `M#51`, `D#44` |
+| TT1 0 → 10 → 20 | `X1660` 가림 · 0°(`X1664`) | 롤(+) `Y1662` | 앞 센서 `X1662` ON(팔레트가 가운데) → 20 | – | `X1660`, `X1664`, `X1662`, `Y1662` |
+| TT1 20 쉬기 | – | – | 1.5초 → 온도 `D#38` = 0 · 메인 라인 1 구동 · TTM 쉼(`D#44` = 0)이면 30 / ≠ 0이면 `D#39` ← `D#37`, `D#40` ← `D#38`, 40 | `T#23` | `D#38`, `M#51`, `D#44` |
 | TT1 30 · 40 → 31 · 41 → 32 · 42 | – | 회전 `Y1664`(MC 밖), 90°(`X1668`) 뒤 31: 롤(+) 메인 / 41: 롤(−) `Y1663` 격리 | 앞(`X1662`) · 뒤(`X1663`) 센서를 지난 뒤 1.5초 → `M#40` OFF, 50 | `T#24` | `Y1664`, `X1668`, `X1662`, `X1663`, `M#40` |
 | TT1 50 | – | 회전 OFF | 0°(`X1664`) → 0 | – | `X1664` |
-| TTM | `X1666` 가림 · 90°(`X1669`) | 90°로 받아 0°(`X1667`)로 돌리고 롤(+) `Y1665` | 위와 같은 순서(스텝 0 · 10 · 20 · 30 · 31 · 32 · 50) | `T#46` · `T#50` · `T#47` | `D#44`, `Y1665`, `Y1666`, `X1665` |
+| TTM | `X1666` 가림 · 90°(`X1669`) | 90°로 받아 0°(`X1667`)로 돌리고 롤(+) `Y1665` | 위와 같은 순서(스텝 0 · 10 · 20 · 30 · 31 · 32 · 50) | `T#46` · `T#47` | `D#44`, `Y1665`, `Y1666`, `X1665` |
 
 발열 격리 기록 (스텝 `D#15`, `serve`의 발열 격리 알림 순서와 같음)
 
@@ -390,8 +390,8 @@ J13  LD= D#13 K20 | AND= D1713 K0  =>  MOV D1526 D1711 | MOV D1527 D1712 | MOV K
 
 | 구분 | 시작 조건 | 동작(출력) | 끝 조건 | 타이머 | 쓰는 번지 |
 |---|---|---|---|---|---|
-| TT2 0 → 10 → 20 | `X1720` 가림 · 0°(`X1725`) | 롤(+) `Y1722` | 입구 빔이 다시 트인 뒤 0.5초 → 20 | `T#43` | `X1720`, `X1725`, `Y1722` |
-| TT2 20 쉬기 | – | – | 1.5초 → **GOOD**(`M#52` OFF) · 합류 중 아님(`M#55` OFF) → 30 / **분기 대상**(`M#52` ON) · 재검사 라인 구동(`M#54` OFF) → 40 | `T#51` | `M#52`, `M#55`, `M#54` |
+| TT2 0 → 10 → 20 | `X1720` 가림 · 0°(`X1725`) | 롤(+) `Y1722` | 앞 센서 `X1723` ON → 20 | – | `X1720`, `X1725`, `Y1722` |
+| TT2 20 쉬기 | – | – | 1.5초 → **GOOD**(`M#52` OFF) · 합류 중 아님(`M#55` OFF) → 30 / **분기 대상**(`M#52` ON) · 재검사 라인 구동(`M#54` OFF) → 40 | `T#43` | `M#52`, `M#55`, `M#54` |
 | TT2 30 · 40 → 31 · 41 → 32 · 42 | – | 회전 `Y1724`(MC 밖), 90°(`X1726`) 뒤 31: 롤(−) `Y1723` GOOD / 41: 롤(+) 재검사 | 뒤(`X1724`) · 앞(`X1723`) 센서를 지난 뒤 1.5초 → `M#41` · `M#52` OFF, 50 → 0°에서 0 | `T#44` | `Y1724`, `X1726`, `X1723`, `X1724`, `M#41`, `M#52` |
 | `D1800` +1 | `X1800` 가림 (재검사 라인 입구) | `D1800` +1 | – | – | `X1800`, `D1800` |
 | `D1800` −1 | 재검사기가 팩을 받음(N 스텝 0 → 10) | `D1800` −1 (0 아래로는 안 내림) | – | – | `D1800` |
@@ -422,15 +422,15 @@ J13  LD= D#13 K20 | AND= D1713 K0  =>  MOV D1526 D1711 | MOV D1527 D1712 | MOV K
 
 | 구분 | 시작 조건 | 동작(출력) | 끝 조건 | 타이머 | 쓰는 번지 |
 |---|---|---|---|---|---|
-| TT3 0 → 10 → 20 | `X1731` 가림 · 0°(`X1735`) | 롤(+) `Y1733` | 입구 빔이 다시 트인 뒤 0.5초 → 20, 1.5초 쉬기 | `T#33` · `T#54` | `X1731`, `X1735`, `Y1733` |
+| TT3 0 → 10 → 20 | `X1731` 가림 · 0°(`X1735`) | 롤(+) `Y1733` | 앞 센서 `X1733` ON → 20, 1.5초 쉬기 | `T#33` | `X1731`, `X1735`, `Y1733` |
 | TT3 30 (GOOD) · 40 (NG) | 30: `M#53` ON · 합류가 쉼(`D#19` = 0) / 40: `M#53` OFF | 회전 `Y1735`(MC 밖), 90°(`X1737`) 뒤 31: 롤(−) `Y1734` / 41: 롤(+) NG | 뒤(`X1734`) · 앞(`X1733`) 센서를 지난 뒤 1.5초 → `M#44` OFF, 50 → 0°에서 0 | `T#34` | `Y1735`, `X1737`, `X1733`, `X1734`, `M#44` |
 | 합류 0 → 10 → 20 | TT3이 GOOD을 내보냄(`D#18` = 31 · 32) | 합류 대기 레일 `Y1736` | `X1736` ON → 20(멈춰 대기) | – | `Y1736`, `X1736` |
 | 합류 20 → 25 → 30 | TT5 입구 · 위에 메인 GOOD이 2.5초 없음 · TT2 · TT3 쉼 | `M#55` ON: 메인 GOOD 구간 `Y1703` 정지 · TT2 GOOD 금지 | 3초 동안 `X1903`이 안 가려지면 30, 가려지면 20 | `T#35` · `T#36` | `X1903`, `X1904`, `X1905`, `D#17`, `D#18` |
-| 합류 30 → 31 → 32 → 40 | – | 회전 `Y1905`(MC 밖), 90°(`X1908`) 뒤 `Y1736` + 롤(−) `Y1906` | `X1906`이 가렸다 트인 뒤 0.5초 → 40, 1.5초 쉬기 | `T#45` · `T#55` | `Y1905`, `Y1906`, `X1906`, `X1908` |
+| 합류 30 → 31 → 40 | – | 회전 `Y1905`(MC 밖), 90°(`X1908`) 뒤 `Y1736` + 롤(−) `Y1906` | 뒤 센서 `X1905` ON(팔레트가 가운데) → 40, 1.5초 쉬기 | `T#45` | `Y1905`, `Y1906`, `X1905`, `X1908` |
 | 합류 45 → 50 → 51 → 0 | – | 회전 OFF, 0°(`X1907`) 뒤 롤(+) `Y1904` | `X1904`를 지난 뒤 1.5초 → 0, `M#55` OFF | `T#48` | `Y1904`, `X1907`, `X1904` |
 
 - TT5 롤(+) `Y1904`는 평소 켜 두어 메인 GOOD 팩이 0°에서 그대로 통과합니다.
-- 턴테이블은 팔레트가 가운데에서 앞뒤 4칸까지 벗어나도 회전에 문제없습니다(회전하면 벗어난 양이 나가는 방향으로만 남음). 회전 출력은 비상정지 중에도 유지합니다.
+- 턴테이블 정지: 진행 쪽 끝 센서가 켜지면 팔레트가 가운데입니다. 래더가 그 센서로 롤을 끄고, OPC 왕복 지연(1 ~ 3초) 때문에 중계 쪽 현장 인터록(`test_results/B_v6_d23/fio_interlock.py`)이 같은 조건에서 0.02초 안에 먼저 끊습니다. 회전 출력은 비상정지 중에도 유지합니다.
 
 ### 4-10. STEP 05 — 게이트 카운터 (블록 R, 11-19 W2 시험 통과 래더와 같음)
 
@@ -474,10 +474,8 @@ A05  LD M#01 | AND M#60  =>  INC D#01                 ; 운전 시간(초)
 A06  LD= D#01 K0  =>  MOV K1 D#01                     ; 0은 "입고 중" 표시로 쓰므로 1부터
 A07  LD> D#01 K32000  =>  MOV K1 D#01
 A08  LD M#68  =>  RST M#61 | RST M#62 | RST M#63 | RST M#64 | RST M#65 | RST M#66 | RST M#67   ; 알람 확인 <A24>
-A20  LD SM402  =>  MOV K1 D#190 | MOV K2 D#191 | MOV K3 D#192 | MOV K4 D#193 | MOV K5 D#194 | MOV K6 D#195   ; A27: 랙 표 ④ = 단 × 9 + 열 + 1 (R01~R24, A · B 같은 번호, 11-23 F2a 실측식)
-A21  LD SM402  =>  MOV K10 D#196 | MOV K11 D#197 | MOV K12 D#198 | MOV K13 D#199 | MOV K14 D#200 | MOV K15 D#201
-A22  LD SM402  =>  MOV K19 D#202 | MOV K20 D#203 | MOV K21 D#204 | MOV K22 D#205 | MOV K23 D#206 | MOV K24 D#207
-A23  LD SM402  =>  MOV K28 D#208 | MOV K29 D#209 | MOV K30 D#210 | MOV K31 D#211 | MOV K32 D#212 | MOV K33 D#213
+A20  LD SM402  =>  MOV K1 D#190 | MOV K2 D#191 | MOV K3 D#192 | MOV K4 D#193 | MOV K5 D#194 | MOV K6 D#195 | MOV K10 D#196 | MOV K11 D#197 | MOV K12 D#198 | MOV K13 D#199 | MOV K14 D#200 | MOV K15 D#201   ; A27: 랙 표 ④ = 단 × 9 + 열 + 1 (R01~R24, A · B 같은 번호, 11-23 F2a 실측식)
+A22  LD SM402  =>  MOV K19 D#202 | MOV K20 D#203 | MOV K21 D#204 | MOV K22 D#205 | MOV K23 D#206 | MOV K24 D#207 | MOV K28 D#208 | MOV K29 D#209 | MOV K30 D#210 | MOV K31 D#211 | MOV K32 D#212 | MOV K33 D#213
 A24  LDP M#60 | AND= D#11 K0  =>  MOV K55 D1601                            ; 운전 시작 시 크레인 A 대기 위치(55)로
 A25  LDP M#60 | AND= D#12 K0  =>  MOV K55 D1602                            ; 크레인 B 대기 위치(55)로
 A26  LDI M#60  =>  MOV K0 D1505 | MOV K0 D1506                                ; 정지 중 입고 로딩 컨베이어 · 진입 롤러 속도 0 (MOV는 MC로 안 꺼짐, D1506은 11-25)
@@ -486,16 +484,12 @@ A26  LDI M#60  =>  MOV K0 D1505 | MOV K0 D1506                                ; 
 ### S. 랙 스캔 · LOCK (MC 밖)
 
 ```
-S01  LD SM400  =>  MOV K0 D#50 | MOV K0 D#51 | MOV K0 D#52 | MOV K0 D#53 | MOV K32767 D#54 | MOV K0 D#55 | MOV K0 Z0
+S01  LD SM400  =>  FMOV K0 D#50 K6 | MOV K32767 D#54 | MOV K0 Z0
 S02  FOR K24
-S03  LD= D#100Z0 K0 | AND= D#160Z0 K0 | AND< D#55 K3 | AND= D#50 K0  =>  MOV Z0 D#50 | INC D#50     ; 4S 구역 빈 칸
-S04  LD= D#100Z0 K0 | AND= D#160Z0 K0 | AND>= D#55 K3 | AND= D#51 K0  =>  MOV Z0 D#51 | INC D#51    ; 6S 구역 빈 칸
-S05  LD> D#100Z0 K0 | AND> D#130Z0 K0 | AND> D#160Z0 K0 | AND= D#52 K0  =>  MOV Z0 D#52 | INC D#52  ; 발열 칸
+S03  LD= D#100Z0 K0 | AND= D#160Z0 K0  =>  MPS | AND< D#55 K3 | AND= D#50 K0 | MOV Z0 D#50 | INC D#50 | MPP | AND>= D#55 K3 | AND= D#51 K0 | MOV Z0 D#51 | INC D#51   ; 4S 구역 빈 칸 / 6S 구역 빈 칸
 S06  LD SM400  =>  - D#01 D#130Z0 D#56                                                              ; 경과 초
-S07  LD> D#100Z0 K0 | AND> D#130Z0 K0 | AND= D#160Z0 K0 | AND>= D#56 K16 | AND< D#130Z0 D#54  =>  MOV D#130Z0 D#54 | MOV Z0 D#53 | INC D#53   ; EDD (숙성 16초 시연값)
-S08  LD M#01 | AND> D#160Z0 K0 | AND= D#100Z0 K0  =>  INC D1610Z0                                   ; LOCK 경과(초)
-S09  LD> D#160Z0 K0 | AND= D#100Z0 K0 | AND>= D1610Z0 K20  =>  MOV K0 D#160Z0 | MOV K0 D1610Z0      ; 20초 뒤 자동 해제 (D13)
-S10  LD M#69 | AND> D#160Z0 K0 | AND= D#100Z0 K0  =>  MOV K0 D#160Z0 | MOV K0 D1610Z0               ; LOCK 일괄 해제 <A24>
+S07  LD> D#100Z0 K0 | AND> D#130Z0 K0  =>  MPS | AND> D#160Z0 K0 | AND= D#52 K0 | MOV Z0 D#52 | INC D#52 | MPP | AND= D#160Z0 K0 | AND>= D#56 K16 | AND< D#130Z0 D#54 | MOV D#130Z0 D#54 | MOV Z0 D#53 | INC D#53   ; 발열 칸 / EDD (숙성 16초 시연값)
+S08  LD> D#160Z0 K0 | AND= D#100Z0 K0  =>  MPS | AND M#01 | INC D1610Z0 | MPP | LD>= D1610Z0 K20 | OR M#69 | ANB | MOV K0 D#160Z0 | MOV K0 D1610Z0   ; LOCK 경과(초) / 20초 뒤 자동 해제 (D13) / LOCK 일괄 해제 <A24>
 S11  LD SM400  =>  INC D#55 | INC Z0
 S12  LD>= D#55 K6  =>  MOV K0 D#55
 S13  NEXT
@@ -515,16 +509,12 @@ H02  LD<> D#52 K0 | OR M#49  =>  OUT M1690
 ; @PROGRAM RFID
 B00  LD M#60  =>  MC N0 M#70                         ; 운전 중일 때만 이 파일 실행(정지 시 OUT 끔)
 B01  LD= D#20 K0 | AND M#11  =>  MOV K0 D#22 | MOV K1 D#20
-B02  LD= D#20 K1  =>  OUT T#01 K10                                   ; 11-24 실제 PLC + MX OPC 시험: 명령 값 → 실행 비트 1.0 s, 응답 대기 5 s(B04), 응답 뒤 0.5 s(B07). OPC 왕복이 약 2 s라 0.3 s · 2 s · 0.2 s로는 RFID ① 명령이 3회 실패(M1952)
-B03  LD= D#20 K1 | AND T#01  =>  MOV D1513 D#21 | MOV K2 D#20
+B02  LD= D#20 K1  =>  OUT T#01 K10 | AND T#01 | MOV D1513 D#21 | MOV K2 D#20   ; 11-24 실제 PLC + MX OPC 시험: 명령 값 → 실행 비트 1.0 s, 응답 대기 5 s(B04), 응답 뒤 0.5 s(B07). OPC 왕복이 약 2 s라 0.3 s · 2 s · 0.2 s로는 RFID ① 명령이 3회 실패(M1952)
 B04  LD= D#20 K2  =>  OUT M1511 | OUT T#02 K50
 B05  LD= D#20 K2 | AND<> D1513 D#21  =>  MOV K3 D#20
 B06  LD= D#20 K2 | AND T#02  =>  INC D#22 | MOV K4 D#20
-B07  LD= D#20 K3  =>  OUT T#03 K5
-B08  LD= D#20 K3 | AND T#03  =>  SET M#12 | MOV K0 D#20                  ; 명령 ID 바뀜 = 완료. 상태(D1514)는 보지 않음(11-23 사용자 결정: 상태는 박스 크기 · 자세에 따라 0/1로 흔들리고 시리얼 · 읽기 · 쓰기는 정상)
-B10  LD= D#20 K4  =>  OUT T#04 K5
-B11  LD= D#20 K4 | AND T#04 | AND< D#22 K3  =>  MOV K1 D#20
-B12  LD= D#20 K4 | AND T#04 | AND>= D#22 K3  =>  SET M#13 | MOV K0 D#20
+B07  LD= D#20 K3  =>  OUT T#03 K5 | AND T#03 | SET M#12 | MOV K0 D#20   ; 명령 ID 바뀜 = 완료. 상태(D1514)는 보지 않음(11-23 사용자 결정: 상태는 박스 크기 · 자세에 따라 0/1로 흔들리고 시리얼 · 읽기 · 쓰기는 정상)
+B10  LD= D#20 K4  =>  OUT T#04 K5 | AND T#04 | MPS | AND< D#22 K3 | MOV K1 D#20 | MPP | AND>= D#22 K3 | SET M#13 | MOV K0 D#20
 B13  LD M#12 | OR M#13  =>  RST M#11                       ; 완료 · 실패면 요청을 내림(요청 RST는 이 한 줄)
 ```
 
@@ -532,16 +522,12 @@ B13  LD M#12 | OR M#13  =>  RST M#11                       ; 완료 · 실패면
 
 ```
 B21  LD= D#23 K0 | AND M#21 | AND= D#26 K0  =>  MOV K0 D#25 | MOV K1 D#23   ; RFID ③ 실행 중이면 기다림(11-24 실제 PLC 시험: ② · ③에 명령이 겹치면 리더가 응답하지 않음 M1954)
-B22  LD= D#23 K1  =>  OUT T#05 K10
-B23  LD= D#23 K1 | AND T#05  =>  MOV D1523 D#24 | MOV K2 D#23
+B22  LD= D#23 K1  =>  OUT T#05 K10 | AND T#05 | MOV D1523 D#24 | MOV K2 D#23
 B24  LD= D#23 K2  =>  OUT M1521 | OUT T#06 K50
 B25  LD= D#23 K2 | AND<> D1523 D#24  =>  MOV K3 D#23
 B26  LD= D#23 K2 | AND T#06  =>  INC D#25 | MOV K4 D#23
-B27  LD= D#23 K3  =>  OUT T#07 K5
-B28  LD= D#23 K3 | AND T#07  =>  SET M#22 | MOV K0 D#23                  ; 상태(D1524)는 보지 않음(B08과 같음)
-B30  LD= D#23 K4  =>  OUT T#08 K5
-B31  LD= D#23 K4 | AND T#08 | AND< D#25 K3  =>  MOV K1 D#23
-B32  LD= D#23 K4 | AND T#08 | AND>= D#25 K3  =>  SET M#23 | MOV K0 D#23
+B27  LD= D#23 K3  =>  OUT T#07 K5 | AND T#07 | SET M#22 | MOV K0 D#23   ; 상태(D1524)는 보지 않음(B08과 같음)
+B30  LD= D#23 K4  =>  OUT T#08 K5 | AND T#08 | MPS | AND< D#25 K3 | MOV K1 D#23 | MPP | AND>= D#25 K3 | SET M#23 | MOV K0 D#23
 B33  LD M#22 | OR M#23  =>  RST M#21                       ; 완료 · 실패면 요청을 내림(요청 RST는 이 한 줄)
 ```
 
@@ -549,16 +535,12 @@ B33  LD M#22 | OR M#23  =>  RST M#21                       ; 완료 · 실패면
 
 ```
 B41  LD= D#26 K0 | AND M#31 | AND= D#23 K0 | ANI M#21  =>  MOV K0 D#28 | MOV K1 D#26   ; RFID ② 실행 중 · 요청 중이면 기다림(② 우선, B21과 짝)
-B42  LD= D#26 K1  =>  OUT T#09 K10
-B43  LD= D#26 K1 | AND T#09  =>  MOV D1533 D#27 | MOV K2 D#26
+B42  LD= D#26 K1  =>  OUT T#09 K10 | AND T#09 | MOV D1533 D#27 | MOV K2 D#26
 B44  LD= D#26 K2  =>  OUT M1531 | OUT T#10 K50
 B45  LD= D#26 K2 | AND<> D1533 D#27  =>  MOV K3 D#26
 B46  LD= D#26 K2 | AND T#10  =>  INC D#28 | MOV K4 D#26
-B47  LD= D#26 K3  =>  OUT T#11 K5
-B48  LD= D#26 K3 | AND T#11  =>  SET M#32 | MOV K0 D#26                  ; 상태(D1534)는 보지 않음(B08과 같음)
-B50  LD= D#26 K4  =>  OUT T#12 K5
-B51  LD= D#26 K4 | AND T#12 | AND< D#28 K3  =>  MOV K1 D#26
-B52  LD= D#26 K4 | AND T#12 | AND>= D#28 K3  =>  SET M#33 | MOV K0 D#26
+B47  LD= D#26 K3  =>  OUT T#11 K5 | AND T#11 | SET M#32 | MOV K0 D#26   ; 상태(D1534)는 보지 않음(B08과 같음)
+B50  LD= D#26 K4  =>  OUT T#12 K5 | AND T#12 | MPS | AND< D#28 K3 | MOV K1 D#26 | MPP | AND>= D#28 K3 | SET M#33 | MOV K0 D#26
 B53  LD M#32 | OR M#33  =>  RST M#31                       ; 완료 · 실패면 요청을 내림(요청 RST는 이 한 줄)
 B59  MCR N0
 ```
@@ -569,47 +551,27 @@ B59  MCR N0
 ; @PROGRAM INFEED
 C00  LD M#60  =>  MC N0 M#71                         ; 운전 중일 때만 이 파일 실행(정지 시 OUT 끔)
 C01  LD= D#10 K0 | AND M1510 | AND X1510  =>  MOV K5 D#10
-C02  LD= D#10 K5  =>  OUT T#13 K25
-C03  LD= D#10 K5 | AND>= T#13 K15 | ANI T#13  =>  OUT Y1500                  ; Emitter 투입 펄스(안): 스텝 5 들어간 뒤 1.5초 기다렸다 1.0초 ON(11-24 실제 PLC + OPC에서 0.5초로는 6S가 Medium으로 나옴). 박스 종류(D1508)를 바꾼 같은 순간에 펄스를 내면 Emitter가 이전 박스로 내보냄(6S가 Medium으로 나와 M1951, 11-24 화면 확인)
-C04  LD<= D#10 K5 | AND= D1518 K4  =>  MOV K2 D1508                           ; 4S = Medium box(2). Small(1)은 이송 중 옆으로 밀려 RFID ② · ③이 못 읽음 → D8 변경(11-23)
-C05  LD<= D#10 K5 | AND= D1518 K6  =>  MOV K4 D1508                           ; 6S = Large box(4). D1508은 비트 값(1 Small · 2 Medium · 4 Large, 설명서)
-C06  LD<= D#10 K5  =>  MOV K2 D1509                                       ; 받침 = SquarePallet(2). C04~C06은 스텝 0(대기)부터 미리 넣음: 투입 펄스와 같은 순간에 바꾸면 Emitter가 이전 박스 종류로 내보냄(11-23)
+C02  LD= D#10 K5  =>  OUT T#13 K25 | MOV K1 D1519 | AND>= T#13 K15 | ANI T#13 | OUT Y1500   ; 투입 전 기본 Small(1). 스텝 10에서 한 번이라도 가리면 C41이 Large(2)로 고정(11-24: 순간값 판정은 OPC 지연에 틀림) / Emitter 투입 펄스(안): 스텝 5 들어간 뒤 1.5초 기다렸다 1.0초 ON(11-24 실제 PLC + OPC에서 0.5초로는 6S가 Medium으로 나옴). 박스 종류(D1508)를 바꾼 같은 순간에 펄스를 내면 Emitter가 이전 박스로 내보냄(6S가 Medium으로 나와 M1951, 11-24 화면 확인)
+C04  LD<= D#10 K5  =>  MOV K2 D1509 | MPS | AND= D1518 K4 | MOV K2 D1508 | MPP | AND= D1518 K6 | MOV K4 D1508   ; 받침 = SquarePallet(2). C04~C06은 스텝 0(대기)부터 미리 넣음: 투입 펄스와 같은 순간에 바꾸면 Emitter가 이전 박스 종류로 내보냄(11-23) / 4S = Medium box(2). Small(1)은 이송 중 옆으로 밀려 RFID ② · ③이 못 읽음 → D8 변경(11-23) / 6S = Large box(4). D1508은 비트 값(1 Small · 2 Medium · 4 Large, 설명서)
 C07  LD= D#10 K5 | ANI X1510  =>  MOV K10 D#10
 C08  LD= D#10 K10 | LD= D#10 K31 | AND X1510 | ORB  =>  OUT T#14 K30                                    ; 높이 판정 3 s(11-24 실제 PLC + OPC: 센서가 1 s 넘게 늦음). 입고 롤러는 C39에서 현재값 1 s로
-C41  LD= D#10 K10 | ANI X1511  =>  MOV K2 D1519                                ; A26 ①안(11-23 임시): 높이 센서가 가리면 Large(2)
-C42  LD= D#10 K5  =>  MOV K1 D1519                                          ; 투입 전 기본 Small(1). 스텝 10에서 한 번이라도 가리면 C41이 Large(2)로 고정(11-24: 순간값 판정은 OPC 지연에 틀림)
-C43  LD= D#10 K10  =>  RST M#03
+C43  LD= D#10 K10  =>  RST M#03 | ANI X1511 | MOV K2 D1519   ; A26 ①안(11-23 임시): 높이 센서가 가리면 Large(2)
 C44  LD= D#10 K10 | LD= D1519 K1 | AND= D1518 K4 | LD= D1519 K2 | AND= D1518 K6 | ORB | ANB  =>  SET M#03   ; Small = 4S 또는 Large = 6S (SET 한 곳)
-C10  LD= D#10 K10 | AND T#14 | AND M#03  =>  MOV K20 D#10
-C11  LD= D#10 K10 | AND T#14 | ANI M#03  =>  SET M#61 | MOV K15 D#10         ; 불일치 → 투입 정지
+C10  LD= D#10 K10 | AND T#14  =>  MPS | AND M#03 | MOV K20 D#10 | MPP | ANI M#03 | SET M#61 | MOV K15 D#10   ; 불일치 → 투입 정지
 C12  LD= D#10 K15 | AND M#68  =>  MOV K10 D#10                               ; 알람 확인 뒤 다시 대조
 ; --- 완료 · 실패 처리: 스텝 큰 것부터(한 스캔에 다음 스텝 처리까지 번지지 않게) ---
 C13  LD>= D#10 K20 | AND<= D#10 K29 | AND M#13  =>  MOV K16 D#10    ; RFID 3회 실패
 C34  LD= D#10 K29 | AND M#12 | AND= D1515 D1516  =>  MOV K30 D#10
 C35  LD= D#10 K29 | AND M#12  =>  MOV K16 D#10                                    ; 검증 불일치
-C32  LD= D#10 K28 | AND M#12  =>  MOV K29 D#10
-C30  LD= D#10 K27 | AND M#12  =>  MOV K28 D#10
-C28  LD= D#10 K26 | AND M#12  =>  MOV K27 D#10
-C26  LD= D#10 K25 | AND M#12  =>  MOV K26 D#10
-C24  LD= D#10 K24 | AND M#12  =>  MOV K25 D#10
-C22  LD= D#10 K23 | AND M#12  =>  MOV K24 D#10
+C32  LD>= D#10 K23 | AND<= D#10 K28 | AND M#12  =>  INC D#10   ; 쓰기 23 ~ 28 → 다음 스텝(한 회로로)
 C19  LD= D#10 K22 | AND M#12 | AND= D1515 K0  =>  MOV K23 D#10                               ; 미등록 → 계속
 C20  LD= D#10 K22 | AND M#12  =>  MOV K16 D#10                                    ; 0 아님 = 중복 투입
 C17  LD= D#10 K21 | AND M#12  =>  MOV D1515 D1517 | MOV K22 D#10
 C15  LD= D#10 K20 | AND M#12  =>  MOV K21 D#10
 C46  LD= D#10 K16  =>  SET M#62 | MOV K15 D#10                               ; RFID ① 알람(SET 한 곳) → 투입 정지
 ; --- 명령 준비 ---
-C14  LD= D#10 K20 | ANI M#11 | ANI M#12 | ANI M#13  =>  MOV K0 D1510 | MOV K0 D1511          ; 명령 0 태그 확인
-C16  LD= D#10 K21 | ANI M#11 | ANI M#12 | ANI M#13  =>  MOV K1 D1510 | MOV K0 D1511          ; 명령 1 시리얼
-C18  LD= D#10 K22 | ANI M#11 | ANI M#12 | ANI M#13  =>  MOV K2 D1510 | MOV K0 D1511          ; 명령 2 idx0
-C21  LD= D#10 K23 | ANI M#11 | ANI M#12 | ANI M#13  =>  MOV K3 D1510 | MOV K0 D1511 | MOV D1516 D1512   ; idx0 ← PACK ID
-C23  LD= D#10 K24 | ANI M#11 | ANI M#12 | ANI M#13  =>  MOV K3 D1510 | MOV K1 D1511 | MOV D#30 D1512    ; idx1 ← 팩 전압
-C25  LD= D#10 K25 | ANI M#11 | ANI M#12 | ANI M#13  =>  MOV K3 D1510 | MOV K2 D1511 | MOV D#01 D1512    ; idx2 ← 투입 시각
-C27  LD= D#10 K26 | ANI M#11 | ANI M#12 | ANI M#13  =>  MOV K3 D1510 | MOV K4 D1511 | MOV K0 D1512      ; idx4 ← 0
-C29  LD= D#10 K27 | ANI M#11 | ANI M#12 | ANI M#13  =>  MOV K3 D1510 | MOV K5 D1511 | MOV K0 D1512      ; idx5 ← 0
-C31  LD= D#10 K28 | ANI M#11 | ANI M#12 | ANI M#13  =>  MOV K3 D1510 | MOV K9 D1511 | MOV D1518 D1512   ; idx9 ← 셀 수
-C33  LD= D#10 K29 | ANI M#11 | ANI M#12 | ANI M#13  =>  MOV K2 D1510 | MOV K0 D1511          ; 명령 2 idx0 검증
-C47  LD>= D#10 K20 | AND<= D#10 K29 | ANI M#11 | ANI M#12 | ANI M#13  =>  SET M#11    ; 명령 요청(SET 한 곳, 위 줄에서 명령 준비)
+C14  LDI M#11 | ANI M#12 | ANI M#13  =>  MPS | AND= D#10 K20 | MOV K0 D1510 | MOV K0 D1511 | MRD | AND= D#10 K21 | MOV K1 D1510 | MOV K0 D1511 | MRD | AND= D#10 K22 | MOV K2 D1510 | MOV K0 D1511 | MRD | AND= D#10 K23 | MOV K3 D1510 | MOV K0 D1511 | MOV D1516 D1512 | MPP | AND= D#10 K24 | MOV K3 D1510 | MOV K1 D1511 | MOV D#30 D1512   ; 명령 0 태그 확인 / 명령 1 시리얼 / 명령 2 idx0 / idx0 ← PACK ID / idx1 ← 팩 전압
+C25  LDI M#11 | ANI M#12 | ANI M#13  =>  MPS | AND= D#10 K25 | MOV K3 D1510 | MOV K2 D1511 | MOV D#01 D1512 | MRD | AND= D#10 K26 | MOV K3 D1510 | MOV K4 D1511 | MOV K0 D1512 | MRD | AND= D#10 K27 | MOV K3 D1510 | MOV K5 D1511 | MOV K0 D1512 | MRD | AND= D#10 K28 | MOV K3 D1510 | MOV K9 D1511 | MOV D1518 D1512 | MRD | AND= D#10 K29 | MOV K2 D1510 | MOV K0 D1511 | MPP | AND>= D#10 K20 | AND<= D#10 K29 | SET M#11   ; idx2 ← 투입 시각 / idx4 ← 0 / idx5 ← 0 / idx9 ← 셀 수 / 명령 2 idx0 검증 / 명령 요청(SET 한 곳, 위 줄에서 명령 준비)
 C48  LD M#12 | OR M#13  =>  RST M#12 | RST M#13                           ; 완료 · 실패 확인 끝(RST 한 곳)
 C36  LD= D#10 K30 | ANI M#02  =>  MOV D1516 D#31 | MOV D1518 D#32 | SET M#02 | RST M1510 | MOV K31 D#10
 C37  LD= D#10 K31 | AND X1510 | AND T#14  =>  MOV K0 D#10                 ; 11-25: 정위치 센서가 빈 뒤 3초 더 지나 막대를 올림(막대가 높아져 일찍 올리면 팔레트 밑에 걸림)
@@ -630,40 +592,27 @@ I02  LD>= D#43 K10 | AND<= D#43 K15  =>  OUT T#37 K52                         ; 
 I03  LD= D#43 K10 | AND>= T#37 K12  =>  MOV K15 D#43                           ; 진입 롤러 위에서 완전히 멈춤
 I15  LD= D#43 K15 | AND T#37  =>  MOV K20 D#43                               ; 쉰 뒤 저속으로만 입고점까지(소프트 PLC 지연 3.5초로 팔레트가 60 cm 지나쳐 크레인 A가 떨어뜨린 것을 재현, 11-25)
 I04  LD>= D#43 K10 | AND<= D#43 K20 | ANI X1512  =>  MOV K30 D#43             ; 입고점 도착
-I05  LD= D#43 K30  =>  OUTH T#38 K300                                 ; 고속 타이머(10 ms): 정지 명령이 닿을 때까지 3초 기다린 뒤 크레인(11-25, 전 0.15초)
-I06  LD= D#43 K30 | AND T#38  =>  MOV K40 D#43                               ; 정지 → 크레인 A 대기
+I05  LD= D#43 K30  =>  OUTH T#38 K300 | AND T#38 | MOV K40 D#43   ; 고속 타이머(10 ms): 정지 명령이 닿을 때까지 3초 기다린 뒤 크레인(11-25, 전 0.15초) / 정지 → 크레인 A 대기
 I07  LD= D#43 K40 | AND X1512  =>  MOV K0 D#43                                ; 크레인 A가 집어 감(입고점 비워짐)
-I08  LD< D#43 K20  =>  MOV K0 D1505                                        ; 저속 구간(20) 말고는 멈춰 둠: 팔레트가 고속으로 올라오지 않게(11-25)
-I09  LD= D#43 K20  =>  MOV K50 D1505                                   ; 입고점 직전 1.5 V(11-24: 실제 PLC 경로는 정지 신호가 늦어 4 V면 팔레트가 컨베이어 끝을 넘어 크레인 A가 못 집음. 느리게 와서 센서에서 멈추면 덜 밀림) → 0.5 V(11-24 중계 시험: 1.5 V도 지연만큼 밀려 포크 중심을 벗어남. 밀리는 거리 = 속도 × 지연)
-I10  LD= D#43 K30  =>  MOV K0 D1505                                    ; 센서에서 바로 정지(역회전 안 함: 11-24 뒤로 돌리면 Large 박스가 팔레트에서 미끄러져 빠짐)
-I11  LD= D#43 K40  =>  MOV K0 D1505
+I08  LD<> D#43 K20  =>  MOV K0 D1505   ; 저속 구간(20)이 아니면 정지
+I09  LD= D#43 K20  =>  MOV K50 D1505 | MOV K50 D1506   ; 입고점 직전 1.5 V(11-24: 실제 PLC 경로는 정지 신호가 늦어 4 V면 팔레트가 컨베이어 끝을 넘어 크레인 A가 못 집음. 느리게 와서 센서에서 멈추면 덜 밀림) → 0.5 V(11-24 중계 시험: 1.5 V도 지연만큼 밀려 포크 중심을 벗어남. 밀리는 거리 = 속도 × 지연) / 감속 중에는 로딩 컨베이어(I09)와 같은 1.5 V. 11-24 실제 PLC 시험: 앞만 느려지고 진입 롤러가 뒤에서 밀어 팔레트가 돌아가 박스가 빠짐(팔레트 길이 ≈ 로딩 컨베이어라 뒤쪽은 늘 진입 롤러 위)
 I12  LD<= D#43 K10  =>  MOV K500 D1506                                    ; 입고 진입 롤러: 처음부터 5 V 고정(11-25, 10 V면 멈춤 명령이 3.5초 늦을 때 크레인 앞까지 밀려감)
-I13  LD= D#43 K20  =>  MOV K50 D1506                                       ; 감속 중에는 로딩 컨베이어(I09)와 같은 1.5 V. 11-24 실제 PLC 시험: 앞만 느려지고 진입 롤러가 뒤에서 밀어 팔레트가 돌아가 박스가 빠짐(팔레트 길이 ≈ 로딩 컨베이어라 뒤쪽은 늘 진입 롤러 위)
 I14  LD= D#43 K15 | OR>= D#43 K30  =>  MOV K0 D1506                                       ; 입구에서 쉬는 동안 · 입고점 도착 · 크레인 대기 중 정지
 ; --- 크레인 A ---
-D01  LD= D#11 K0 | AND= D#43 K40 | AND M#02 | AND= D#32 K4 | AND<> D#50 K0  =>  MOV D#50 D#33 | MOV K1 D#11                 ; 4S → 4S 구역
-D02  LD= D#11 K0 | AND= D#43 K40 | AND M#02 | AND= D#32 K4 | AND= D#50 K0 | AND<> D#51 K0  =>  MOV D#51 D#33 | MOV K1 D#11   ; 4S 구역 만차 → 6S 구역
-D03  LD= D#11 K0 | AND= D#43 K40 | AND M#02 | AND= D#32 K6 | AND<> D#51 K0  =>  MOV D#51 D#33 | MOV K1 D#11                 ; 6S → 6S 구역
-D04  LD= D#11 K0 | AND= D#43 K40 | AND M#02 | AND= D#32 K6 | AND= D#51 K0 | AND<> D#50 K0  =>  MOV D#50 D#33 | MOV K1 D#11   ; 6S 구역 만차 → 4S 구역
+D01  LD= D#11 K0 | AND= D#43 K40 | AND M#02  =>  MPS | AND= D#32 K4 | AND<> D#50 K0 | MOV D#50 D#33 | MOV K1 D#11 | MRD | AND= D#32 K4 | AND= D#50 K0 | AND<> D#51 K0 | MOV D#51 D#33 | MOV K1 D#11 | MRD | AND= D#32 K6 | AND<> D#51 K0 | MOV D#51 D#33 | MOV K1 D#11 | MPP | AND= D#32 K6 | AND= D#51 K0 | AND<> D#50 K0 | MOV D#50 D#33 | MOV K1 D#11   ; 4S → 4S 구역 / 4S 구역 만차 → 6S 구역 / 6S → 6S 구역 / 6S 구역 만차 → 4S 구역
 D05  LD= D#11 K1  =>  MOV D#33 Z2 | DEC Z2 | MOV D#31 D#100Z2 | MOV K0 D#130Z2 | MOV D#33 D1600 | MOV K10 D#11
 D07  LD= D#11 K10 | AND X1602  =>  MOV K11 D#11                             ; 포크 입고점 쪽(왼쪽) 끝
-D08  LD= D#11 K11  =>  OUT T#15 K80                                         ; 들어 올림 8초 + 승강 끝(D09). 11-24 실제 PLC + OPC: 리프트 출력 → 승강 중 신호가 약 2.3 s 늦게 들어와 1.5 · 3초로는 다 들기 전에 포크를 빼 팔레트가 떨어짐
-D09  LD= D#11 K11 | AND T#15 | ANI X1601  =>  MOV K12 D#11
+D08  LD= D#11 K11  =>  OUT T#15 K80 | AND T#15 | ANI X1601 | MOV K12 D#11   ; 들어 올림 8초 + 승강 끝(D09). 11-24 실제 PLC + OPC: 리프트 출력 → 승강 중 신호가 약 2.3 s 늦게 들어와 1.5 · 3초로는 다 들기 전에 포크를 빼 팔레트가 떨어짐
 D10  LD= D#11 K12 | AND X1603  =>  MOV K20 D#11
 D11  LD= D#11 K20  =>  MOV D#190Z2 D1601 | OUT T#16 K30                     ; 목표 칸(변환표). 3초 안에 안 움직이면 이미 그 자리
-D12  LD= D#11 K20 | LD X1600 | OR X1601 | ANB  =>  MOV K21 D#11              ; 이동 시작 확인
-D23  LD= D#11 K20 | AND T#16  =>  MOV K21 D#11
-D24  LD= D#11 K21 | ANI X1600 | ANI X1601  =>  OUT T#39 K5
-D25  LD= D#11 K21 | AND T#39  =>  MOV K30 D#11                              ; 0.5초 동안 멈춰 있음 = 도착
+D12  LD= D#11 K20 | LD X1600 | OR X1601 | OR T#16 | ANB  =>  MOV K21 D#11   ; 이동 시작 확인
+D24  LD= D#11 K21 | ANI X1600 | ANI X1601  =>  OUT T#39 K5 | AND T#39 | MOV K30 D#11   ; 0.5초 동안 멈춰 있음 = 도착
 D14  LD= D#11 K30 | AND X1604  =>  MOV K31 D#11                             ; 포크 랙 쪽(오른쪽) 끝
-D15  LD= D#11 K31  =>  OUT T#17 K80                                         ; 내려놓음 8초 + 승강 끝(D16, D08과 같은 이유)
-D16  LD= D#11 K31 | AND T#17 | ANI X1601  =>  MOV K32 D#11
+D15  LD= D#11 K31  =>  OUT T#17 K80 | AND T#17 | ANI X1601 | MOV K32 D#11   ; 내려놓음 8초 + 승강 끝(D16, D08과 같은 이유)
 D17  LD= D#11 K32 | AND X1603  =>  MOV D#01 D#130Z2 | RST M#02 | MOV K40 D#11    ; 입고 시각 = 숙성 시작
 D18  LD= D#11 K40  =>  MOV K55 D1601 | OUT T#18 K30                           ; 대기 위치 55(입고점)
-D19  LD= D#11 K40 | LD X1600 | OR X1601 | ANB  =>  MOV K41 D#11
-D26  LD= D#11 K40 | AND T#18  =>  MOV K41 D#11
-D27  LD= D#11 K41 | ANI X1600 | ANI X1601  =>  OUT T#40 K5
-D28  LD= D#11 K41 | AND T#40  =>  MOV K0 D#11
+D19  LD= D#11 K40 | LD X1600 | OR X1601 | OR T#18 | ANB  =>  MOV K41 D#11
+D27  LD= D#11 K41 | ANI X1600 | ANI X1601  =>  OUT T#40 K5 | AND T#40 | MOV K0 D#11
 D21  LD<> D#11 K0  =>  OUT M1600
 ```
 
@@ -672,26 +621,18 @@ D21  LD<> D#11 K0  =>  OUT M1600
 ```
 E01  LD= D#12 K0 | AND<> D#52 K0 | ANI M#49  =>  MOV D#52 D#34 | MOV K1 D#12                                 ; 발열 우선
 E02  LD= D#12 K0 | AND= D#52 K0 | AND<> D#53 K0 | ANI M1800 | AND< D#41 K2  =>  MOV D#53 D#34 | MOV K1 D#12  ; EDD
-E03  LD= D#12 K1  =>  MOV D#34 Z3 | DEC Z3 | MOV D#100Z3 D#35 | MOV D#160Z3 D#36 | MOV D#34 D1600
-E04  LD= D#12 K1 | AND= D#36 K0  =>  INC D#41 | MOV K10 D#12                 ; 정상 팩
-E05  LD= D#12 K1 | AND<> D#36 K0  =>  SET M#49 | MOV K10 D#12                ; 발열 팩
+E03  LD= D#12 K1  =>  MOV D#34 Z3 | DEC Z3 | MOV D#100Z3 D#35 | MOV D#160Z3 D#36 | MOV D#34 D1600 | MPS | AND= D#36 K0 | INC D#41 | MOV K10 D#12 | MPP | AND<> D#36 K0 | SET M#49 | MOV K10 D#12   ; 정상 팩 / 발열 팩
 E06  LD= D#12 K10  =>  MOV D#190Z3 D1602 | OUT T#19 K30                     ; 목표 칸(변환표, A와 같은 번호)
-E07  LD= D#12 K10 | LD X1608 | OR X1609 | ANB  =>  MOV K11 D#12
-E23  LD= D#12 K10 | AND T#19  =>  MOV K11 D#12
-E24  LD= D#12 K11 | ANI X1608 | ANI X1609  =>  OUT T#41 K5
-E25  LD= D#12 K11 | AND T#41  =>  MOV K20 D#12
+E07  LD= D#12 K10 | LD X1608 | OR X1609 | OR T#19 | ANB  =>  MOV K11 D#12
+E24  LD= D#12 K11 | ANI X1608 | ANI X1609  =>  OUT T#41 K5 | AND T#41 | MOV K20 D#12
 E09  LD= D#12 K20 | AND X160A  =>  MOV K21 D#12                             ; 포크 랙 쪽(왼쪽) 끝
-E10  LD= D#12 K21  =>  OUT T#20 K80                                         ; 들어 올림 8초 + 승강 끝(E11, D08과 같은 이유)
-E11  LD= D#12 K21 | AND T#20 | ANI X1609  =>  MOV K22 D#12
+E10  LD= D#12 K21  =>  OUT T#20 K80 | AND T#20 | ANI X1609 | MOV K22 D#12   ; 들어 올림 8초 + 승강 끝(E11, D08과 같은 이유)
 E12  LD= D#12 K22 | AND X160B  =>  MOV K0 D#100Z3 | MOV K0 D#130Z3 | MOV K0 D1610Z3 | MOV K30 D#12   ; 칸 비움 (온도는 남겨 LOCK)
 E13  LD= D#12 K30  =>  MOV K55 D1602 | OUT T#21 K30
-E14  LD= D#12 K30 | LD X1608 | OR X1609 | ANB  =>  MOV K31 D#12
-E26  LD= D#12 K30 | AND T#21  =>  MOV K31 D#12
-E27  LD= D#12 K31 | ANI X1608 | ANI X1609 | AND X1610 | ANI M#40  =>  OUT T#42 K5   ; 대기 위치에 멈춤 · 출고점 비어 있음(반사형 ON = 비어 있음)
-E28  LD= D#12 K31 | AND T#42  =>  MOV K41 D#12
+E14  LD= D#12 K30 | LD X1608 | OR X1609 | OR T#21 | ANB  =>  MOV K31 D#12
+E27  LD= D#12 K31 | ANI X1608 | ANI X1609 | AND X1610 | ANI M#40  =>  OUT T#42 K5 | AND T#42 | MOV K41 D#12   ; 대기 위치에 멈춤 · 출고점 비어 있음(반사형 ON = 비어 있음)
 E16  LD= D#12 K41 | AND X160C  =>  MOV K42 D#12                             ; 포크 출고점 쪽(오른쪽) 끝
-E17  LD= D#12 K42  =>  OUT T#22 K80                                         ; 내려놓음 8초 + 승강 끝(E18)
-E18  LD= D#12 K42 | AND T#22 | ANI X1609  =>  MOV K43 D#12
+E17  LD= D#12 K42  =>  OUT T#22 K80 | AND T#22 | ANI X1609 | MOV K43 D#12   ; 내려놓음 8초 + 승강 끝(E18)
 E19  LD= D#12 K43 | AND X160B  =>  MOV D#35 D#37 | MOV D#36 D#38 | SET M#40 | MOV K0 D#12
 E21  LD<> D#12 K0  =>  OUT M1601
 E22  LD< D#12 K41  =>  OUT Y1610                                             ; 출고점 로딩 컨베이어 (내려놓는 동안만 멈춤)
@@ -710,31 +651,23 @@ E20  LD>= D#12 K21 | AND<= D#12 K41  =>  OUT Y160A                           ; �
 ```
 ; @PROGRAM SORT1
 F00  LD M#60  =>  MC N0 M#73                         ; 운전 중일 때만 이 파일 실행(정지 시 OUT 끔)
-F01  LD= D#16 K0 | ANI X1660 | AND X1664  =>  MOV K10 D#16                    ; TT1 입구 빔 가림(0°일 때만)
-F02  LD= D#16 K10 | AND X1660  =>  OUT T#23 K5                            ; 입구 빔이 다시 트임 = 다 올라옴. 0.5초 더 굴려 가운데로
-F27  LD= D#16 K10 | AND T#23  =>  MOV K20 D#16
-F03  LD= D#16 K20  =>  OUT T#49 K15                                          ; 롤러가 선 뒤 쉬기(출력 지연 약 1초보다 길게). 앞뒤 4칸 여유라 자리가 조금 달라도 됨
-F04  LD= D#16 K20 | AND T#49 | AND= D#38 K0 | ANI M#51 | AND= D#44 K0  =>  MOV K30 D#16   ; 정상 → 메인. 메인 라인 1이 멈췄거나 TTM이 바쁘면 TT1 위에서 대기
-F05  LD= D#16 K20 | AND T#49 | AND<> D#38 K0  =>  MOV D#37 D#39 | MOV D#38 D#40 | MOV K40 D#16   ; 발열 → 격리
-F06  LD= D#16 K30 | AND X1668  =>  MOV K31 D#16                               ; 90° 도착
+F01  LD= D#16 K0 | LDI X1660 | OR X1662 | ANB | AND X1664  =>  MOV K10 D#16                    ; TT1 입구 빔 가림(0°일 때만)
+F02  LD= D#16 K10 | AND X1662  =>  MOV K20 D#16                             ; TT1 앞 센서 ON = 팔레트가 가운데(현장 인터록이 롤을 즉시 끊음)
+F03  LD= D#16 K20  =>  OUT T#23 K15 | AND T#23 | MPS | AND= D#38 K0 | ANI M#51 | AND= D#44 K0 | MOV K30 D#16 | MPP | AND<> D#38 K0 | MOV D#37 D#39 | MOV D#38 D#40 | MOV K40 D#16   ; 롤러가 선 뒤 쉬기(출력 지연 약 1초보다 길게). 앞뒤 4칸 여유라 자리가 조금 달라도 됨 / 정상 → 메인. 메인 라인 1이 멈췄거나 TTM이 바쁘면 TT1 위에서 대기 / 발열 → 격리
+F06  LD= D#16 K30 | OR= D#16 K40 | AND X1668  =>  INC D#16   ; 90° 도착 → 30은 31, 40은 41
 F07  LD= D#16 K31 | AND X1662  =>  MOV K32 D#16                               ; 앞 센서 지나는 중
-F08  LD= D#16 K40 | AND X1668  =>  MOV K41 D#16
 F09  LD= D#16 K41 | AND X1663  =>  MOV K42 D#16                               ; 뒤 센서 지나는 중
-F10  LD= D#16 K32 | ANI X1662 | LD= D#16 K42 | ANI X1663 | ORB  =>  OUT T#24 K15    ; 센서를 지난 뒤 1.5초 더 굴려 완전히 내보냄
-F11  LD>= D#16 K32 | AND<= D#16 K42 | AND T#24  =>  MOV K50 D#16 | RST M#40    ; 비움 → 출고 구간 비움(RST 한 곳)
+F10  LD= D#16 K32 | ANI X1662 | LD= D#16 K42 | ANI X1663 | ORB  =>  OUT T#24 K15 | AND T#24 | MOV K50 D#16 | RST M#40   ; 센서를 지난 뒤 1.5초 더 굴려 완전히 내보냄 / 비움 → 출고 구간 비움(RST 한 곳)
 F12  LD= D#16 K50 | AND X1664  =>  MOV K0 D#16                                ; 0° 복귀
 F13  LD<= D#16 K10 | ANI X1662 | LD>= D#16 K31 | AND<= D#16 K32 | ANI M#51 | ORB  =>  OUT Y1662   ; 롤(+): 쉴 때 · 받을 때 · 메인으로 내보낼 때
 F14  LD>= D#16 K41 | AND<= D#16 K42  =>  OUT Y1663                            ; 롤(−): 격리로 내보낼 때
 ; --- 메인 코너 TTM (−Z로 90°에서 받아 0°로 돌려 −X로) ---
-F15  LD= D#44 K0 | ANI X1666 | AND X1669  =>  MOV K10 D#44
-F16  LD= D#44 K10 | AND X1666  =>  OUT T#46 K5                            ; 입구 빔이 다시 트임 = 다 올라옴. 0.5초 더 굴려 가운데로
-F28  LD= D#44 K10 | AND T#46  =>  MOV K20 D#44
-F17  LD= D#44 K20  =>  OUT T#50 K15                                          ; 롤러가 선 뒤 쉬기(출력 지연 약 1초보다 길게). 앞뒤 4칸 여유라 자리가 조금 달라도 됨
-F18  LD= D#44 K20 | AND T#50 | ANI M#51  =>  MOV K30 D#44                 ; 메인 라인 1이 멈춰 있으면(검사 중) 대기
+F15  LD= D#44 K0 | LDI X1666 | OR X1665 | ANB | AND X1669  =>  MOV K10 D#44
+F16  LD= D#44 K10 | AND X1665  =>  MOV K20 D#44                             ; TTM 앞 센서 ON = 팔레트가 가운데(현장 인터록이 롤을 즉시 끊음)
+F17  LD= D#44 K20  =>  OUT T#46 K15 | AND T#46 | ANI M#51 | MOV K30 D#44   ; 롤러가 선 뒤 쉬기(출력 지연 약 1초보다 길게). 앞뒤 4칸 여유라 자리가 조금 달라도 됨 / 메인 라인 1이 멈춰 있으면(검사 중) 대기
 F19  LD= D#44 K30 | AND X1667  =>  MOV K31 D#44                           ; 0° 도착
 F20  LD= D#44 K31 | AND X1665  =>  MOV K32 D#44
-F21  LD= D#44 K32 | ANI X1665  =>  OUT T#47 K15
-F22  LD= D#44 K32 | AND T#47  =>  MOV K50 D#44
+F21  LD= D#44 K32 | ANI X1665  =>  OUT T#47 K15 | AND T#47 | MOV K50 D#44
 F23  LD= D#44 K50 | AND X1669  =>  MOV K0 D#44                            ; 90° 복귀
 F24  LD<= D#44 K10 | ANI X1665 | LD>= D#44 K31 | AND<= D#44 K32 | ANI M#51 | ORB  =>  OUT Y1665   ; 롤(+)
 ```
@@ -742,11 +675,8 @@ F24  LD<= D#44 K10 | ANI X1665 | LD>= D#44 K31 | AND<= D#44 K32 | ANI M#51 | ORB
 ### G. 발열 격리 기록 핸드셰이크 (D1650~D1653)
 
 ```
-G01  LDF X1902 | AND= D#15 K0  =>  MOV D#39 D1651 | MOV D#40 D1652 | MOV K1 D1650 | MOV K10 D#15
-G02  LDF X1902  =>  RST M#49
-G03  LD= D#15 K10  =>  OUT T#25 K50
-G04  LD= D#15 K10 | AND T#25  =>  SET M#67                                   ; Python 응답 없음 <A24>
-G05  LD= D#15 K10 | AND= D1653 K1  =>  MOV K0 D1650 | MOV K20 D#15
+G01  LDF X1902  =>  RST M#49 | AND= D#15 K0 | MOV D#39 D1651 | MOV D#40 D1652 | MOV K1 D1650 | MOV K10 D#15
+G03  LD= D#15 K10  =>  OUT T#25 K50 | MPS | AND T#25 | SET M#67 | MPP | AND= D1653 K1 | MOV K0 D1650 | MOV K20 D#15   ; Python 응답 없음 <A24>
 G06  LD= D#15 K20 | AND= D1653 K0  =>  MOV K0 D#15
 G99  MCR N0
 ; --- MC 밖: 정지 · 비상정지 중에도 각도 유지(꺼지면 팔레트를 얹은 채 돌아감) ---
@@ -759,15 +689,10 @@ F26  LD<= D#44 K20 | OR= D#44 K50  =>  OUT Y1666                              ; 
 ```
 ; @PROGRAM INSPECT
 J00  LD M#60  =>  MC N0 M#74                         ; 운전 중일 때만 이 파일 실행(정지 시 OUT 끔)
-J01  LD= D#13 K0 | ANI X1700  =>  OUT T#26 K10
-J02  LD= D#13 K0 | AND T#26  =>  RST M#42 | RST M#43 | MOV K0 D#49 | MOV K10 D#13
+J01  LD= D#13 K0 | ANI X1700  =>  OUT T#26 K10 | AND T#26 | RST M#42 | RST M#43 | MOV K0 D#49 | MOV K10 D#13
 ; --- 완료 · 실패 처리: 스텝 큰 것부터 ---
 J17  LD>= D#13 K40 | AND<= D#13 K44 | AND M#23  =>  MOV K46 D#13               ; 태그 쓰기 실패
-J28  LD= D#13 K44 | AND M#22  =>  MOV K45 D#13
-J26  LD= D#13 K43 | AND M#22  =>  MOV K44 D#13
-J24  LD= D#13 K42 | AND M#22  =>  MOV K43 D#13
-J22  LD= D#13 K41 | AND M#22  =>  MOV K42 D#13
-J20  LD= D#13 K40 | AND M#22  =>  MOV K41 D#13
+J28  LD>= D#13 K40 | AND<= D#13 K44 | AND M#22  =>  INC D#13   ; 쓰기 40 ~ 44 → 다음 스텝(한 회로로)
 J03  LD>= D#13 K10 | AND<= D#13 K13 | AND M#23  =>  MOV K51 D#13    ; 판독 3회 실패 → 계측 없이 분기
 J12  LD= D#13 K13 | AND M#22  =>  MOV D1525 D1714 | MOV K20 D#13                ; D#47은 시리얼만 둠(11-24: 셀 수로 덮으면 직전 팩 시리얼을 못 거름)
 J10  LD= D#13 K12 | AND M#22  =>  MOV D1525 D1527 | MOV K13 D#13
@@ -777,55 +702,36 @@ J50  LD= D#13 K11 | AND M#22 | AND= D1525 K0  =>  INC D#49 | MOV K14 D#13       
 J05  LD= D#13 K10 | AND M#22 | AND<> D1525 K0 | AND<> D1525 D#47 | AND<> D1525 D1714  =>  MOV D1525 D#47 | MOV K11 D#13   ; 읽은 값이 0이 아니고, 직전 팩 시리얼(D#47)도 레지스터에 남은 직전 셀 수(D1714)도 아님 = 이 팩 태그를 읽음. 태그를 아직 못 잡으면 리더가 직전 팩 태그 값을 돌려줌 → 103을 102로 읽은 일(11-24 v3)
 J46  LD= D#13 K10 | AND M#22 | AND< D#49 K2  =>  INC D#49 | MOV K14 D#13       ; 시리얼이 맞지 않으면 1초 뒤 다시 읽기(2번까지, 11-23)
 J47  LD= D#13 K10 | AND M#22  =>  MOV K51 D#13                              ; 3번 다 못 잡음 → 판독 실패
-J48  LD= D#13 K14  =>  OUT T#52 K10
-J49  LD= D#13 K14 | AND T#52  =>  MOV K10 D#13
+J48  LD= D#13 K14  =>  OUT T#52 K10 | AND T#52 | MOV K10 D#13
 J40  LD= D#13 K46 | OR= D#13 K51  =>  SET M#63                            ; RFID ② 알람(SET 한 곳)
 J41  LD= D#13 K46  =>  MOV K45 D#13                                        ; 태그 쓰기 실패 → 기록 끝으로
 J42  LD= D#13 K51  =>  SET M#43 | MOV K50 D#13                             ; 판독 실패 · 미등록 → 계측 없이 분기
 ; --- 명령 준비 · 검사 ---
-J04  LD= D#13 K10 | ANI M#21 | ANI M#22 | ANI M#23  =>  MOV K1 D1520 | MOV K0 D1521        ; 명령 1 시리얼(태그 확인)
-J06  LD= D#13 K11 | ANI M#21 | ANI M#22 | ANI M#23  =>  MOV K2 D1520 | MOV K0 D1521        ; idx0
-J09  LD= D#13 K12 | ANI M#21 | ANI M#22 | ANI M#23  =>  MOV K2 D1520 | MOV K4 D1521        ; idx4
-J11  LD= D#13 K13 | ANI M#21 | ANI M#22 | ANI M#23  =>  MOV K2 D1520 | MOV K9 D1521        ; idx9
+J04  LDI M#21 | ANI M#22 | ANI M#23  =>  MPS | AND= D#13 K10 | MOV K1 D1520 | MOV K0 D1521 | MRD | AND= D#13 K11 | MOV K2 D1520 | MOV K0 D1521 | MRD | AND= D#13 K12 | MOV K2 D1520 | MOV K4 D1521 | MPP | AND= D#13 K13 | MOV K2 D1520 | MOV K9 D1521   ; 명령 1 시리얼(태그 확인) / idx0 / idx4 / idx9
 J13  LD= D#13 K20 | AND= D1713 K0  =>  MOV D1526 D1711 | MOV D1527 D1712 | MOV K1 D1710 | MOV K30 D#13
-J14  LD= D#13 K30  =>  OUT M1700 | OUT T#27 K50
-J15  LD= D#13 K30 | AND T#27  =>  SET M#65                                   ; Python 응답 없음 <A24>
-J16  LD= D#13 K30 | AND= D1713 K1  =>  MOV K40 D#13
+J14  LD= D#13 K30  =>  OUT M1700 | OUT T#27 K50 | MPS | AND T#27 | SET M#65 | MPP | AND= D1713 K1 | MOV K40 D#13   ; Python 응답 없음 <A24>
 J18  LD= D#13 K40 | AND<> D1700 K2  =>  MOV K41 D#13
-J19  LD= D#13 K40 | AND= D1700 K2 | ANI M#21 | ANI M#22 | ANI M#23  =>  MOV K3 D1520 | MOV K4 D1521 | MOV D1527 D1522 | INC D1522   ; idx4 ← 재검사 + 1
-J21  LD= D#13 K41 | ANI M#21 | ANI M#22 | ANI M#23  =>  MOV K3 D1520 | MOV K5 D1521 | MOV D1700 D1522   ; idx5 ← 판정
-J23  LD= D#13 K42 | ANI M#21 | ANI M#22 | ANI M#23  =>  MOV K3 D1520 | MOV K6 D1521 | MOV D1701 D1522   ; idx6 ← 팩 ΔV
-J25  LD= D#13 K43 | ANI M#21 | ANI M#22 | ANI M#23  =>  MOV K3 D1520 | MOV K7 D1521 | MOV D1702 D1522   ; idx7 ← 팩 IR
-J27  LD= D#13 K44 | ANI M#21 | ANI M#22 | ANI M#23  =>  MOV K3 D1520 | MOV K8 D1521 | MOV D1703 D1522   ; idx8 ← 온도
-J43  LD>= D#13 K10 | AND<= D#13 K13 | LD>= D#13 K40 | AND<= D#13 K44 | ORB | ANI M#21 | ANI M#22 | ANI M#23  =>  SET M#21   ; 명령 요청(SET 한 곳)
+J19  LDI M#21 | ANI M#22 | ANI M#23  =>  MPS | AND= D#13 K40 | AND= D1700 K2 | MOV K3 D1520 | MOV K4 D1521 | MOV D1527 D1522 | INC D1522 | MRD | AND= D#13 K41 | MOV K3 D1520 | MOV K5 D1521 | MOV D1700 D1522 | MRD | AND= D#13 K42 | MOV K3 D1520 | MOV K6 D1521 | MOV D1701 D1522 | MRD | AND= D#13 K43 | MOV K3 D1520 | MOV K7 D1521 | MOV D1702 D1522 | MRD | AND= D#13 K44 | MOV K3 D1520 | MOV K8 D1521 | MOV D1703 D1522 | MPP | LD>= D#13 K10 | AND<= D#13 K13 | LD>= D#13 K40 | AND<= D#13 K44 | ORB | ANB | SET M#21   ; idx4 ← 재검사 + 1 / idx5 ← 판정 / idx6 ← 팩 ΔV / idx7 ← 팩 IR / idx8 ← 온도 / 명령 요청(SET 한 곳)
 J44  LD M#22 | OR M#23  =>  RST M#22 | RST M#23                           ; 완료 · 실패 확인 끝(RST 한 곳)
 J29  LD= D#13 K45  =>  MOV K0 D1710 | MOV K50 D#13
 J30  LD= D#13 K50 | ANI M#43 | AND= D1700 K1  =>  MOV K60 D#13                                   ; GOOD
 J31  LD= D#13 K50  =>  SET M#42 | MOV K60 D#13                             ; GOOD 아님(2·3·4·5) 또는 판독 실패 · 미등록
-J33  LD= D#13 K60 | ANI M#42 | ANI M#41 | AND= D#17 K0  =>  MOV K65 D#13
-J34  LD= D#13 K60 | AND M#42 | ANI M#41 | AND= D#17 K0 | ANI M1800  =>  SET M#52 | MOV K65 D#13   ; M1800이면 출구 대기
+J33  LD= D#13 K60 | ANI M#41 | AND= D#17 K0  =>  MPS | ANI M#42 | MOV K65 D#13 | MPP | AND M#42 | ANI M1800 | SET M#52 | MOV K65 D#13   ; M1800이면 출구 대기
 J45  LD= D#13 K65  =>  SET M#41 | MOV K70 D#13                             ; 출구 차지(SET 한 곳)
-J35  LD= D#13 K70 | AND X1700  =>  OUT T#28 K20
-J36  LD= D#13 K70 | AND T#28 | AND> D#41 K0  =>  DEC D#41
-J37  LD= D#13 K70 | AND T#28  =>  MOV K0 D#13
+J35  LD= D#13 K70 | AND X1700  =>  OUT T#28 K20 | AND T#28 | MPS | AND> D#41 K0 | DEC D#41 | MPP | MOV K0 D#13
 J39  LD>= D#13 K10 | AND<= D#13 K65  =>  OUT M#51
 ```
 
 ### K. M1720 분기 (Pusher, 번지 안 기준)
 
 ```
-K01  LD= D#17 K0 | ANI X1720 | AND X1725  =>  MOV K10 D#17                    ; TT2 입구 빔 가림(0°일 때만)
-K02  LD= D#17 K10 | AND X1720  =>  OUT T#43 K5                            ; 입구 빔이 다시 트임 = 다 올라옴. 0.5초 더 굴려 가운데로
-K16  LD= D#17 K10 | AND T#43  =>  MOV K20 D#17
-K03  LD= D#17 K20  =>  OUT T#51 K15                                          ; 롤러가 선 뒤 쉬기(출력 지연 약 1초보다 길게). 앞뒤 4칸 여유라 자리가 조금 달라도 됨
-K04  LD= D#17 K20 | AND T#51 | ANI M#52 | ANI M#55  =>  MOV K30 D#17          ; GOOD(합류 중이면 대기)
-K05  LD= D#17 K20 | AND T#51 | AND M#52 | ANI M#54  =>  MOV K40 D#17          ; 재검사 대상(재검사 라인이 멈춰 있으면 대기)
-K06  LD= D#17 K30 | AND X1726  =>  MOV K31 D#17                               ; 90° 도착
+K01  LD= D#17 K0 | LDI X1720 | OR X1723 | ANB | AND X1725  =>  MOV K10 D#17                    ; TT2 입구 빔 가림(0°일 때만)
+K02  LD= D#17 K10 | AND X1723  =>  MOV K20 D#17                             ; TT2 앞 센서 ON = 팔레트가 가운데(현장 인터록이 롤을 즉시 끊음)
+K03  LD= D#17 K20  =>  OUT T#43 K15 | AND T#43 | MPS | ANI M#52 | ANI M#55 | MOV K30 D#17 | MPP | AND M#52 | ANI M#54 | MOV K40 D#17   ; 롤러가 선 뒤 쉬기(출력 지연 약 1초보다 길게). 앞뒤 4칸 여유라 자리가 조금 달라도 됨 / GOOD(합류 중이면 대기) / 재검사 대상(재검사 라인이 멈춰 있으면 대기)
+K06  LD= D#17 K30 | OR= D#17 K40 | AND X1726  =>  INC D#17   ; 90° 도착 → 30은 31, 40은 41
 K07  LD= D#17 K31 | AND X1724  =>  MOV K32 D#17                               ; 뒤 센서 지나는 중
-K08  LD= D#17 K40 | AND X1726  =>  MOV K41 D#17
 K09  LD= D#17 K41 | AND X1723  =>  MOV K42 D#17                               ; 앞 센서 지나는 중
-K10  LD= D#17 K32 | ANI X1724 | LD= D#17 K42 | ANI X1723 | ORB  =>  OUT T#44 K15
-K11  LD>= D#17 K32 | AND<= D#17 K42 | AND T#44  =>  MOV K50 D#17 | RST M#41 | RST M#52   ; 비움 → 메인 출구 · 분기 대상 해제(RST 한 곳)
+K10  LD= D#17 K32 | ANI X1724 | LD= D#17 K42 | ANI X1723 | ORB  =>  OUT T#44 K15 | AND T#44 | MOV K50 D#17 | RST M#41 | RST M#52   ; 비움 → 메인 출구 · 분기 대상 해제(RST 한 곳)
 K12  LD= D#17 K50 | AND X1725  =>  MOV K0 D#17                                ; 0° 복귀
 K13  LD<= D#17 K10 | ANI X1723 | LD>= D#17 K41 | AND<= D#17 K42 | ORB  =>  OUT Y1722   ; 롤(+): 쉴 때 · 받을 때 · 재검사로
 K14  LD>= D#17 K31 | AND<= D#17 K32  =>  OUT Y1723                            ; 롤(−): GOOD으로
@@ -848,15 +754,10 @@ J38  LD< D#13 K70  =>  OUT Y1701                                             ; �
 ```
 ; @PROGRAM RETEST
 N00  LD M#60  =>  MC N0 M#75                         ; 운전 중일 때만 이 파일 실행(정지 시 OUT 끔)
-N01  LD= D#14 K0 | ANI X1730  =>  OUT T#30 K10                                ; <A22> 정치를 두면 이 시간
-N02  LD= D#14 K0 | AND T#30 | AND> D1800 K0  =>  DEC D1800
-N03  LD= D#14 K0 | AND T#30  =>  RST M#45 | MOV K0 D#57 | MOV K10 D#14
+N01  LD= D#14 K0 | ANI X1730  =>  OUT T#30 K10 | AND T#30 | MPS | AND> D1800 K0 | DEC D1800 | MPP | RST M#45 | MOV K0 D#57 | MOV K10 D#14   ; <A22> 정치를 두면 이 시간
 ; --- 완료 · 실패 처리: 스텝 큰 것부터 ---
 N23  LD>= D#14 K41 | AND<= D#14 K44 | AND M#33  =>  MOV K46 D#14               ; 태그 쓰기 실패
-N31  LD= D#14 K44 | AND M#32  =>  MOV K45 D#14
-N29  LD= D#14 K43 | AND M#32  =>  MOV K44 D#14
-N27  LD= D#14 K42 | AND M#32  =>  MOV K43 D#14
-N25  LD= D#14 K41 | AND M#32  =>  MOV K42 D#14
+N31  LD>= D#14 K41 | AND<= D#14 K44 | AND M#32  =>  INC D#14   ; 쓰기 41 ~ 44 → 다음 스텝(한 회로로)
 N04  LD>= D#14 K10 | AND<= D#14 K14 | AND M#33  =>  MOV K51 D#14               ; 판독 3회 실패 → NG
 N15  LD= D#14 K14 | AND M#32  =>  MOV D1535 D1744 | MOV K15 D#14                ; D#48은 시리얼만 둠(J12와 같음)
 N13  LD= D#14 K13 | AND M#32  =>  MOV D1535 D#42 | MOV K14 D#14
@@ -867,55 +768,34 @@ N50  LD= D#14 K11 | AND M#32 | AND= D1535 K0  =>  INC D#57 | MOV K16 D#14       
 N06  LD= D#14 K10 | AND M#32 | AND<> D1535 K0 | AND<> D1535 D#48 | AND<> D1535 D1744  =>  MOV D1535 D#48 | MOV K11 D#14   ; 시리얼 확인(J05와 같음)
 N46  LD= D#14 K10 | AND M#32 | AND< D#57 K2  =>  INC D#57 | MOV K16 D#14       ; 1초 뒤 다시 읽기(2번까지, J46과 같음)
 N47  LD= D#14 K10 | AND M#32  =>  MOV K51 D#14                              ; 3번 다 못 잡음 → 판독 실패
-N48  LD= D#14 K16  =>  OUT T#53 K10
-N49  LD= D#14 K16 | AND T#53  =>  MOV K10 D#14
+N48  LD= D#14 K16  =>  OUT T#53 K10 | AND T#53 | MOV K10 D#14
 N40  LD= D#14 K46 | OR= D#14 K51  =>  SET M#64                            ; RFID ③ 알람(SET 한 곳)
 N41  LD= D#14 K46  =>  MOV K45 D#14                                        ; 태그 쓰기 실패 → 기록 끝으로
 N42  LD= D#14 K51  =>  MOV K50 D#14                                        ; 판독 실패 · 미등록 · 예상 밖 판정 → NG
 ; --- 명령 준비 · 재검사 ---
-N05  LD= D#14 K10 | ANI M#31 | ANI M#32 | ANI M#33  =>  MOV K1 D1530 | MOV K0 D1531        ; 명령 1 시리얼(태그 확인)
-N07  LD= D#14 K11 | ANI M#31 | ANI M#32 | ANI M#33  =>  MOV K2 D1530 | MOV K0 D1531        ; idx0
-N10  LD= D#14 K12 | ANI M#31 | ANI M#32 | ANI M#33  =>  MOV K2 D1530 | MOV K4 D1531        ; idx4
-N12  LD= D#14 K13 | ANI M#31 | ANI M#32 | ANI M#33  =>  MOV K2 D1530 | MOV K5 D1531        ; idx5
-N14  LD= D#14 K14 | ANI M#31 | ANI M#32 | ANI M#33  =>  MOV K2 D1530 | MOV K9 D1531        ; idx9
-N16  LD= D#14 K15 | AND< D#42 K2  =>  MOV K51 D#14                               ; 태그 판정 0 · 1 = 예상 밖
-N17  LD= D#14 K15 | AND= D#42 K2  =>  MOV K20 D#14                           ; RETEST만 재측정
-N18  LD= D#14 K15 | AND<> D#42 K2  =>  MOV K50 D#14                          ; 메인 NG(3·4·5) → 계측 없이 통과
+N05  LDI M#31 | ANI M#32 | ANI M#33  =>  MPS | AND= D#14 K10 | MOV K1 D1530 | MOV K0 D1531 | MRD | AND= D#14 K11 | MOV K2 D1530 | MOV K0 D1531 | MRD | AND= D#14 K12 | MOV K2 D1530 | MOV K4 D1531 | MRD | AND= D#14 K13 | MOV K2 D1530 | MOV K5 D1531 | MPP | AND= D#14 K14 | MOV K2 D1530 | MOV K9 D1531   ; 명령 1 시리얼(태그 확인) / idx0 / idx4 / idx5 / idx9
+N16  LD= D#14 K15  =>  MPS | AND< D#42 K2 | MOV K51 D#14 | MRD | AND= D#42 K2 | MOV K20 D#14 | MPP | AND> D#42 K2 | MOV K50 D#14   ; 태그 판정 0 · 1 = 예상 밖 / RETEST만 재측정 / 메인 NG(3·4·5) → 계측 없이 통과
 N19  LD= D#14 K20 | AND= D1743 K0  =>  MOV D1536 D1741 | MOV D1537 D1742 | MOV K1 D1740 | MOV K30 D#14
-N20  LD= D#14 K30  =>  OUT M1730 | OUT T#31 K50
-N21  LD= D#14 K30 | AND T#31  =>  SET M#66                                   ; Python 응답 없음 <A24>
-N22  LD= D#14 K30 | AND= D1743 K1  =>  MOV K41 D#14
-N24  LD= D#14 K41 | ANI M#31 | ANI M#32 | ANI M#33  =>  MOV K3 D1530 | MOV K5 D1531 | MOV D1730 D1532   ; idx5 ← 판정
-N26  LD= D#14 K42 | ANI M#31 | ANI M#32 | ANI M#33  =>  MOV K3 D1530 | MOV K6 D1531 | MOV D1731 D1532   ; idx6
-N28  LD= D#14 K43 | ANI M#31 | ANI M#32 | ANI M#33  =>  MOV K3 D1530 | MOV K7 D1531 | MOV D1732 D1532   ; idx7
-N30  LD= D#14 K44 | ANI M#31 | ANI M#32 | ANI M#33  =>  MOV K3 D1530 | MOV K8 D1531 | MOV D1733 D1532   ; idx8
-N43  LD>= D#14 K10 | AND<= D#14 K14 | LD>= D#14 K41 | AND<= D#14 K44 | ORB | ANI M#31 | ANI M#32 | ANI M#33  =>  SET M#31   ; 명령 요청(SET 한 곳)
+N20  LD= D#14 K30  =>  OUT M1730 | OUT T#31 K50 | MPS | AND T#31 | SET M#66 | MPP | AND= D1743 K1 | MOV K41 D#14   ; Python 응답 없음 <A24>
+N24  LDI M#31 | ANI M#32 | ANI M#33  =>  MPS | AND= D#14 K41 | MOV K3 D1530 | MOV K5 D1531 | MOV D1730 D1532 | MRD | AND= D#14 K42 | MOV K3 D1530 | MOV K6 D1531 | MOV D1731 D1532 | MRD | AND= D#14 K43 | MOV K3 D1530 | MOV K7 D1531 | MOV D1732 D1532 | MRD | AND= D#14 K44 | MOV K3 D1530 | MOV K8 D1531 | MOV D1733 D1532 | MPP | LD>= D#14 K10 | AND<= D#14 K14 | LD>= D#14 K41 | AND<= D#14 K44 | ORB | ANB | SET M#31   ; idx5 ← 판정 / idx6 / idx7 / idx8 / 명령 요청(SET 한 곳)
 N44  LD M#32 | OR M#33  =>  RST M#32 | RST M#33                           ; 완료 · 실패 확인 끝(RST 한 곳)
-N32  LD= D#14 K45 | AND= D1730 K1  =>  SET M#45                              ; 재검사 GOOD
-N33  LD= D#14 K45  =>  MOV K0 D1740 | MOV K50 D#14
-N34  LD= D#14 K50 | AND M#45 | ANI M#44 | AND= D#19 K0  =>  SET M#53 | MOV K55 D#14
-N35  LD= D#14 K50 | ANI M#45 | ANI M#44  =>  RST M#53 | MOV K55 D#14
+N32  LD= D#14 K45  =>  MOV K0 D1740 | MOV K50 D#14 | AND= D1730 K1 | SET M#45   ; 재검사 GOOD
+N34  LD= D#14 K50 | ANI M#44  =>  MPS | AND M#45 | AND= D#19 K0 | SET M#53 | MOV K55 D#14 | MPP | ANI M#45 | RST M#53 | MOV K55 D#14
 N45  LD= D#14 K55  =>  SET M#44 | MOV K60 D#14                             ; 재검사 출구 차지(SET 한 곳)
-N36  LD= D#14 K60 | AND X1730  =>  OUT T#32 K20
-N37  LD= D#14 K60 | AND T#32  =>  MOV K0 D#14
+N36  LD= D#14 K60 | AND X1730  =>  OUT T#32 K20 | AND T#32 | MOV K0 D#14
 N39  LD>= D#14 K10 | AND<= D#14 K55  =>  OUT M#54
 ```
 
 ### P. 2차 분리
 
 ```
-P01  LD= D#18 K0 | ANI X1731 | AND X1735  =>  MOV K10 D#18                    ; TT3 입구 빔 가림(0°일 때만)
-P02  LD= D#18 K10 | AND X1731  =>  OUT T#33 K5                            ; 입구 빔이 다시 트임 = 다 올라옴. 0.5초 더 굴려 가운데로
-P16  LD= D#18 K10 | AND T#33  =>  MOV K20 D#18
-P03  LD= D#18 K20  =>  OUT T#54 K15                                          ; 롤러가 선 뒤 쉬기(출력 지연 약 1초보다 길게). 앞뒤 4칸 여유라 자리가 조금 달라도 됨
-P04  LD= D#18 K20 | AND T#54 | AND M#53 | AND= D#19 K0  =>  MOV K30 D#18      ; GOOD(합류 대기 레일이 비어 있을 때)
-P05  LD= D#18 K20 | AND T#54 | ANI M#53  =>  MOV K40 D#18                     ; NG
-P06  LD= D#18 K30 | AND X1737  =>  MOV K31 D#18                               ; 90° 도착
+P01  LD= D#18 K0 | LDI X1731 | OR X1733 | ANB | AND X1735  =>  MOV K10 D#18                    ; TT3 입구 빔 가림(0°일 때만)
+P02  LD= D#18 K10 | AND X1733  =>  MOV K20 D#18                             ; TT3 앞 센서 ON = 팔레트가 가운데(현장 인터록이 롤을 즉시 끊음)
+P03  LD= D#18 K20  =>  OUT T#33 K15 | AND T#33 | MPS | AND M#53 | AND= D#19 K0 | MOV K30 D#18 | MPP | ANI M#53 | MOV K40 D#18   ; 롤러가 선 뒤 쉬기(출력 지연 약 1초보다 길게). 앞뒤 4칸 여유라 자리가 조금 달라도 됨 / GOOD(합류 대기 레일이 비어 있을 때) / NG
+P06  LD= D#18 K30 | OR= D#18 K40 | AND X1737  =>  INC D#18   ; 90° 도착 → 30은 31, 40은 41
 P07  LD= D#18 K31 | AND X1734  =>  MOV K32 D#18                               ; 뒤 센서 지나는 중
-P08  LD= D#18 K40 | AND X1737  =>  MOV K41 D#18
 P09  LD= D#18 K41 | AND X1733  =>  MOV K42 D#18                               ; 앞 센서 지나는 중
-P10  LD= D#18 K32 | ANI X1734 | LD= D#18 K42 | ANI X1733 | ORB  =>  OUT T#34 K15
-P11  LD>= D#18 K32 | AND<= D#18 K42 | AND T#34  =>  MOV K50 D#18 | RST M#44    ; 비움 → 재검사 출구 비움(RST 한 곳)
+P10  LD= D#18 K32 | ANI X1734 | LD= D#18 K42 | ANI X1733 | ORB  =>  OUT T#34 K15 | AND T#34 | MOV K50 D#18 | RST M#44   ; 비움 → 재검사 출구 비움(RST 한 곳)
 P12  LD= D#18 K50 | AND X1735  =>  MOV K0 D#18                                ; 0° 복귀
 P13  LD<= D#18 K10 | ANI X1733 | LD>= D#18 K41 | AND<= D#18 K42 | ORB  =>  OUT Y1733   ; 롤(+): 쉴 때 · 받을 때 · NG로
 P14  LD>= D#18 K31 | AND<= D#18 K32  =>  OUT Y1734                            ; 롤(−): GOOD으로
@@ -929,22 +809,17 @@ Q02  LD= D#19 K10 | AND X1736  =>  MOV K20 D#19                              ; �
 Q03  LD X1903 | ANI X1904 | ANI X1905  =>  OUT T#35 K25                      ; TT5 입구 · 위에 메인 GOOD이 2.5초 동안 없음
 Q04  LD= D#19 K20 | AND T#35 | AND= D#17 K0 | AND= D#18 K0  =>  MOV K25 D#19  ; 메인 GOOD 구간을 멈추고
 Q05  LD= D#19 K25 | ANI X1903  =>  MOV K20 D#19                              ; 멈추는 사이 들어온 팩이 있으면 먼저 보냄
-Q06  LD= D#19 K25  =>  OUT T#36 K30                                          ; 3초(출력 지연보다 길게) 동안 안 들어오면
-Q07  LD= D#19 K25 | AND T#36  =>  MOV K30 D#19                               ; TT5를 90°로
+Q06  LD= D#19 K25  =>  OUT T#36 K30 | AND T#36 | MOV K30 D#19   ; 3초(출력 지연보다 길게) 동안 안 들어오면 / TT5를 90°로
 Q08  LD= D#19 K30 | AND X1908  =>  MOV K31 D#19                              ; 90° 도착 → 합류 레일 · 롤(−)
-Q09  LD= D#19 K31 | ANI X1906  =>  MOV K32 D#19                              ; 입구 빔 가림
-Q11  LD= D#19 K32 | AND X1906  =>  OUT T#45 K5                                ; 다 올라옴. 0.5초 더 굴림
-Q22  LD= D#19 K32 | AND T#45  =>  MOV K40 D#19
-Q12  LD= D#19 K40  =>  OUT T#55 K15
-Q13  LD= D#19 K40 | AND T#55  =>  MOV K45 D#19                               ; 0°로
+Q11  LD= D#19 K31 | AND X1905  =>  MOV K40 D#19                              ; TT5 뒤 센서 ON = 팔레트가 가운데
+Q12  LD= D#19 K40  =>  OUT T#45 K15 | AND T#45 | MOV K45 D#19   ; 0°로
 Q14  LD= D#19 K45 | AND X1907  =>  MOV K50 D#19                              ; 0° 도착 → 롤(+)로 내보냄
 Q15  LD= D#19 K50 | AND X1904  =>  MOV K51 D#19
-Q16  LD= D#19 K51 | ANI X1904  =>  OUT T#48 K15
-Q17  LD= D#19 K51 | AND T#48  =>  MOV K0 D#19
+Q16  LD= D#19 K51 | ANI X1904  =>  OUT T#48 K15 | AND T#48 | MOV K0 D#19
 Q10  LD>= D#19 K25 | AND<= D#19 K51  =>  OUT M#55                             ; 합류 중(메인 GOOD 구간 · TT2 GOOD 멈춤)
-Q18  LD= D#19 K10 | LD>= D#19 K31 | AND<= D#19 K32 | ORB  =>  OUT Y1736       ; 합류 레일(받을 때 · 보낼 때)
+Q18  LD= D#19 K10 | OR= D#19 K31  =>  OUT Y1736       ; 합류 레일(받을 때 · 보낼 때)
 Q19  LD<= D#19 K25 | OR= D#19 K50 | OR= D#19 K51  =>  OUT Y1904               ; 롤(+): 평소 켜 둠(메인 GOOD 통과) · 내보낼 때
-Q20  LD>= D#19 K31 | AND<= D#19 K32 | ANI X1905  =>  OUT Y1906   ; 롤(−): 재검사 GOOD을 받을 때
+Q20  LD= D#19 K31 | ANI X1905  =>  OUT Y1906   ; 롤(−): 재검사 GOOD을 받을 때
 Q99  MCR N0
 ; --- MC 밖(11-25): 정지 · 비상정지 중에도 스텝에 맞춰 자리 유지 — 포크 · 리프트가 꺼지면 들던 팔레트가 떨어짐(비상정지 시험) ---
 P15  LD>= D#18 K30 | AND<= D#18 K42  =>  OUT Y1735                            ; TT3 회전(90°)
@@ -971,12 +846,8 @@ V99  MCR N0
 R01  LDI X1900  =>  INCP D1900
 R02  LDI X1901  =>  INCP D1901
 R03  LDI X1902  =>  INCP D1902
-R04  LD SM400  =>  + D1900 D1901 D#60
-R05  LD SM400  =>  + D#60 D1902 D1903                 ; 합계
-R06  LD<> D1903 K0  =>  * D1900 K1000 D#62            ; 32비트 결과 D#62~D#63
-R07  LD SM400  =>  MOV D1903 D#64
-R08  LD SM400  =>  MOV K0 D#65                        ; 나눗수 32비트화
-R09  LD<> D1903 K0  =>  D/ D#62 D#64 D#66             ; 몫 D#66~D#67 · 나머지 D#68~D#69
+R04  LD SM400  =>  + D1900 D1901 D#60 | + D#60 D1902 D1903 | MOV D1903 D#64 | MOV K0 D#65   ; 합계 / 나눗수 32비트화
+R06  LD<> D1903 K0  =>  * D1900 K1000 D#62 | D/ D#62 D#64 D#66   ; 32비트 결과 D#62~D#63 / 몫 D#66~D#67 · 나머지 D#68~D#69
 R10  LD SM400  =>  MOV D#66 D1904                     ; 수율(0.1 %) <A5> 지금 식
 R11  LD M1920 | OR X1503  =>  FMOV K0 D1900 K5        ; 리셋 <A9> 수동만
 R12  LD= D1903 K0  =>  MOV K0 D#66
