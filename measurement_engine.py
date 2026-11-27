@@ -149,9 +149,15 @@ def pack_spec(cell_spec, n):
     return {"good": (g[0] * n, g[1] * n, g[2]), "warn": (g[1] * n + 1, w[1] * n, w[2]), "ng": (w[1] * n + 1, ng[1] * n)}
 
 
+# 11-27 A16(팀 결정): 실측값이 없어 판정 기준은 '18650 셀 가정값 × 셀 수'로 정함(아래 CELL_DV · CELL_IR · TEMP_NG).
+# 6S는 셀 사이 연결부(니켈 스트립 · 용접) 저항이 더해지므로 IR 기준에 여유 10%를 둠(가정값, 실측이 생기면 이 표만 바꿈)
+IR_LINK_MARGIN = {4: 1.00, 6: 1.10}
+
+
 def limits(n):
+    k = IR_LINK_MARGIN.get(n, 1.0)
     return {"dv_warn": CELL_DV["good"][1] * n, "dv_ng": CELL_DV["warn"][1] * n,
-            "ir_warn": CELL_IR["good"][1] * n, "ir_ng": CELL_IR["warn"][1] * n, "temp_ng": TEMP_NG}
+            "ir_warn": round(CELL_IR["good"][1] * n * k), "ir_ng": round(CELL_IR["warn"][1] * n * k), "temp_ng": TEMP_NG}
 
 
 def _pick(rnd, spec):
@@ -175,6 +181,20 @@ def measure(pack_id, retest_count=0, mode="id", n_cells=4):
     return {"dv": _pick(rnd, pack_spec(CELL_DV, n_cells)),
             "ir": _pick(rnd, pack_spec(CELL_IR, n_cells)),
             "temp": _pick(rnd, TEMP)}
+
+
+# 11-27 A2(팀 결정 ②): 랙 보관 중 이상 발열은 엔진이 PACK별로 정함(Factory I/O에는 온도 센서가 없음).
+# 원래 설계대로 팩당 6% 확률로 이상 발열(41.0~45.0 °C), 그 밖은 25.0~35.0 °C. --mode id면 PACK ID 시드(재현), random이면 매번 새로
+HOT_P, HOT_T, NORMAL_T = 0.06, (410, 450), (250, 350)
+
+
+def storage_temp(pack_id, mode="id", forced=None):
+    """보관 중 온도(0.1 °C)와 이상 발열 여부. forced = True/False면 시험용 지정(--hot-packs), None이면 6% 확률"""
+    rnd = random.SystemRandom().random if mode == "random" else mulberry32(SEED_BASE + pack_id * 31337 + 17)
+    r = rnd()
+    hot = (r < HOT_P) if forced is None else forced
+    lo, hi = HOT_T if hot else NORMAL_T
+    return lo + math.floor(rnd() * (hi - lo + 1)), hot
 
 
 def judge(m, retest_count=0, n_cells=4):
@@ -271,6 +291,24 @@ CREATE TABLE IF NOT EXISTS rfid_failures (         -- Project B 기록 (11-27, A
     status        INTEGER,                         -- 리더 상태: 0 정상 1 태그 없음 2 태그 여러 개 3 주소 오류 4 명령 오류
     serial        INTEGER,                         -- 이번 팩 태그 시리얼(못 읽었으면 NULL)
     note          TEXT
+);
+CREATE TABLE IF NOT EXISTS storage_heat (          -- Project B 기록 (11-27, A2): 랙 보관 중 온도(가상). 팩이 랙에 들어갈 때 엔진이 정함
+    pack_id       INTEGER PRIMARY KEY,
+    ts            TEXT    NOT NULL,
+    temp_x10      INTEGER NOT NULL,                -- 0.1 °C
+    hot           INTEGER NOT NULL,                -- 1 = 이상 발열 → PLC에 발열 접수(격리)
+    forced        INTEGER NOT NULL DEFAULT 0       -- 1 = 시험용 지정(--hot-packs)
+);
+CREATE TABLE IF NOT EXISTS batches (               -- Project B 기록 (11-27, A9): 회차(C 인계 묶음)별 결과. 회차가 끝나면 한 줄
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts            TEXT    NOT NULL,                -- 회차 끝(마지막 상자까지 셈 · 팔레타이저 빔) 시각
+    pack_from     INTEGER NOT NULL,
+    pack_to       INTEGER NOT NULL,
+    packs         INTEGER NOT NULL,
+    good          INTEGER NOT NULL,                -- PLC 카운터 D1900 · D1901 · D1902(HMI에 보이는 값)
+    ng            INTEGER NOT NULL,
+    iso           INTEGER NOT NULL,
+    yield_x10     INTEGER NOT NULL                 -- D1904 = GOOD ÷ (GOOD + NG + 격리) × 1000 (A5: 발열 격리를 분모에 넣음)
 );
 CREATE INDEX IF NOT EXISTS idx_cells_pack ON cells (pack_id);
 CREATE INDEX IF NOT EXISTS idx_meas_pack ON measurements (pack_id);
@@ -517,6 +555,12 @@ def cmd_report(args):
         print(f"  RFID 판독 실패 {n_fail:>5} 건  (PACK ID 모름 · rfid_failures 테이블, 태그 시리얼 기준)")
         for ts, st, stat, ser, note in conn.execute("SELECT ts, station, status, serial, note FROM rfid_failures ORDER BY id DESC LIMIT 5"):
             print(f"    └ {ts} RFID {'①②③'[st - 1]} 상태 {stat} 시리얼 {ser if ser is not None else '-'} · {note}")
+    # 11-27 A2 · A9: 보관 온도(엔진이 정함) · 회차별 결과
+    n_st, n_hot = conn.execute("SELECT COUNT(*), COALESCE(SUM(hot), 0) FROM storage_heat").fetchone()
+    if n_st:
+        print(f"  보관 온도    {n_st:>5} 팩 기록 · 이상 발열 {n_hot} 팩 (storage_heat 테이블)")
+    for b in conn.execute("SELECT id, ts, pack_from, pack_to, packs, good, ng, iso, yield_x10 FROM batches ORDER BY id DESC LIMIT 5"):
+        print(f"  회차 {b[0]:>3}  {b[1]}  PACK {b[2]}~{b[3]} ({b[4]}팩) · GOOD {b[5]} · NG {b[6]} · 격리 {b[7]} · 수율 {b[8] / 10:.1f}%")
     if total:
         print(f"  수율         {s['GOOD'] / total * 100:6.1f} %")
     print()
@@ -627,6 +671,66 @@ def cmd_serve(args):
                 last_ok_serial[1] = read(ser_addr)[0]          # ①: 알람이 없을 때 본 시리얼 = 직전 팩 값(실패 순간 비교용)
             fail_prev[st] = on
 
+    # 11-27 A2: 팩이 랙 칸에 들어가면(D1660+k = PACK ID, D1810+k = 넣은 시각) 보관 온도를 정해 DB에 남기고,
+    # 이상 발열이면 PLC 발열 접수(D1697 칸 · D1698 온도 → M1672, 래더 H01이 받고 끔). 전에는 시험 도구가 계획의 'H'로 대신 함
+    # --hot-packs를 주면(빈 값 '-' 포함) 그 팩만 이상 발열(시험 재현용), 안 주면 팩마다 6% 확률(시연 · A12 매번 다르게)
+    hot_forced = None if args.hot_packs is None else {int(x) for x in args.hot_packs.replace(" ", "").split(",") if x.isdigit()}
+    heat_done = {r[0] for r in conn.execute("SELECT pack_id FROM storage_heat")}
+    heat_wait = []                                    # 접수 비트가 아직 켜져 있어 못 보낸 발열 (칸, 온도, PACK)
+
+    def handle_storage():
+        if tick[0] % 5 != 1 or args.no_storage_heat:
+            return
+        ids, ts_ = read(1660, 24), read(1810, 24)
+        for k in range(24):
+            pid = ids[k]
+            if pid and ts_[k] and pid not in heat_done:
+                t, hot = storage_temp(pid, args.mode, None if hot_forced is None else pid in hot_forced)
+                conn.execute("INSERT OR REPLACE INTO storage_heat (pack_id, ts, temp_x10, hot, forced) VALUES (?, ?, ?, ?, ?)",
+                             (pid, now(), t, int(hot), int(hot_forced is not None)))
+                conn.commit()
+                heat_done.add(pid)
+                print(f"[보관] PACK-{pid:04d} 칸 {k + 1} 보관 온도 {t / 10:.1f}°C" + (" → 이상 발열(격리 대상)" if hot else ""))
+                if hot:
+                    heat_wait.append((k + 1, t, pid))
+        if heat_wait and not int(link.read("M1672") or 0):
+            slot, t, pid = heat_wait.pop(0)
+            write(1697, [slot, t])
+            link.write("M1672", 1)
+            print(f"[발열 접수] PACK-{pid:04d} 칸 {slot} {t / 10:.1f}°C → PLC(M1672)")
+
+    # 11-27 A9: 회차 = C 인계 묶음(공유 DB packs 중 아직 닫히지 않은 것). 그 팩이 모두 최종 판정 · 격리 기록을 받고,
+    # PLC 카운터 합(D1903)이 팩 수에 닿고, 팔레타이저가 비면(D1918 = 0, 배치 끝 1개 팔레트까지 나감) 회차를 닫아 batches 에 한 줄.
+    # 카운터는 HMI에 그대로 두었다가 다음 운전 시작(M1950 0 → 1) 때 엔진이 0으로(래더 R04 · R05가 합계 · 수율을 다시 셈)
+    bstate = {"closed": False, "m1950": None}
+    side_err = {}
+
+    def handle_batch():
+        if tick[0] % 5 != 3:
+            return
+        run = int(link.read("M1950") or 0)
+        if bstate["closed"] and bstate["m1950"] == 0 and run == 1:
+            write(1900, [0, 0, 0])
+            bstate["closed"] = False
+            print("[회차] 운전 시작 → 카운터 D1900~D1902를 0으로(지난 회차는 batches 표에 있음)")
+        bstate["m1950"] = run
+        last_to = conn.execute("SELECT COALESCE(MAX(pack_to), 0) FROM batches").fetchone()[0]
+        open_ids = [r[0] for r in conn.execute("SELECT pack_id FROM packs WHERE pack_id > ? ORDER BY pack_id", (last_to,))]
+        if not open_ids:
+            return
+        judged_n = conn.execute(f"SELECT COUNT(*) FROM results WHERE pack_id IN ({','.join('?' * len(open_ids))})", open_ids).fetchone()[0]
+        if judged_n < len(open_ids):
+            return
+        g, n, i, tot, y = read(1900, 5)
+        if tot < len(open_ids) or read(1918)[0] != 0:
+            return
+        conn.execute("INSERT INTO batches (ts, pack_from, pack_to, packs, good, ng, iso, yield_x10) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                     (now(), open_ids[0], open_ids[-1], len(open_ids), g, n, i, y))
+        conn.commit()
+        bstate["closed"] = True
+        print(f"[회차 끝] PACK {open_ids[0]}~{open_ids[-1]} · GOOD {g} · NG {n} · 격리 {i} · 수율 {y / 10:.1f}% → DB batches"
+              " (카운터는 다음 운전 시작 때 0)")
+
     def handle_isolation():
         req, pack_id, temp_x10, done = read(ISO_BLOCK, 4)
         if req == 0:
@@ -653,6 +757,15 @@ def cmd_serve(args):
                     handle(st_no)
                 handle_isolation()
                 handle_rfid_failures()
+                for _side in (handle_storage, handle_batch):   # 11-27: 보관 온도 · 회차는 부가 기능 — 한 번 읽기 오류로 검사 응답까지 재접속하지 않게
+                    try:
+                        _side()
+                    except LinkError as _e:
+                        if not side_err.get(_side.__name__):
+                            print(f"[ENGINE] {_side.__name__} 읽기 실패(다음 주기에 다시): {_e}")
+                        side_err[_side.__name__] = True
+                    else:
+                        side_err[_side.__name__] = False
                 if down:
                     down = False
                     print("[ENGINE] 통신 복구")
@@ -724,6 +837,8 @@ def main():
     v.add_argument("--mode", choices=("id", "random"), default="id",
                    help="id: PACK ID 시드 난수(재현 가능, 시뮬레이터와 일치) / random: 매번 새 난수")
     v.add_argument("--db", default=DEFAULT_DB, help=db_help)
+    v.add_argument("--hot-packs", default=None, help="A2 시험용: 이 PACK만 보관 중 이상 발열(예: 104 · 102,103 · '-' = 없음). 안 주면 팩마다 6%% 확률")
+    v.add_argument("--no-storage-heat", action="store_true", help="보관 온도 · 발열 접수를 하지 않음(시험 도구가 대신할 때)")
     v.set_defaults(func=cmd_serve)
 
     args = p.parse_args()

@@ -3,7 +3,7 @@
 #
 # 사용(Git Bash): bash run_real.sh <이름> [비상정지 계획] [팩 계획]
 #   예) bash run_real.sh v9a "X1500@Y1914=1|X1500@X1600=1|X1500@X1608=1|X1502@Y1664=1" 1,1L,1,H,1,1
-#   환경 변수: OUT(기록 폴더, 기본 D:/seojung/fio_shots) · LIMIT(초, 기본 1000) · SCENE(기본 V7_plc_2.factoryio)
+#   환경 변수: MODE=random(시연: 계측 · 보관 발열 매번 다르게, 기본 id = 재현) · OUT(기록 폴더, 기본 D:/seojung/fio_shots) · LIMIT(초, 기본 1000) · SCENE(기본 V7_plc_2.factoryio)
 #             HOLD=1(팩이 다 나와도 LIMIT까지 중계 유지 — 시연용) · KEEPUNTIL=Y1929(그 비트가 켜질 때까지 계속)
 #             PRESS="M1963@D1902=1:5"(HMI 비트 셋 버튼 흉내) · WATCHX="D1740,X1730"(더 기록할 번지) · SHOTS=1(화면 · 신호 기록)
 #             SKIPCHECK=1(점검 건너뜀, 권하지 않음)
@@ -17,8 +17,13 @@ mkdir -p "$OUT"; rm -f "$OUT/$N.log"
 # 1. serve: 남은 것을 모두 끄고 새 DB로 하나만(11-26 · 11-27: 두 개가 같은 요청에 둘 다 답하거나, 없어서 검사기에서 멈춘 일)
 powershell -NoProfile -Command "Get-CimInstance Win32_Process | ?{ \$_.CommandLine -match 'measurement_engine\.py\s+serve' -and \$_.ProcessId -ne \$PID } | %{ Stop-Process -Id \$_.ProcessId -Force -ErrorAction SilentlyContinue }"
 DB="$OUT/serve_$N.db"; rm -f "$DB" "$DB-wal" "$DB-shm"
-(cd "$ROOT" && py -3.12 measurement_engine.py handoff --db "$DB" --start 101 --count 6 | tail -1)
-(cd "$ROOT" && nohup py -3.12 -u measurement_engine.py serve --opc-device CSIM --opc-source cache --db "$DB" > "$OUT/serve_$N.log" 2>&1 &)
+# 11-27 A2 · A12: 계획의 H 자리 팩 = 보관 중 이상 발열(serve --hot-packs, 시험 재현). MODE=random(시연)이고 계획에 H가 없으면 serve가 팩마다 6% 확률
+MODE=${MODE:-id}; NP=$(echo "$PLAN" | tr ',' '\n' | grep -c .)
+HOTS=$(echo "$PLAN" | tr ',' '\n' | awk '/^H/{printf "%s%d", (n++ ? "," : ""), 100 + NR}')
+if [ "$MODE" = random ] && [ -z "$HOTS" ]; then HOTARG=(); else HOTARG=(--hot-packs "${HOTS:--}"); fi
+(cd "$ROOT" && py -3.12 measurement_engine.py handoff --db "$DB" --start 101 --count "$NP" | tail -1)
+(cd "$ROOT" && nohup py -3.12 -u measurement_engine.py serve --opc-device CSIM --opc-source cache --mode "$MODE" "${HOTARG[@]}" --db "$DB" > "$OUT/serve_$N.log" 2>&1 &)
+echo "serve: 난수 $MODE · 발열 지정 ${HOTS:-$([ ${#HOTARG[@]} -eq 0 ] && echo '없음(6% 확률)' || echo '없음')}"
 sleep 4
 
 # 2. 점검

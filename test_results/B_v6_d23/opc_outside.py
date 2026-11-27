@@ -253,12 +253,14 @@ while time.time() - T0 < LIMIT:
         if V["D1650"] == 0: pend["iso"] = False
         if V["D1650"] == 1 and (V["D1653"] or 0) == 0 and not pend["iso"]: pend["iso"] = True; L.write("D1653", 1); log(f"격리 기록 PACK {V['D1651']} 온도 {V['D1652']}")
         if V["D1650"] == 0 and V["D1653"] == 1: L.write("D1653", 0)
-    # 발열 접수(H)
-    for k in range(24):
+    # 발열 접수(H) — 11-27 A2: --serve면 serve가 보관 온도를 정하고 접수함(run_real.sh가 계획의 H를 serve --hot-packs로 넘김)
+    for k in (range(24) if not SERVE else ()):
         pid = V[f"D{1660+k}"]
         if pid in pack_ids and plan[pack_ids.index(pid)].rstrip("L") == "H" and (V[f"D{1810+k}"] or 0) > 0 and pid not in judged:
             judged.add(pid); L.write_many([("D1697", k + 1), ("D1698", 410), ("M1672", 1)]); log(f"발열 접수: 칸 {k+1} PACK {pid}")
     done = sum(V[d] or 0 for d in ("D1900", "D1901", "D1902"))
+    if plan and done >= len(plan): prev["all_done"] = True          # 11-27: 회차 끝 뒤 다음 운전 시작에 serve가 카운터를 0으로 해도(A9) '다 나옴'은 유지
+    if prev.get("all_done"): done = max(done, len(plan))
     if plan and done >= len(plan):
         if KU and not V.get(KU):
             if not prev.get("ku"): prev["ku"] = 1; log(f"모든 팩 배출 — {KU} 켜질 때까지 계속")
@@ -272,9 +274,11 @@ while time.time() - T0 < LIMIT:
     time.sleep(0.05)
 if BR:
     BR["stop"] = True; time.sleep(0.3)
-    # 11-27 검토: 끝날 때 출력을 켠 채로 두지 않음 — 모든 코일(Run 포함)과 아날로그 출력을 0으로(씬이 멈춘 채 남음, 다음 회차는 씬을 새로 엶)
+    # 11-27 검토: 끝날 때 출력을 켠 채로 두지 않음 — 코일 · 아날로그 출력을 0으로. Run 코일은 켜 둠
+    # (Run을 끄면 Factory I/O가 편집 모드로 돌아가 씬이 처음 상태로 초기화됨 → 남은 팔레트 · 격리 팩이 사라지고 회차 끝(A9)을 못 봄, 11-27 v9c)
     try:
-        _ca = [a for _, ar, a in BR["out"] if ar == "coil"] + [BR["run"]]; MB.write_multiple_coils(0, [False] * (max(_ca) + 1))
+        _ca = [a for _, ar, a in BR["out"] if ar == "coil"] + [BR["run"]]
+        MB.write_multiple_coils(0, [i == BR["run"] for i in range(max(_ca) + 1)])
         _ra = [a for _, ar, a in BR["out"] if ar != "coil"]
         if _ra: MB.write_multiple_registers(0, [0] * (max(_ra) + 1))
     except Exception: pass
