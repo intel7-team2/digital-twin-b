@@ -10,9 +10,10 @@ import sys, os, time, ctypes
 sys.path.insert(0, r"D:\seojung\digital-twin-b")
 import plc_link as P
 
-plan = sys.argv[1].split(","); LIMIT = float(sys.argv[2])
+plan = [x for x in sys.argv[1].split(",") if x and x != "-"]; LIMIT = float(sys.argv[2])   # 11-27: 계획 "-" = 팩 없이 중계만(HMI 버튼 · 수동 시험용, 카운터도 지우지 않음)
 DEV = sys.argv[sys.argv.index("--device") + 1] if "--device" in sys.argv else "CSIM"
 SERVE = "--serve" in sys.argv                               # 11-26: 검사 · 격리 기록 응답은 measurement_engine.py serve가 함(여기서는 기록만). C 인계 · 발열 접수는 그대로 대행
+HOLDRUN = "--hold" in sys.argv                             # 11-27: 팩이 다 나와도 제한 시간까지 중계 유지(시연 · HMI 수거)
 
 
 class Link(P.OpcDirectLink):
@@ -70,6 +71,14 @@ if "--bridge" in sys.argv:                                  # Factory I/O(Modbus
     for tg in F.tags(txt):
         if tg["key"] in tb and re.match(r"^([XY][0-9A-F]{4}|[DM]\d{4})$", tg["name"]):
             ar, a, _ = tb[tg["key"]]; (BR["in"] if ar in ("di", "ir") else BR["out"]).append((tg["name"], ar, a))
+    # 11-27 검토: 시작 전에 씬 주소 겹침 검사(11-27 리무버 태그 Address가 크레인 B 포크와 겹쳐 포크가 멈춘 일)
+    _dup = [k for k in set((ar, a) for _, ar, a in BR["in"] + BR["out"]) if sum(1 for _, ar, a in BR["in"] + BR["out"] if (ar, a) == k) > 1]
+    _tagaddr = {}
+    for _m in re.finditer(r'<(\w+(?:Input|Output)) Name="([^"]*)" Address="(-?\d+)"', txt): _tagaddr.setdefault((_m.group(1), _m.group(3)), []).append(_m.group(2))
+    _dup2 = {k: v for k, v in _tagaddr.items() if len(v) > 1 and k[1] != "-1"}
+    _dupn = sorted({n for n, _, _ in BR["in"]} & {n for n, _, _ in BR["out"]}) + sorted(n for n in {n for n, _, _ in BR["in"]} if sum(1 for m, _, _ in BR["in"] if m == n) > 1)
+    if _dup or _dup2 or _dupn:
+        sys.exit(f"씬 검사 실패 — Modbus 주소 겹침 {_dup} · 태그 Address 겹침 {_dup2} · 이름 겹침 {_dupn}")
     MB = ModbusClient("127.0.0.1", 502)
     MB.write_single_coil(tb[re.search(r'RunOutputKey="([0-9a-f-]{36})"', txt).group(1)][1], 1)
     BR["run"] = tb[re.search(r'RunOutputKey="([0-9a-f-]{36})"', txt).group(1)][1]
@@ -128,10 +137,12 @@ if "--bridge" in sys.argv:                                  # Factory I/O(Modbus
             with ILK:                                                # 인터록이 끊은 롤은 켜지 않음(11-25)
                 BR["want"] = co
                 cw = [(a, v and a not in BR["cut"]) for a, v in co.items() if last_co.get(a) != (v and a not in BR["cut"])]
-                for a, v in cw: Mr.write_single_coil(a, v); last_co[a] = v
+                for a, v in cw:
+                    if Mr.write_single_coil(a, v): last_co[a] = v          # 11-27 검토: 실패하면 기억하지 않음(다음 바퀴에 다시 씀)
             with ILK:
                 hw = [(a, 0 if a in BR["zero"] else v) for a, v in hr.items() if last_hr.get(a) != (0 if a in BR["zero"] else v)]
-                for a, v in hw: Mr.write_single_register(a, v); last_hr[a] = v
+                for a, v in hw:
+                    if Mr.write_single_register(a, v): last_hr[a] = v
             time.sleep(0.02)
     # 11-25 턴테이블 현장 즉시정지: 진행 쪽 끝 센서가 켜지면 롤을 바로 끊음(fio_interlock.py). OPC를 거치지 않음
     import fio_interlock
@@ -156,9 +167,16 @@ if "--bridge" in sys.argv:                                  # Factory I/O(Modbus
                     for a in new:
                         if BR["want"].get(a): Mi.write_single_coil(a, False)
             time.sleep(0.01)
-    for f in (_in_loop, _out_loop, _ilk_loop): threading.Thread(target=f, daemon=True).start()
+    def _guard(f):                                                   # 11-27 검토: 중계 스레드가 예외로 조용히 죽지 않게 — 기록하고 1초 뒤 다시(새 연결)
+        while not BR["stop"]:
+            try: f()
+            except BaseException as e:
+                if BR["stop"]: break
+                log(f"  ** 중계 스레드 {f.__name__} 오류 → 1초 뒤 다시: {type(e).__name__} {e}"); time.sleep(1)
+    for f in (_in_loop, _out_loop, _ilk_loop): threading.Thread(target=_guard, args=(f,), daemon=True).start()
     log("중계 스레드 시작(입력 쓰기 · 출력 읽기 따로)")
-def log(m): print(f"{time.time()-T0:6.1f}s {m}", flush=True)
+_LL = [time.time()]; STALL = float(os.environ.get("STALL", "150"))   # 11-27 검토: 이 시간 동안 기록할 변화가 없으면 정체 의심을 남김
+def log(m): _LL[0] = time.time(); print(f"{time.time()-T0:6.1f}s {m}", flush=True)
 WATCH = ["M1950", "M1500", "D1640", "D1641", "D1656", "D1541", "D1750", "D1760", "D1525", "D1535", "D1558", "D1568", "D1900", "D1901", "D1902"] + [f"M{1951+i}" for i in range(8)]
 WATCH += [w for w in os.environ.get("WATCHX", "").split(",") if w]   # 11-27: WATCHX="D1740,X1730" — 변화를 더 기록할 번지(MX OPC에 등록된 것만)
 HS = ["M1510", "D1710", "D1711", "D1713", "D1740", "D1741", "D1743", "D1650", "D1651", "D1652", "D1653", "D1700", "D1730"]
@@ -172,8 +190,14 @@ if KU: ALL.append(KU)
 pack_ids = list(range(101, 101 + len(plan))); fed = 0; judged = set(); prev = {}
 
 # 시작: X1501은 Factory I/O 씬 버튼이라 OPC로 써도 Factory I/O가 덮음 → 운전 비트 M1950을 직접 SET(래더 A02와 같은 결과)
-for a in ("M1510", "D1900", "D1901", "D1902", "D1713", "D1743", "D1653"): L.write(a, 0)   # 이전 회차 값 지움(카운터는 처음 X 상태로 1씩 올라 있음)
+for a in (("M1510", "D1900", "D1901", "D1902", "D1713", "D1743", "D1653") if plan else ()): L.write(a, 0)   # 이전 회차 값 지움(카운터는 처음 X 상태로 1씩 올라 있음)
 L.write("M1950", 1); log("운전 시작(M1950 SET)")
+time.sleep(2)
+_st = L.read_many(["M1950", "X1500", "X1502"])                  # 11-27 검토: 정지 버튼(NC) X1502 · 비상정지 X1500이 0이면 래더가 M1950을 바로 지움 → 알리고 끝냄
+if not _st.get("M1950"):
+    log(f"** 운전 시작 실패: M1950={_st.get('M1950')} · 비상정지 X1500={_st.get('X1500')} · 정지 X1502={_st.get('X1502')} (Factory I/O 실행 · 버튼 상태 확인)")
+    if BR: BR["stop"] = True
+    sys.exit(2)
 pend = {"C": False, "main": False, "re": False, "iso": False}   # OPC 캐시 지연으로 같은 요청에 두 번 답하지 않게
 t_start = time.time()
 while time.time() - T0 < LIMIT:
@@ -235,14 +259,23 @@ while time.time() - T0 < LIMIT:
         if pid in pack_ids and plan[pack_ids.index(pid)].rstrip("L") == "H" and (V[f"D{1810+k}"] or 0) > 0 and pid not in judged:
             judged.add(pid); L.write_many([("D1697", k + 1), ("D1698", 410), ("M1672", 1)]); log(f"발열 접수: 칸 {k+1} PACK {pid}")
     done = sum(V[d] or 0 for d in ("D1900", "D1901", "D1902"))
-    if done >= len(plan):
+    if plan and done >= len(plan):
         if KU and not V.get(KU):
             if not prev.get("ku"): prev["ku"] = 1; log(f"모든 팩 배출 — {KU} 켜질 때까지 계속")
+        elif HOLDRUN:
+            if not prev.get("hold"): prev["hold"] = 1; log("모든 팩 배출 — --hold: 제한 시간까지 중계 유지(HMI 수거 · 시연용)")
         else: log((f"{KU} 켜짐 · " if KU else "") + "모든 팩 배출"); break
+    if plan and done < len(plan) and time.time() - _LL[0] > STALL:   # 팩이 다 나온 뒤(배치 끝 대기 · --hold)는 경고하지 않음
+        _sb = {k: V.get(k) for k in ("M1950", "M1500", "D1541", "D1640", "D1641", "D1750", "D1760", "D1900", "D1901", "D1902") if k in V}
+        log(f"** 정체 의심: {STALL:.0f}초 동안 기록할 변화 없음 · {_sb} (Factory I/O 화면 · 스텝 확인)")
     prev["주기"] = max(prev.get("주기", 0), time.time() - t)
     time.sleep(0.05)
 if BR:
     BR["stop"] = True; time.sleep(0.3)
-    try: MB.write_multiple_coils(min(a for _, ar, a in BR["out"] if ar == "coil"), [False] * 1)
+    # 11-27 검토: 끝날 때 출력을 켠 채로 두지 않음 — 모든 코일(Run 포함)과 아날로그 출력을 0으로(씬이 멈춘 채 남음, 다음 회차는 씬을 새로 엶)
+    try:
+        _ca = [a for _, ar, a in BR["out"] if ar == "coil"] + [BR["run"]]; MB.write_multiple_coils(0, [False] * (max(_ca) + 1))
+        _ra = [a for _, ar, a in BR["out"] if ar != "coil"]
+        if _ra: MB.write_multiple_registers(0, [0] * (max(_ra) + 1))
     except Exception: pass
 print(f"결과: GOOD {V['D1900']} · NG {V['D1901']} · 격리 {V['D1902']} / 계획 {plan} · 가장 긴 주기 {prev['주기']:.2f}s", flush=True)

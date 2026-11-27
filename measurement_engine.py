@@ -656,7 +656,7 @@ def cmd_serve(args):
                 if down:
                     down = False
                     print("[ENGINE] 통신 복구")
-            except LinkError as e:
+            except (LinkError, OSError) as e:          # 11-27 검토: 닫힌 연결로 읽을 때의 OS 오류도 같은 재접속으로
                 if not down:
                     down = True
                     print(f"[ENGINE] 통신 오류: {e} → 2초마다 다시 시도")
@@ -665,8 +665,8 @@ def cmd_serve(args):
                 try:
                     link.close()
                     link = open_link(args)
-                except Exception:
-                    pass
+                except (Exception, SystemExit) as e2:  # 11-27 검토: 연결 실패의 sys.exit로 serve가 끝나지 않게
+                    print(f"[ENGINE] 다시 연결 실패: {e2} → 2초 뒤 다시")
             time.sleep(args.interval)
     except KeyboardInterrupt:
         print("\n[ENGINE] 종료")

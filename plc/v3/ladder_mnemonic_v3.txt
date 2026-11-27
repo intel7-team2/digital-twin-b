@@ -1,9 +1,10 @@
 ; Project B v6 래더 v3 명령어 목록 (plc/v2/make_v3.py가 만듦 · 규칙 radder_v2.md)
 
 ; @PROGRAM COMMON
-; [초기화부] 첫 스캔, 또는 정지 중(M1950 OFF) 초기화 입력 M1961: 스텝 릴레이 · 구간 기억 비트 · 알람 리셋 → 초기 스텝 SET. 비상정지만으로는 유지(들고 있던 팔레트 낙하 방지). 랙 재고(D1660~)는 지우지 않음
+; [초기화부] 첫 스캔, 또는 정지 중(M1950 OFF) 초기화 입력 M1964(11-27까지 M1961): 스텝 릴레이 · 구간 기억 비트 · 알람 리셋 → 초기 스텝 SET. 비상정지만으로는 유지(들고 있던 팔레트 낙하 방지). 랙 재고(D1660~)는 지우지 않음
 ; 11-26: 한 회로에 BKRST · SET 40여 개를 달면 GX Works2가 회로를 노랗게 표시(세로로 너무 긺) → 초기화 조건을 M1962(초기화 중)에 담고 작은 회로로 나눔
-Z01  LD SM402 | LD M1961 | ANI M1950 | ORB  =>  OUT M1962
+; 11-27: 초기화 입력을 M1961(HMI 'LOCK 해제')에서 M1964(시험 · 회차 사이 초기화 전용, opc_reset.py)로 분리 — 비상정지 뒤 정지 중에 LOCK 해제를 눌러도 라인 위 팔레트 정보를 지우지 않게
+Z01  LD SM402 | LD M1964 | ANI M1950 | ORB  =>  OUT M1962
 Z02  LD M1962  =>  BKRST M1985 K15 | BKRST M1591 K9 | BKRST M1743 K3 | BKRST M1691 K9 | BKRST M1712 K8 | BKRST M1570 K21 | BKRST M1673 K17
 Z03  LD M1962  =>  BKRST M1733 K10 | BKRST M1770 K23 | BKRST M1810 K22 | BKRST M1836 K27 | BKRST M1863 K33 | BKRST M1970 K10
 Z04  LD M1962  =>  BKRST M1542 K6 | BKRST M1555 K3 | BKRST M1565 K3 | BKRST M1670 K3 | BKRST M1746 K19 | BKRST M1951 K8 | BKRST M1980 K5 | RST M1510 | RST M1950 | MOV K0 D1655 | MOV K0 D1918
@@ -354,6 +355,7 @@ W03  LD M1950  =>  OUT Y1693
 W04  LD M1960  =>  RST M1960
 W05  LD M1920  =>  RST M1920
 W06  LD M1961  =>  RST M1961
+W08  LD M1964  =>  RST M1964
 ; 11-27: HMI '알람 발생 중' 표시 비트(HMI 알람 블록 1에 있는 조건 전부)
 W07  LD M1500 | OR M1800 | OR M1690 | OR<> K2M1951 K0  =>  OUT M1959
 

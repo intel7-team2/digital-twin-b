@@ -331,8 +331,36 @@ class OpcDirectLink:
         return [self.read(d) for d in word_range(start, count)]
 
     def write_words(self, start, values):
-        for d, v in zip(word_range(start, len(values)), values):
-            self.write(d, v)
+        """11-27 검토: 여러 워드를 SyncIO.Write 한 번으로(전에는 워드마다 약 0.6 s → 결과 4워드에 약 2.4 s)"""
+        devs = list(word_range(start, len(values)))
+        if len(devs) == 1:
+            return self.write(devs[0], values[0])
+        with self._lock:
+            n = len(devs)
+            hs, vs = (ctypes.c_ulong * n)(), (_VARIANT * n)()
+            for i, (dev, value) in enumerate(zip(devs, values)):
+                h, vt = self._item(dev)
+                hs[i] = h
+                vs[i].vt = vt if vt in _VT_FMT else 2
+                fmt = _VT_FMT[vs[i].vt]
+                if vs[i].vt == 11:
+                    v = -1 if value else 0
+                elif fmt in ("<f", "<d"):
+                    v = float(value)
+                elif fmt in ("<H", "<I", "<B"):
+                    v = int(value) & {"<H": 0xFFFF, "<I": 0xFFFFFFFF, "<B": 0xFF}[fmt]
+                else:
+                    v = int(value)
+                struct.pack_into(fmt, vs[i].v, 0, v)
+            err = ctypes.POINTER(ctypes.c_long)()
+            hr = self._call(self._sio, 4, ctypes.c_ulong, ctypes.POINTER(ctypes.c_ulong), ctypes.POINTER(_VARIANT),
+                            ctypes.POINTER(ctypes.POINTER(ctypes.c_long)))(self._sio, n, hs, vs, ctypes.byref(err))
+            codes = [(err[i] & 0xFFFFFFFF) for i in range(n)] if err else [hr & 0xFFFFFFFF] * n
+            if err:
+                self._ole32.CoTaskMemFree(err)
+            bad = [f"{devs[i]}(0x{codes[i]:08X})" for i in range(n) if codes[i]]
+            if hr not in (0, 1) or bad:
+                raise LinkError(f"OPC {self.device} 쓰기 실패 {bad or hex(hr & 0xFFFFFFFF)}")
 
     def write_bit(self, dev, state):
         self.write(dev, bool(state))
@@ -354,7 +382,7 @@ def OpcLink(server="Mitsubishi.MXOPC.6", device="QSIM", wrapper="auto", source=O
             return OpcDirectLink(server, device, source)
         except LinkError as e:
             if wrapper == "direct" or struct.calcsize("P") * 8 != 32:
-                sys.exit(f"OPC 연결 실패: {e}")
+                raise LinkError(f"OPC 연결 실패: {e}")   # 11-27 검토: sys.exit면 serve 재접속 루프가 못 잡고 끝남
             print(f"[OPC] 직접 연결 실패 ({e}) → Automation 래퍼 OPC.SiemensDAAuto 로 재시도")
             wrapper = "OPC.SiemensDAAuto"
     return OpcAutomationLink(server, device, wrapper, source)

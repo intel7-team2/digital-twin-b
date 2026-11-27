@@ -4,13 +4,13 @@
 
 - 확정 방식(11-27 사용자 지시): 11-20 배정 초안(`plc/ladder_alloc_v6.csv`)과 v3에서 더한 번지를 **그대로 확정**. 번지 범위는 1500~19FF(Factory I/O · HMI · Python과 같은 블록)
 - C 인계 값(`M1510` · `D1516` · `D1518` · 팩 전압)을 PLC에 쓰는 주체: **`measurement_engine.py serve`**로 정함 — 구현은 공유 DB 연결(A14) 때. 그 전까지는 시험 도구(`opc_outside.py`)가 대신 씀
-- MX OPC 등록 = `test_results/MXOPC_B_v7e.mdb`에 태그가 있음(HMI · Python이 읽고 쓰는 번지). 래더 안에서만 쓰는 번지는 등록하지 않음
+- MX OPC 등록 = `test_results/MXOPC_B_v7f.mdb`에 태그가 있음(HMI · Python이 읽고 쓰는 번지). 래더 안에서만 쓰는 번지는 등록하지 않음
 
 | 구분 | 개수 |
 |---|---|
 | 입력 | 57 |
 | 출력 | 62 |
-| 내부 비트 | 245 |
+| 내부 비트 | 246 |
 | 데이터 | 115 |
 | 타이머 | 76 |
 | 특수 릴레이 | 3 |
@@ -354,9 +354,10 @@
 | 내부 비트 | M1958 | 알람: 박스 벨트 상자 걸림 — 박스 벨트 단계 30초 초과(DRIVE Y06, 11-27) | v3 추가 | DRIVE | O |
 | 내부 비트 | M1959 | HMI 알람 발생 중 = M1500 · M1800 · M1690 · M1951~M1958 중 하나(LAMP W07, 11-27) | v3 추가 | LAMP | O |
 | 내부 비트 | M1960 | 알람 확인(HMI 비트 셋 · 조작반 리셋 X1503 짧게). LAMP W04가 끔 | v3 추가 | COMMON · INFEED · LAMP |  |
-| 내부 비트 | M1961 | 초기화 요청: 랙 LOCK 일괄 해제, 정지 중이면 래더 초기화(HMI LOCK 해제 2초 · opc_reset.py). LAMP W06이 끔 | v3 추가 | COMMON · LAMP |  |
+| 내부 비트 | M1961 | 랙 LOCK 일괄 해제(HMI LOCK 해제 2초 · opc_reset.py). 11-27부터 초기화는 하지 않음(M1964로 분리). LAMP W06이 끔 | v3 추가 | COMMON · LAMP |  |
 | 내부 비트 | M1962 | 초기화 중(Z01 결과 → Z02~Z06 초기화 회로, 11-26) | v3 추가 | COMMON |  |
 | 내부 비트 | M1963 | 격리 팩 수거 완료(HMI 비트 셋, 11-27 사용자 ①): 레일 끝에 팔레트가 있으면(X1902 OFF) 리무버 Y1695로 치움. 비거나 3초 뒤 DRIVE V04가 끔 | v3 추가 | DRIVE | O |
+| 내부 비트 | M1964 | 초기화 요청(정지 중, 시험 · 회차 사이 — opc_reset.py 전용). 11-27 M1961(LOCK 해제)에서 분리 — 래더 Z01, LAMP W08이 끔 | v3 추가 | COMMON · LAMP | O |
 | 내부 비트 | M1970 | 스텝 릴레이 P0 (TT5 합류) | v3 스텝 | COMMON · RETEST |  |
 | 내부 비트 | M1971 | 스텝 릴레이 P10 (TT5 합류) | v3 스텝 | RETEST |  |
 | 내부 비트 | M1972 | 스텝 릴레이 P20 (TT5 합류) | v3 스텝 | RETEST |  |

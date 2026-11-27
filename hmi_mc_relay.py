@@ -106,11 +106,31 @@ class MemoryBackend:
 class OpcBackend:
     """MX OPC Server 경유 (plc_link.OpcLink). 태그 이름 = 디바이스 이름."""
 
-    def __init__(self, link):
+    def __init__(self, link, factory=None):
         self.link = link
         self.label = getattr(link, "label", "OPC")
         self.lock = threading.Lock()
         self._warned = set()
+        self.factory = factory          # 11-27 검토: MX OPC 서비스 재시작(0x800706BA 등) 뒤 연결을 새로 만듦
+        self._next_retry = 0.0
+
+    def _reconnect(self, err):
+        """연결 자체가 끊긴 오류면 새 연결(2초에 한 번까지). 성공하면 True"""
+        if not self.factory or time.time() < self._next_retry:
+            return False
+        self._next_retry = time.time() + 2
+        try:
+            try:
+                self.link.close()
+            except Exception:
+                pass
+            self.link = self.factory()
+            self._warned.clear()        # 연결이 바뀌면 '태그 없음' 판정도 다시
+            print(f"{time.strftime('%H:%M:%S')} [중계] OPC 다시 연결함 (원인: {err})", flush=True)
+            return True
+        except BaseException as e2:
+            print(f"{time.strftime('%H:%M:%S')} [중계] OPC 다시 연결 실패: {e2}", flush=True)
+            return False
 
     def read(self, names):
         # 11-26 WinGP 실접속: Pro-face는 비트를 16개 단위(M1488~M1503 등) · 워드를 이어진 묶음으로 읽어
@@ -124,7 +144,10 @@ class OpcBackend:
                 try:
                     out.append(int(self.link.read(n)))
                 except Exception as e:
-                    if "등록 실패" not in str(e):      # PLC 재시작 중 품질 불량 같은 일시 실패 → 통신 오류로 답함(HMI가 0을 실제 값으로 보이지 않게)
+                    # 11-27 검토: '태그 없음'은 MX OPC 오류 0xC0040007(없는 항목)일 때만. 다른 등록 실패(서버 재시작 중 등)는 연결을 다시 만듦
+                    if not ("등록 실패" in str(e) and "C0040007" in str(e).upper()):
+                        if "품질" not in str(e):           # 품질 불량(PLC 재시작 중)은 연결 문제 아님
+                            self._reconnect(e)
                         raise RelayError(END_BACKEND, f"OPC 읽기 실패 {n}: {e}") from None
                     self._warned.add(n)                # 태그가 없음 → 다음부터 바로 0
                     print(f"{time.strftime('%H:%M:%S')} [알림] OPC 태그 없음 {n} → 0으로 읽음", flush=True)
@@ -137,6 +160,7 @@ class OpcBackend:
                 try:
                     self.link.write(n, v)
                 except Exception as e:
+                    self._reconnect(e)
                     raise RelayError(END_BACKEND, f"OPC 쓰기 실패 {n}: {e}") from None
 
 
@@ -420,7 +444,8 @@ def main():
     else:
         from plc_link import OPC_DS_CACHE, OPC_DS_DEVICE, OpcLink
         src = OPC_DS_CACHE if args.opc_source == "cache" else OPC_DS_DEVICE
-        be = OpcBackend(OpcLink(args.opc_server, args.opc_device, args.opc_wrapper, src))
+        _mk = lambda: OpcLink(args.opc_server, args.opc_device, args.opc_wrapper, src)
+        be = OpcBackend(_mk(), factory=_mk)
     relay = Relay(be, args.verbose)
     servers = start(relay, args.bind, args.port, not args.no_udp)
     print(f"[중계] MC 3E 바이너리 TCP{'' if args.no_udp else '·UDP'} {args.bind}:{args.port} → {be.label}"
