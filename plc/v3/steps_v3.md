@@ -181,7 +181,7 @@
 | RETEST | N07 | 9 | 17 |
 | RETEST | N08 | 17 | 17 |
 | RETEST | N09 | 11 | 16 |
-| RETEST | N10 | 7 | 12 |
+| RETEST | N10 | 10 | 18 |
 | RETEST | N11 | 6 | 9 |
 | RETEST | N12 | 11 | 17 |
 | RETEST | N13 | 10 | 18 |
@@ -304,8 +304,8 @@
 | CRANE | 46 | 443 |
 | SORT1 | 23 | 195 |
 | INSPECT | 34 | 396 |
-| RETEST | 44 | 449 |
+| RETEST | 44 | 455 |
 | DRIVE | 65 | 570 |
 | COUNTER | 7 | 51 |
 | LAMP | 7 | 24 |
-| **합계** | 291 | 2929 |
+| **합계** | 291 | 2935 |

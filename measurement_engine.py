@@ -50,7 +50,7 @@ Project B · 배터리 팩 후공정 v5 (4S 2×2 / 6S 2×3, 18650 3.7V) · Pytho
   python measurement_engine.py isolate --pack 9 --temp 412   # 발열 격리 기록 모사 (PLC 알림 대신)
   python measurement_engine.py stats --count 10000 --cells 6
   python3.12-32 measurement_engine.py serve           # PLC 핸드셰이크 + DB 저장 (기본: MX OPC Server, 장치 QSIM)
-  python measurement_engine.py serve --link modbus --host 192.168.0.XXX   # Modbus TCP 직접 (시연 PC 주소 미정)
+  python measurement_engine.py serve --link modbus --host 192.168.0.214   # Modbus TCP 직접 (시연 PC = 이 PC, A21)
 
 PLC 통신 (plc_link.py, 결정 D17)
   기본은 MX OPC Server(OPC DA) 경유입니다. GX Simulator2(또는 실물 PLC) ↔ MX OPC Server ↔ 이 엔진.
@@ -264,6 +264,14 @@ CREATE TABLE IF NOT EXISTS results (               -- Project B 기록
     ir_x100       INTEGER NOT NULL,
     temp_x10      INTEGER NOT NULL
 );
+CREATE TABLE IF NOT EXISTS rfid_failures (         -- Project B 기록 (11-27, A11): RFID 판독 실패 팩. PACK ID를 몰라 results 에는 못 남김
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts            TEXT    NOT NULL,
+    station       INTEGER NOT NULL CHECK (station IN (1, 2, 3)),   -- RFID ① 입고 / ② 메인 검사 / ③ 재검사
+    status        INTEGER,                         -- 리더 상태: 0 정상 1 태그 없음 2 태그 여러 개 3 주소 오류 4 명령 오류
+    serial        INTEGER,                         -- 이번 팩 태그 시리얼(못 읽었으면 NULL)
+    note          TEXT
+);
 CREATE INDEX IF NOT EXISTS idx_cells_pack ON cells (pack_id);
 CREATE INDEX IF NOT EXISTS idx_meas_pack ON measurements (pack_id);
 """
@@ -345,6 +353,13 @@ def record_isolation(conn, pack_id, temp_x10):
     )
     conn.commit()
     return info is not None
+
+
+def record_rfid_failure(conn, station, status, serial, note):
+    """RFID 판독 실패 1건 저장 (A11). PACK ID는 몰라 태그 시리얼 · 리더 상태로 남김"""
+    conn.execute("INSERT INTO rfid_failures (ts, station, status, serial, note) VALUES (?, ?, ?, ?, ?)",
+                 (now(), station, status, serial, note))
+    conn.commit()
 
 
 def pack_info(conn, pack_id):
@@ -497,6 +512,11 @@ def cmd_report(args):
     for key in ("DV", "IR", "TEMP"):
         print(f"    └ {CAUSE_LABEL[key]:<6} {s[key]:>6} 팩")
     print(f"  발열 격리 ISO {s['ISO']:>6} 팩   (보관 중, 검사 전)")
+    n_fail = conn.execute("SELECT COUNT(*) FROM rfid_failures").fetchone()[0]
+    if n_fail:                                        # 11-27(A11): PACK ID를 몰라 results 밖에 남긴 RFID 판독 실패
+        print(f"  RFID 판독 실패 {n_fail:>5} 건  (PACK ID 모름 · rfid_failures 테이블, 태그 시리얼 기준)")
+        for ts, st, stat, ser, note in conn.execute("SELECT ts, station, status, serial, note FROM rfid_failures ORDER BY id DESC LIMIT 5"):
+            print(f"    └ {ts} RFID {'①②③'[st - 1]} 상태 {stat} 시리얼 {ser if ser is not None else '-'} · {note}")
     if total:
         print(f"  수율         {s['GOOD'] / total * 100:6.1f} %")
     print()
@@ -554,6 +574,10 @@ def cmd_serve(args):
         if req == 1 and done == 0 and st_no not in answered:
             answered.add(st_no)
             pack_id, rc = read(base + PACK, 2)            # 검사기 RFID가 읽은 idx0 / idx4
+            try:
+                last_ok_serial[st_no + 1] = read(1558 if st_no == 1 else 1568)[0]   # A11: 이 팩의 정상 시리얼(다음 실패 판단용)
+            except LinkError:
+                pass
             tag_cells = read(base + CELLS)[0]             # 태그 idx9
             info = pack_info(conn, pack_id) if pack_id else None
             n = info[0] if info else (tag_cells if tag_cells in PACK_TYPES else 4)
@@ -574,6 +598,34 @@ def cmd_serve(args):
             print(f"{tag} PACK-{pack_id:04d} {PACK_TYPES[n]['name']} RC={rc} {fmt(m)} → {VERDICT_NAME[v]}({v}){cause}")
         elif req == 0 and done == 1:
             write(base + DONE, [0])
+
+    # 11-27(A11): RFID 판독 실패 알람(M1952 ① · M1953 ② · M1954 ③)이 켜지는 순간 리더 상태와 태그 시리얼을 rfid_failures 에 남김.
+    # 시리얼은 래더가 마지막으로 읽은 값(D1517 · D1558 · D1568). 직전 정상 팩의 값과 같으면 이번 팩 시리얼도 못 읽은 것 → NULL
+    RFID_FAIL = {1: ("M1952", 1517, 1514), 2: ("M1953", 1558, 1524), 3: ("M1954", 1568, 1534)}
+    fail_prev = {k: None for k in RFID_FAIL}
+    last_ok_serial = {1: None, 2: None, 3: None}     # ② · ③은 검사 요청 때, ①은 알람이 없을 때 0.5초마다 갱신
+    tick = [0]
+
+    def handle_rfid_failures():
+        tick[0] += 1
+        if tick[0] % 5:                               # 알람은 리셋 전까지 켜져 있으므로 0.5초마다 봐도 충분(OPC 읽기 줄임)
+            return
+        for st, (bit, ser_addr, stat_addr) in RFID_FAIL.items():
+            on = int(link.read(bit) or 0)
+            if on and fail_prev[st] == 0:
+                status = read(stat_addr)[0]
+                serial = read(ser_addr)[0]
+                if status == 1 or not serial:
+                    rec, note = None, "태그 없음 · 시리얼 못 읽음"
+                elif serial == last_ok_serial[st]:
+                    rec, note = None, f"시리얼 못 읽음(직전 팩 값 {serial} 그대로)"
+                else:
+                    rec, note = serial, "시리얼은 읽음 · 데이터 판독 실패"
+                record_rfid_failure(conn, st, status, rec, note)
+                print(f"[RFID {'①②③'[st - 1]} 판독 실패] 상태 {status} · 시리얼 {rec} · {note} → DB rfid_failures")
+            elif not on and st == 1:
+                last_ok_serial[1] = read(ser_addr)[0]          # ①: 알람이 없을 때 본 시리얼 = 직전 팩 값(실패 순간 비교용)
+            fail_prev[st] = on
 
     def handle_isolation():
         req, pack_id, temp_x10, done = read(ISO_BLOCK, 4)
@@ -600,6 +652,7 @@ def cmd_serve(args):
                 for st_no in STATIONS:
                     handle(st_no)
                 handle_isolation()
+                handle_rfid_failures()
                 if down:
                     down = False
                     print("[ENGINE] 통신 복구")

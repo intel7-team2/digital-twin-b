@@ -1,0 +1,574 @@
+# v3 래더 I/O 할당표 (11-27 확정, 안건 A30)
+
+> `python plc/v3/make_io_alloc_v3.py`가 래더 명령어 목록(`ladder_mnemonic_v3.txt`)에서 실제로 쓰는 번지를 모아 만듭니다. 래더를 바꾸면 다시 실행하세요. 같은 내용의 CSV: `io_alloc_v3.csv`.
+
+- 확정 방식(11-27 사용자 지시): 11-20 배정 초안(`plc/ladder_alloc_v6.csv`)과 v3에서 더한 번지를 **그대로 확정**. 번지 범위는 1500~19FF(Factory I/O · HMI · Python과 같은 블록)
+- C 인계 값(`M1510` · `D1516` · `D1518` · 팩 전압)을 PLC에 쓰는 주체: **`measurement_engine.py serve`**로 정함 — 구현은 공유 DB 연결(A14) 때. 그 전까지는 시험 도구(`opc_outside.py`)가 대신 씀
+- MX OPC 등록 = `test_results/MXOPC_B_v7c.mdb`에 태그가 있음(HMI · Python이 읽고 쓰는 번지). 래더 안에서만 쓰는 번지는 등록하지 않음
+
+| 구분 | 개수 |
+|---|---|
+| 입력 | 57 |
+| 출력 | 61 |
+| 내부 비트 | 244 |
+| 데이터 | 115 |
+| 타이머 | 75 |
+| 특수 릴레이 | 3 |
+
+| 구분 | 번지 | 뜻 | 출처 | 쓰는 프로그램 | MX OPC 등록 |
+|---|---|---|---|---|---|
+| 입력 | X1500 | 조작반 비상정지 (NC: ON = 정상) → PLC가 M1500 = NOT X1500 [Factory I/O: Emergency stop] | 번지 안(신규(안)) | COMMON | O |
+| 입력 | X1501 | 조작반 시작 [Factory I/O: Start] | 번지 안(신규(안)) | COMMON | O |
+| 입력 | X1502 | 조작반 정지 [Factory I/O: Stop] | 번지 안(신규(안)) | COMMON | O |
+| 입력 | X1503 | 조작반 리셋: 누르면 알람 확인(M1960과 같음 · RFID① 다시 읽기) · 2초 누르면 카운터 리셋(M1920과 같음) — 11-26 v3 [Factory I/O: Reset] | 번지 안(신규(안)) | COMMON · INFEED · COUNTER | O |
+| 입력 | X1510 | RFID① 정위치 [Factory I/O: Detect] | 번지 안(신규(안)) | INFEED | O |
+| 입력 | X1511 | 박스 높이 센서: Large box만 가림 → PLC가 D1519 = 2(Large) / 1(Small) [Factory I/O: Detect] | 번지 안(신규(안)) | INFEED | O |
+| 입력 | X1512 | 크레인 A 입고점 도착 [Factory I/O: Detect] | 번지 안(신규(안)) | CRANE | O |
+| 입력 | X1513 | 입고 로딩 컨베이어 입구 (반사형: 가리면 OFF) [Factory I/O: X1513] | 번지 안(신규(안) D23) | INFEED · CRANE | O |
+| 입력 | X1600 | 주행 중 [Factory I/O: Moving X] | 번지 안(신규(안)) | CRANE | O |
+| 입력 | X1601 | 승강 중 [Factory I/O: Moving Z] | 번지 안(신규(안)) | CRANE | O |
+| 입력 | X1602 | 포크 왼쪽 끝 [Factory I/O: At Left] | 번지 안(신규(안)) | CRANE | O |
+| 입력 | X1603 | 포크 가운데 [Factory I/O: At Middle] | 번지 안(신규(안)) | CRANE | O |
+| 입력 | X1604 | 포크 오른쪽 끝 [Factory I/O: At Right] | 번지 안(신규(안)) | CRANE | O |
+| 입력 | X1608 | 주행 중 [Factory I/O: Moving X] | 번지 안(신규(안)) | CRANE | O |
+| 입력 | X1609 | 승강 중 [Factory I/O: Moving Z] | 번지 안(신규(안)) | CRANE | O |
+| 입력 | X160A | 포크 왼쪽 끝 [Factory I/O: At Left] | 번지 안(신규(안)) | CRANE | O |
+| 입력 | X160B | 포크 가운데 [Factory I/O: At Middle] | 번지 안(신규(안)) | CRANE | O |
+| 입력 | X160C | 포크 오른쪽 끝 [Factory I/O: At Right] | 번지 안(신규(안)) | CRANE | O |
+| 입력 | X1610 | 크레인 B 출고점 팩 있음 [Factory I/O: Detect] | 번지 안(신규(안)) | CRANE | O |
+| 입력 | X1660 | 1차 분리 진입 [Factory I/O: Detect] | 번지 안(신규(안)) | SORT1 | O |
+| 입력 | X1662 | TT1 앞 센서 [Factory I/O: X1662] | 번지 안(신규(안) 11-25) | SORT1 | O |
+| 입력 | X1663 | TT1 뒤 센서 [Factory I/O: X1663] | 번지 안(신규(안) 11-25) | SORT1 | O |
+| 입력 | X1664 | TT1 0° [Factory I/O: X1664] | 번지 안(신규(안) 11-25) | SORT1 | O |
+| 입력 | X1665 | TTM 앞 센서 [Factory I/O: X1665] | 번지 안(신규(안) 11-25) | SORT1 | O |
+| 입력 | X1666 | TTM 입구 빔 [Factory I/O: X1666] | 번지 안(신규(안) 11-25) | SORT1 | O |
+| 입력 | X1667 | TTM 0° [Factory I/O: X1667] | 번지 안(신규(안) 11-25) | SORT1 | O |
+| 입력 | X1668 | TT1 90° [Factory I/O: X1668] | 번지 안(신규(안) 11-25) | SORT1 | O |
+| 입력 | X1669 | TTM 90° [Factory I/O: X1669] | 번지 안(신규(안) 11-25) | SORT1 | O |
+| 입력 | X1700 | 메인 검사 정위치 [Factory I/O: Detect] | 번지 안(신규(안)) | INSPECT | O |
+| 입력 | X1720 | Pusher 앞 도착 [Factory I/O: Detect] | 번지 안(신규(안)) | INSPECT | O |
+| 입력 | X1723 | TT2 앞 센서 [Factory I/O: X1723] | 번지 안(신규(안) 11-25) | INSPECT | O |
+| 입력 | X1725 | TT2 0° [Factory I/O: X1725] | 번지 안(신규(안) 11-25) | INSPECT | O |
+| 입력 | X1726 | TT2 90° [Factory I/O: X1726] | 번지 안(신규(안) 11-25) | INSPECT | O |
+| 입력 | X1730 | 재검사 정위치 [Factory I/O: Detect] | 번지 안(신규(안)) | RETEST | O |
+| 입력 | X1731 | 2차 분리 진입 [Factory I/O: Detect] | 번지 안(신규(안)) | RETEST | O |
+| 입력 | X1733 | TT3 앞 센서 [Factory I/O: X1733] | 번지 안(신규(안) 11-25) | RETEST | O |
+| 입력 | X1734 | TT3 뒤 센서 [Factory I/O: X1734] | 번지 안(신규(안) 11-25) | RETEST | O |
+| 입력 | X1735 | TT3 0° [Factory I/O: X1735] | 번지 안(신규(안) 11-25) | RETEST | O |
+| 입력 | X1736 | 합류 대기 레일(확산 반사: ON이 있음) [Factory I/O: X1736] | 번지 안(신규(안) 11-25) | RETEST | O |
+| 입력 | X1737 | TT3 90° [Factory I/O: X1737] | 번지 안(신규(안) 11-25) | RETEST | O |
+| 입력 | X1800 | 재검사 라인 입구 (D1800 +1) [Factory I/O: Detect] | 번지 안(신규(안)) | INSPECT | O |
+| 입력 | X1900 | GOOD OUT 게이트 (카운터 D1900) [Factory I/O: Detect] | 번지 안(기존) | DRIVE · COUNTER | O |
+| 입력 | X1902 | 발열 격리 게이트 (카운터 D1902) [Factory I/O: Detect] | 번지 안(기존) | CRANE · SORT1 · COUNTER | O |
+| 입력 | X1904 | TT5 앞 센서 [Factory I/O: X1904] | 번지 안(신규(안) 11-25) | RETEST | O |
+| 입력 | X1905 | TT5 뒤 센서 [Factory I/O: X1905] | 번지 안(신규(안) 11-25) | RETEST | O |
+| 입력 | X1907 | TT5 0° [Factory I/O: X1907] | 번지 안(신규(안) 11-25) | RETEST | O |
+| 입력 | X1908 | TT5 90° [Factory I/O: X1908] | 번지 안(신규(안) 11-25) | RETEST | O |
+| 입력 | X1910 | E1 앞 대기(확산 ON) [Factory I/O: X1910] | 번지 안(신규(안) V7) | DRIVE | O |
+| 입력 | X1911 | E1 입구(트임 ON) [Factory I/O: X1911] | 번지 안(신규(안) V7) | DRIVE | O |
+| 입력 | X1913 | E1 1층 아래 [Factory I/O: X1913] | 번지 안(신규(안) V7) | DRIVE | O |
+| 입력 | X1916 | E1 2층 위 [Factory I/O: X1916] | 번지 안(신규(안) V7) | DRIVE | O |
+| 입력 | X1917 | 2층 픽업 정위치(ON) [Factory I/O: X1917] | 번지 안(신규(안) V7) | DRIVE | O |
+| 입력 | X1918 | 픽앤플레이스 상자 감지(11-26: 잡기 확인 [Factory I/O: X1918] | 번지 안(켜져야 들어 올림)) | DRIVE | O |
+| 입력 | X1921 | 팔레트 앞 [Factory I/O: X1921] | 번지 안(신규(안) V7) | DRIVE | O |
+| 입력 | X1922 | 승강 중 [Factory I/O: X1922] | 번지 안(신규(안) V7) | DRIVE | O |
+| 입력 | X1923 | 밀대 리밋 [Factory I/O: X1923] | 번지 안(신규(안) V7) | DRIVE | O |
+| 입력 | X1925 | 팔레트 배출 빔 [Factory I/O: X1925] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1500 | 투입 허가 (M1510 C 인계 수신 때 ON) [Factory I/O: Emitter (Emit)] | 번지 안(신규(안)) | INFEED | O |
+| 출력 | Y1501 | 입고 컨베이어 1 (Emitter → RFID①) [Factory I/O: Run] | 번지 안(신규(안)) | INFEED | O |
+| 출력 | Y1502 | RFID① 위치 정지 [Factory I/O: Stop blade] | 번지 안(신규(안)) | INFEED | O |
+| 출력 | Y1600 | 포크 왼쪽 [Factory I/O: Forks Left] | 번지 안(신규(안)) | CRANE | O |
+| 출력 | Y1601 | 포크 오른쪽 [Factory I/O: Forks Right] | 번지 안(신규(안)) | CRANE | O |
+| 출력 | Y1602 | 들어올림 [Factory I/O: Lift] | 번지 안(신규(안)) | CRANE | O |
+| 출력 | Y1608 | 포크 왼쪽 [Factory I/O: Forks Left] | 번지 안(신규(안)) | CRANE | O |
+| 출력 | Y1609 | 포크 오른쪽 [Factory I/O: Forks Right] | 번지 안(신규(안)) | CRANE | O |
+| 출력 | Y160A | 들어올림 [Factory I/O: Lift] | 번지 안(신규(안)) | CRANE | O |
+| 출력 | Y1610 | 크레인 B 출고점 로딩 컨베이어 [Factory I/O: Run] | 번지 안(신규(안)) | CRANE | O |
+| 출력 | Y1611 | 출고 컨베이어 (→ 1차 분리) [Factory I/O: Run] | 번지 안(신규(안)) | DRIVE | O |
+| 출력 | Y1662 | TT1 롤(+) 메인 [Factory I/O: Y1662] | 번지 안(신규(안) 11-25) | SORT1 | O |
+| 출력 | Y1663 | TT1 롤(−) 격리 [Factory I/O: Y1663] | 번지 안(신규(안) 11-25) | SORT1 | O |
+| 출력 | Y1664 | TT1 회전 [Factory I/O: Y1664] | 번지 안(신규(안) 11-25) | SORT1 | O |
+| 출력 | Y1665 | TTM 롤(+) [Factory I/O: Y1665] | 번지 안(신규(안) 11-25) | SORT1 | O |
+| 출력 | Y1666 | TTM 회전 [Factory I/O: Y1666] | 번지 안(신규(안) 11-25) | SORT1 | O |
+| 출력 | Y1690 | 격리 라인 컨베이어 [Factory I/O: Run] | 번지 안(신규(안)) | DRIVE | O |
+| 출력 | Y1691 | 발열 경보 빨강 (M1690) [Factory I/O: Red] | 번지 안(신규(안)) | LAMP | O |
+| 출력 | Y1692 | 노랑 (재검사 라인 만차 M1800 · 래더 알람 M1951~M1958 — 11-26 · 11-27 v3) [Factory I/O: Yellow] | 번지 안(신규(안)) | LAMP | O |
+| 출력 | Y1693 | 초록 (운전 중) [Factory I/O: Green] | 번지 안(신규(안)) | LAMP | O |
+| 출력 | Y1694 | 발열 경보음 (M1690) [Factory I/O: Alarm Siren] | 번지 안(신규(안)) | LAMP | O |
+| 출력 | Y1700 | 메인 라인 1 (1차 분리 → 메인 검사기) [Factory I/O: Run] | 번지 안(신규(안)) | DRIVE | O |
+| 출력 | Y1701 | 메인 검사 위치 정지 [Factory I/O: Stop blade] | 번지 안(신규(안)) | INSPECT | O |
+| 출력 | Y1702 | 메인 라인 2 (메인 검사기 → Pusher → GOOD OUT) [Factory I/O: Run] | 번지 안(신규(안)) | DRIVE | O |
+| 출력 | Y1703 | 메인 GOOD 구간(CT2 ~ CT5), 합류 받는 동안 멈춤 [Factory I/O: Y1703] | 번지 안(신규(안) D23) | DRIVE | O |
+| 출력 | Y1722 | TT2 롤(+) 재검사 [Factory I/O: Y1722] | 번지 안(신규(안) 11-25) | INSPECT | O |
+| 출력 | Y1724 | TT2 회전 [Factory I/O: Y1724] | 번지 안(신규(안) 11-25) | INSPECT | O |
+| 출력 | Y1730 | 재검사 위치 정지 [Factory I/O: Stop blade] | 번지 안(신규(안)) | RETEST | O |
+| 출력 | Y1733 | TT3 롤(+) NG [Factory I/O: Y1733] | 번지 안(신규(안) 11-25) | RETEST | O |
+| 출력 | Y1734 | TT3 롤(−) GOOD [Factory I/O: Y1734] | 번지 안(신규(안) 11-25) | RETEST | O |
+| 출력 | Y1735 | TT3 회전 [Factory I/O: Y1735] | 번지 안(신규(안) 11-25) | RETEST | O |
+| 출력 | Y1736 | 합류 대기 레일 [Factory I/O: Y1736] | 번지 안(신규(안) 11-25) | RETEST | O |
+| 출력 | Y1800 | 재검사 라인 1 (Pusher → 재검사기) [Factory I/O: Run] | 번지 안(신규(안)) | DRIVE | O |
+| 출력 | Y1904 | TT5 롤(+) [Factory I/O: Y1904] | 번지 안(신규(안) 11-25) | RETEST | O |
+| 출력 | Y1905 | TT5 회전 [Factory I/O: Y1905] | 번지 안(신규(안) 11-25) | RETEST | O |
+| 출력 | Y1906 | TT5 롤(−) [Factory I/O: Y1906] | 번지 안(신규(안) 11-25) | RETEST | O |
+| 출력 | Y1910 | E1 앞 레일 [Factory I/O: Y1910] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1911 | E1 앞 스토퍼 [Factory I/O: Y1911] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1912 | E1 롤(+) [Factory I/O: Y1912] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1913 | E1 롤(−) [Factory I/O: Y1913] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1914 | E1 상승 [Factory I/O: Y1914] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1915 | E1 하강 [Factory I/O: Y1915] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1916 | 2층 레일 1 [Factory I/O: Y1916] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1917 | 2층 픽업 레일 [Factory I/O: Y1917] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1918 | 2층 픽업 스토퍼 [Factory I/O: Y1918] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1919 | 빈 팔레트 배출 레일 [Factory I/O: Y1919] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y191A | 픽앤플레이스 잡기 [Factory I/O: Y191A] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y191B | 박스 벨트 1 [Factory I/O: Y191B] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y191C | 박스 벨트 2 [Factory I/O: Y191C] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y191D | NG 벨트 [Factory I/O: Y191D] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1920 | 팔레타이저 벨트 [Factory I/O: Y1920] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1921 | 팔레타이저 밀대 [Factory I/O: Y1921] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1922 | 팔레타이저 집게 [Factory I/O: Y1922] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1923 | 팔레타이저 판 열기 [Factory I/O: Y1923] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1924 | 팔레타이저 상승 [Factory I/O: Y1924] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1925 | 팔레타이저 하강 [Factory I/O: Y1925] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1926 | 팔레타이저 끝까지 [Factory I/O: Y1926] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1927 | 팔레타이저 체인 [Factory I/O: Y1927] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1928 | 빈 팔레트 공급 레일 [Factory I/O: Y1928] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y1929 | 적재 팔레트 배출 레일 [Factory I/O: Y1929] | 번지 안(신규(안) V7) | DRIVE | O |
+| 출력 | Y192A | 빈 팔레트 투입 [Factory I/O: Y192A] | 번지 안(신규(안) V7) | DRIVE | O |
+| 내부 비트 | M1500 | 비상정지 중(= NOT X1500) — 출력 차단 · 알람 | v3 추가 | COMMON · LAMP | O |
+| 내부 비트 | M1510 | C 인계 수신(PACK ID · 셀 수 · 팩 전압을 받으면 ON, 입고 RFID①이 처리) | v3 추가 | COMMON · INFEED | O |
+| 내부 비트 | M1511 | 실행 펄스 [Factory I/O: Execute Command] | 번지 안(기존) | RFID | O |
+| 내부 비트 | M1521 | 실행 펄스 [Factory I/O: Execute Command] | 번지 안(기존) | RFID | O |
+| 내부 비트 | M1531 | 실행 펄스 [Factory I/O: Execute Command] | 번지 안(기존) | RFID | O |
+| 내부 비트 | M1540 | 1초 펄스 | 배정 초안 M#01 | COMMON | O |
+| 내부 비트 | M1542 | 입고 구간(RFID① ~ 크레인 A 입고점)에 팩 있음 | 배정 초안 M#02 | COMMON · INFEED · CRANE | O |
+| 내부 비트 | M1543 | 박스 크기 = DB 셀 수 일치 | 배정 초안 M#03 | INFEED | O |
+| 내부 비트 | M1545 | RFID① 명령 요청 · 정상 완료 · 3회 실패 | 배정 초안 M#11 | RFID · INFEED | O |
+| 내부 비트 | M1546 | RFID① 명령 요청 · 정상 완료 · 3회 실패 | 배정 초안 M#11 | RFID · INFEED | O |
+| 내부 비트 | M1547 | RFID① 명령 요청 · 정상 완료 · 3회 실패 | 배정 초안 M#11 | RFID · INFEED | O |
+| 내부 비트 | M1555 | RFID② 명령 요청 · 정상 완료 · 3회 실패 | 배정 초안 M#21 | COMMON · RFID · INSPECT | O |
+| 내부 비트 | M1556 | RFID② 명령 요청 · 정상 완료 · 3회 실패 | 배정 초안 M#21 | RFID · INSPECT | O |
+| 내부 비트 | M1557 | RFID② 명령 요청 · 정상 완료 · 3회 실패 | 배정 초안 M#21 | RFID · INSPECT | O |
+| 내부 비트 | M1565 | RFID③ 명령 요청 · 정상 완료 · 3회 실패 | 배정 초안 M#31 | COMMON · RFID · RETEST | O |
+| 내부 비트 | M1566 | RFID③ 명령 요청 · 정상 완료 · 3회 실패 | 배정 초안 M#31 | RFID · RETEST | O |
+| 내부 비트 | M1567 | RFID③ 명령 요청 · 정상 완료 · 3회 실패 | 배정 초안 M#31 | RFID · RETEST | O |
+| 내부 비트 | M1570 | 스텝 릴레이 R1_0 (RFID 명령 게이트) | v3 스텝 | COMMON · RFID |  |
+| 내부 비트 | M1571 | 스텝 릴레이 R1_1 (RFID 명령 게이트) | v3 스텝 | RFID |  |
+| 내부 비트 | M1572 | 스텝 릴레이 R1_2 (RFID 명령 게이트) | v3 스텝 | RFID |  |
+| 내부 비트 | M1573 | 스텝 릴레이 R1_3 (RFID 명령 게이트) | v3 스텝 | RFID |  |
+| 내부 비트 | M1574 | 스텝 릴레이 R1_4 (RFID 명령 게이트) | v3 스텝 | RFID |  |
+| 내부 비트 | M1575 | 스텝 릴레이 R2_0 (RFID 명령 게이트) | v3 스텝 | COMMON · RFID |  |
+| 내부 비트 | M1576 | 스텝 릴레이 R2_1 (RFID 명령 게이트) | v3 스텝 | RFID |  |
+| 내부 비트 | M1577 | 스텝 릴레이 R2_2 (RFID 명령 게이트) | v3 스텝 | RFID |  |
+| 내부 비트 | M1578 | 스텝 릴레이 R2_3 (RFID 명령 게이트) | v3 스텝 | RFID |  |
+| 내부 비트 | M1579 | 스텝 릴레이 R2_4 (RFID 명령 게이트) | v3 스텝 | RFID |  |
+| 내부 비트 | M1580 | 스텝 릴레이 R3_0 (RFID 명령 게이트) | v3 스텝 | COMMON · RFID |  |
+| 내부 비트 | M1581 | 스텝 릴레이 R3_1 (RFID 명령 게이트) | v3 스텝 | RFID |  |
+| 내부 비트 | M1582 | 스텝 릴레이 R3_2 (RFID 명령 게이트) | v3 스텝 | RFID |  |
+| 내부 비트 | M1583 | 스텝 릴레이 R3_3 (RFID 명령 게이트) | v3 스텝 | RFID |  |
+| 내부 비트 | M1584 | 스텝 릴레이 R3_4 (RFID 명령 게이트) | v3 스텝 | RFID |  |
+| 내부 비트 | M1585 | 스텝 릴레이 I0 (입고) | v3 스텝 | COMMON · CRANE |  |
+| 내부 비트 | M1586 | 스텝 릴레이 I10 (입고) | v3 스텝 | CRANE |  |
+| 내부 비트 | M1587 | 스텝 릴레이 I15 (입고) | v3 스텝 | INFEED · CRANE |  |
+| 내부 비트 | M1588 | 스텝 릴레이 I20 (입고) | v3 스텝 | INFEED · CRANE |  |
+| 내부 비트 | M1589 | 스텝 릴레이 I30 (입고) | v3 스텝 | CRANE |  |
+| 내부 비트 | M1590 | 스텝 릴레이 I40 (입고) | v3 스텝 | CRANE |  |
+| 내부 비트 | M1591 | 스텝 릴레이 U0 (픽앤플레이스) | v3 스텝 | COMMON · DRIVE |  |
+| 내부 비트 | M1592 | 스텝 릴레이 U10 (픽앤플레이스) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1593 | 스텝 릴레이 U20 (픽앤플레이스) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1594 | 스텝 릴레이 U21 (픽앤플레이스) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1595 | 스텝 릴레이 U22 (픽앤플레이스) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1596 | 스텝 릴레이 U23 (픽앤플레이스) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1597 | 스텝 릴레이 U24 (픽앤플레이스) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1598 | 스텝 릴레이 U25 (픽앤플레이스) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1599 | 스텝 릴레이 U26 (픽앤플레이스) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1600 | 크레인 A(입고면) 동작 중 | v3 추가 | CRANE | O |
+| 내부 비트 | M1601 | 크레인 B(출고면) 동작 중 | v3 추가 | CRANE | O |
+| 내부 비트 | M1670 | 출고 구간(크레인 B 출고점 ~ 1차 분리)에 팩 있음 | 배정 초안 M#40 | COMMON · CRANE · SORT1 | O |
+| 내부 비트 | M1671 | 발열 팩이 격리로 가는 중 | 배정 초안 M#49 | COMMON · CRANE · SORT1 | O |
+| 내부 비트 | M1672 | 발열 접수 요청 (바깥이 ON) | 배정 초안 M#50 | COMMON | O |
+| 내부 비트 | M1673 | 스텝 릴레이 T0 (TT1 · 1차 분리) | v3 스텝 | COMMON · SORT1 |  |
+| 내부 비트 | M1674 | 스텝 릴레이 T10 (TT1 · 1차 분리) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1675 | 스텝 릴레이 T20 (TT1 · 1차 분리) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1676 | 스텝 릴레이 T30 (TT1 · 1차 분리) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1677 | 스텝 릴레이 T31 (TT1 · 1차 분리) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1678 | 스텝 릴레이 T32 (TT1 · 1차 분리) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1679 | 스텝 릴레이 T40 (TT1 · 1차 분리) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1680 | 스텝 릴레이 T41 (TT1 · 1차 분리) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1681 | 스텝 릴레이 T42 (TT1 · 1차 분리) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1682 | 스텝 릴레이 T50 (TT1 · 1차 분리) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1683 | 스텝 릴레이 M0 (TTM) | v3 스텝 | COMMON · SORT1 |  |
+| 내부 비트 | M1684 | 스텝 릴레이 M10 (TTM) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1685 | 스텝 릴레이 M20 (TTM) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1686 | 스텝 릴레이 M30 (TTM) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1687 | 스텝 릴레이 M31 (TTM) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1688 | 스텝 릴레이 M32 (TTM) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1689 | 스텝 릴레이 M50 (TTM) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1690 | 보관 중 이상 발열 → 크레인 B 우선 인출 · 격리 · 칸 LOCK | v3 추가 | COMMON · LAMP | O |
+| 내부 비트 | M1691 | 스텝 릴레이 L0 (팔레타이저) | v3 스텝 | COMMON · DRIVE |  |
+| 내부 비트 | M1692 | 스텝 릴레이 L1 (팔레타이저) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1693 | 스텝 릴레이 L2 (팔레타이저) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1694 | 스텝 릴레이 L3 (팔레타이저) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1695 | 스텝 릴레이 L4 (팔레타이저) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1696 | 스텝 릴레이 L10 (팔레타이저) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1697 | 스텝 릴레이 L20 (팔레타이저) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1698 | 스텝 릴레이 L21 (팔레타이저) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1699 | 스텝 릴레이 L22 (팔레타이저) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1700 | 메인 검사 프로브(검사 중) | v3 추가 | INSPECT | O |
+| 내부 비트 | M1712 | 스텝 릴레이 L30 (팔레타이저) | v3 스텝 | COMMON · DRIVE |  |
+| 내부 비트 | M1714 | 스텝 릴레이 L32 (팔레타이저) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1715 | 스텝 릴레이 L33 (팔레타이저) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1716 | 스텝 릴레이 L34 (팔레타이저) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1717 | 스텝 릴레이 L35 (팔레타이저) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1718 | 스텝 릴레이 L36 (팔레타이저) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1719 | 스텝 릴레이 L37 (팔레타이저) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1730 | 재검사 프로브(검사 중) | v3 추가 | RETEST | O |
+| 내부 비트 | M1733 | 스텝 릴레이 Q0 (TT3) | v3 스텝 | COMMON · RETEST |  |
+| 내부 비트 | M1734 | 스텝 릴레이 Q10 (TT3) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1735 | 스텝 릴레이 Q20 (TT3) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1737 | 스텝 릴레이 Q30 (TT3) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1738 | 스텝 릴레이 Q31 (TT3) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1739 | 스텝 릴레이 Q40 (TT3) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1740 | 스텝 릴레이 Q45 (TT3) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1741 | 스텝 릴레이 Q50 (TT3) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1742 | 스텝 릴레이 Q51 (TT3) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1743 | 스텝 릴레이 U27 (픽앤플레이스) | v3 스텝 | COMMON · DRIVE |  |
+| 내부 비트 | M1744 | 스텝 릴레이 U28 (픽앤플레이스) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1745 | 픽앤플레이스 스텝 U29: L 높이에 상자가 없어 M 높이로 더 내려감(11-26) | v3 추가 | DRIVE |  |
+| 내부 비트 | M1746 | 구간 기억 비트 블록 시작(M1746~M1764: 팩이 어느 구간에 있는지 · 판정 넘김) — 초기화 때 함께 지움 | v3 추가 | COMMON |  |
+| 내부 비트 | M1750 | 메인 출구 구간에 팩 있음 | 배정 초안 M#41 | INSPECT | O |
+| 내부 비트 | M1751 | 메인 검사기의 팩이 분기 대상 | 배정 초안 M#42 | INSPECT | O |
+| 내부 비트 | M1752 | 메인 RFID 판독 실패 · 미등록 | 배정 초안 M#43 | INSPECT | O |
+| 내부 비트 | M1753 | 메인 검사 중 (메인 라인 1 정지 구간) | 배정 초안 M#51 | SORT1 · INSPECT · DRIVE | O |
+| 내부 비트 | M1754 | 메인 출구 구간의 팩이 분기 대상 | 배정 초안 M#52 | INSPECT | O |
+| 내부 비트 | M1755 | 메인 검사 RFID② 태그를 못 읽음(0 · 직전 시리얼 · 남은 셀 수 판정) | v3 추가 | INSPECT |  |
+| 내부 비트 | M1760 | 재검사 출구 구간에 팩 있음 | 배정 초안 M#44 | RETEST | O |
+| 내부 비트 | M1761 | 재검사기의 팩이 GOOD | 배정 초안 M#45 | RETEST | O |
+| 내부 비트 | M1764 | 재검사 출구 구간의 팩이 GOOD | 배정 초안 M#53 | RETEST | O |
+| 내부 비트 | M1765 | 재검사 중 (재검사 라인 정지 구간) | 배정 초안 M#54 | INSPECT · RETEST · DRIVE | O |
+| 내부 비트 | M1766 | 재검사 RFID③ 태그를 못 읽음 | v3 추가 | RETEST |  |
+| 내부 비트 | M1770 | 스텝 릴레이 J10 (메인 검사) | v3 스텝 | COMMON · INSPECT |  |
+| 내부 비트 | M1771 | 스텝 릴레이 J11 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1772 | 스텝 릴레이 J12 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1773 | 스텝 릴레이 J13 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1774 | 스텝 릴레이 J40 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1775 | 스텝 릴레이 J41 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1776 | 스텝 릴레이 J42 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1777 | 스텝 릴레이 J43 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1778 | 스텝 릴레이 J44 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1782 | 스텝 릴레이 J0 (메인 검사) | v3 스텝 | COMMON · INSPECT |  |
+| 내부 비트 | M1783 | 스텝 릴레이 J14 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1784 | 스텝 릴레이 J20 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1785 | 스텝 릴레이 J30 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1786 | 스텝 릴레이 J45 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1787 | 스텝 릴레이 J46 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1788 | 스텝 릴레이 J50 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1789 | 스텝 릴레이 J51 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1790 | 스텝 릴레이 J60 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1791 | 스텝 릴레이 J65 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1792 | 스텝 릴레이 J70 (메인 검사) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1800 | 재검사 라인 만차(줄이 분기점까지 참) → GOOD 외 팩은 메인 검사 출구 대기 | v3 추가 | CRANE · INSPECT · LAMP | O |
+| 내부 비트 | M1810 | 스텝 릴레이 C0 (입고 RFID①) | v3 스텝 | COMMON · INFEED |  |
+| 내부 비트 | M1811 | 스텝 릴레이 C5 (입고 RFID①) | v3 스텝 | INFEED |  |
+| 내부 비트 | M1812 | 스텝 릴레이 C10 (입고 RFID①) | v3 스텝 | INFEED |  |
+| 내부 비트 | M1813 | 스텝 릴레이 C15 (입고 RFID①) | v3 스텝 | INFEED |  |
+| 내부 비트 | M1814 | 스텝 릴레이 C16 (입고 RFID①) | v3 스텝 | INFEED |  |
+| 내부 비트 | M1815 | 스텝 릴레이 C30 (입고 RFID①) | v3 스텝 | INFEED |  |
+| 내부 비트 | M1816 | 스텝 릴레이 C31 (입고 RFID①) | v3 스텝 | INFEED |  |
+| 내부 비트 | M1820 | 스텝 릴레이 C20 (입고 RFID①) | v3 스텝 | INFEED |  |
+| 내부 비트 | M1821 | 스텝 릴레이 C21 (입고 RFID①) | v3 스텝 | INFEED |  |
+| 내부 비트 | M1822 | 스텝 릴레이 C22 (입고 RFID①) | v3 스텝 | INFEED |  |
+| 내부 비트 | M1823 | 스텝 릴레이 C23 (입고 RFID①) | v3 스텝 | INFEED |  |
+| 내부 비트 | M1824 | 스텝 릴레이 C24 (입고 RFID①) | v3 스텝 | INFEED |  |
+| 내부 비트 | M1825 | 스텝 릴레이 C25 (입고 RFID①) | v3 스텝 | INFEED |  |
+| 내부 비트 | M1826 | 스텝 릴레이 C26 (입고 RFID①) | v3 스텝 | INFEED |  |
+| 내부 비트 | M1827 | 스텝 릴레이 C27 (입고 RFID①) | v3 스텝 | INFEED |  |
+| 내부 비트 | M1828 | 스텝 릴레이 C28 (입고 RFID①) | v3 스텝 | INFEED |  |
+| 내부 비트 | M1829 | 스텝 릴레이 C29 (입고 RFID①) | v3 스텝 | INFEED |  |
+| 내부 비트 | M1836 | 스텝 릴레이 A0 (크레인 A) | v3 스텝 | COMMON · CRANE |  |
+| 내부 비트 | M1837 | 스텝 릴레이 A1 (크레인 A) | v3 스텝 | CRANE |  |
+| 내부 비트 | M1838 | 스텝 릴레이 A10 (크레인 A) | v3 스텝 | CRANE |  |
+| 내부 비트 | M1839 | 스텝 릴레이 A11 (크레인 A) | v3 스텝 | CRANE |  |
+| 내부 비트 | M1840 | 스텝 릴레이 A12 (크레인 A) | v3 스텝 | CRANE |  |
+| 내부 비트 | M1841 | 스텝 릴레이 A20 (크레인 A) | v3 스텝 | COMMON · CRANE |  |
+| 내부 비트 | M1842 | 스텝 릴레이 A21 (크레인 A) | v3 스텝 | COMMON · CRANE |  |
+| 내부 비트 | M1843 | 스텝 릴레이 A30 (크레인 A) | v3 스텝 | CRANE |  |
+| 내부 비트 | M1844 | 스텝 릴레이 A31 (크레인 A) | v3 스텝 | CRANE |  |
+| 내부 비트 | M1845 | 스텝 릴레이 A32 (크레인 A) | v3 스텝 | CRANE |  |
+| 내부 비트 | M1846 | 스텝 릴레이 A40 (크레인 A) | v3 스텝 | COMMON · CRANE |  |
+| 내부 비트 | M1847 | 스텝 릴레이 A41 (크레인 A) | v3 스텝 | COMMON · CRANE |  |
+| 내부 비트 | M1848 | 스텝 릴레이 B0 (크레인 B) | v3 스텝 | COMMON · CRANE |  |
+| 내부 비트 | M1849 | 스텝 릴레이 B1 (크레인 B) | v3 스텝 | COMMON · CRANE |  |
+| 내부 비트 | M1850 | 스텝 릴레이 B10 (크레인 B) | v3 스텝 | COMMON · CRANE |  |
+| 내부 비트 | M1851 | 스텝 릴레이 B11 (크레인 B) | v3 스텝 | COMMON · CRANE |  |
+| 내부 비트 | M1852 | 스텝 릴레이 B20 (크레인 B) | v3 스텝 | CRANE |  |
+| 내부 비트 | M1853 | 스텝 릴레이 B21 (크레인 B) | v3 스텝 | CRANE |  |
+| 내부 비트 | M1854 | 스텝 릴레이 B22 (크레인 B) | v3 스텝 | CRANE |  |
+| 내부 비트 | M1855 | 스텝 릴레이 B30 (크레인 B) | v3 스텝 | COMMON · CRANE |  |
+| 내부 비트 | M1856 | 스텝 릴레이 B31 (크레인 B) | v3 스텝 | COMMON · CRANE |  |
+| 내부 비트 | M1857 | 스텝 릴레이 B41 (크레인 B) | v3 스텝 | CRANE |  |
+| 내부 비트 | M1858 | 스텝 릴레이 B42 (크레인 B) | v3 스텝 | CRANE |  |
+| 내부 비트 | M1859 | 스텝 릴레이 B43 (크레인 B) | v3 스텝 | CRANE |  |
+| 내부 비트 | M1860 | 스텝 릴레이 G0 (격리 기록) | v3 스텝 | COMMON · SORT1 |  |
+| 내부 비트 | M1861 | 스텝 릴레이 G10 (격리 기록) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1862 | 스텝 릴레이 G20 (격리 기록) | v3 스텝 | SORT1 |  |
+| 내부 비트 | M1863 | 스텝 릴레이 N10 (재검사) | v3 스텝 | COMMON · RETEST |  |
+| 내부 비트 | M1864 | 스텝 릴레이 N11 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1865 | 스텝 릴레이 N12 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1866 | 스텝 릴레이 N13 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1867 | 스텝 릴레이 N14 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1871 | 스텝 릴레이 N41 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1872 | 스텝 릴레이 N42 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1873 | 스텝 릴레이 N43 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1874 | 스텝 릴레이 N44 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1875 | 스텝 릴레이 N0 (재검사) | v3 스텝 | COMMON · RETEST |  |
+| 내부 비트 | M1876 | 스텝 릴레이 N15 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1877 | 스텝 릴레이 N16 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1878 | 스텝 릴레이 N20 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1879 | 스텝 릴레이 N30 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1880 | 스텝 릴레이 N45 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1881 | 스텝 릴레이 N46 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1882 | 스텝 릴레이 N50 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1883 | 스텝 릴레이 N51 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1884 | 스텝 릴레이 N55 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1885 | 스텝 릴레이 N60 (재검사) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1886 | 스텝 릴레이 K0 (TT2 분기) | v3 스텝 | COMMON · INSPECT |  |
+| 내부 비트 | M1887 | 스텝 릴레이 K10 (TT2 분기) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1888 | 스텝 릴레이 K20 (TT2 분기) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1889 | 스텝 릴레이 K30 (TT2 분기) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1891 | 스텝 릴레이 K32 (TT2 분기) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1892 | 스텝 릴레이 K40 (TT2 분기) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1893 | 스텝 릴레이 K41 (TT2 분기) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1894 | 스텝 릴레이 K42 (TT2 분기) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1895 | 스텝 릴레이 K50 (TT2 분기) | v3 스텝 | INSPECT |  |
+| 내부 비트 | M1920 | 카운터 리셋(HMI 2초 · 비트 셋, 조작반 리셋 X1503 2초). LAMP W05가 끔 | v3 추가 | COUNTER · LAMP | O |
+| 내부 비트 | M1950 | 운전 중 (A24 임시 배정 11-23) | 배정 초안 M#60 | COMMON · RFID · INFEED · CRANE · SORT1 · INSPECT · RETEST · DRIVE · LAMP | O |
+| 내부 비트 | M1951 | 알람: 박스 크기 불일치 (A24 임시 배정 11-23) | 배정 초안 M#61 | COMMON · INFEED | O |
+| 내부 비트 | M1952 | 알람: RFID① · ② · ③ 오류 (A24 임시 배정 11-23) | 배정 초안 M#62 | INFEED | O |
+| 내부 비트 | M1953 | 알람: RFID① · ② · ③ 오류 (A24 임시 배정 11-23) | 배정 초안 M#62 | INSPECT | O |
+| 내부 비트 | M1954 | 알람: RFID① · ② · ③ 오류 (A24 임시 배정 11-23) | 배정 초안 M#62 | RETEST | O |
+| 내부 비트 | M1955 | 알람: Python 응답 없음 메인 · 재검사 · 격리 기록 (A24 임시 배정 11-23) | 배정 초안 M#65 | INSPECT | O |
+| 내부 비트 | M1956 | 알람: Python 응답 없음 메인 · 재검사 · 격리 기록 (A24 임시 배정 11-23) | 배정 초안 M#65 | RETEST | O |
+| 내부 비트 | M1957 | 알람: Python 응답 없음 메인 · 재검사 · 격리 기록 (A24 임시 배정 11-23) | 배정 초안 M#65 | SORT1 | O |
+| 내부 비트 | M1958 | 알람: 박스 벨트 상자 걸림 — 박스 벨트 단계 30초 초과(DRIVE Y06, 11-27) | v3 추가 | DRIVE | O |
+| 내부 비트 | M1959 | HMI 알람 발생 중 = M1500 · M1800 · M1690 · M1951~M1958 중 하나(LAMP W07, 11-27) | v3 추가 | LAMP | O |
+| 내부 비트 | M1960 | 알람 확인(HMI 비트 셋 · 조작반 리셋 X1503 짧게). LAMP W04가 끔 | v3 추가 | COMMON · INFEED · LAMP | O |
+| 내부 비트 | M1961 | 초기화 요청: 랙 LOCK 일괄 해제, 정지 중이면 래더 초기화(HMI LOCK 해제 2초 · opc_reset.py). LAMP W06이 끔 | v3 추가 | COMMON · LAMP | O |
+| 내부 비트 | M1962 | 초기화 중(Z01 결과 → Z02~Z06 초기화 회로, 11-26) | v3 추가 | COMMON |  |
+| 내부 비트 | M1970 | 스텝 릴레이 P0 (TT5 합류) | v3 스텝 | COMMON · RETEST |  |
+| 내부 비트 | M1971 | 스텝 릴레이 P10 (TT5 합류) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1972 | 스텝 릴레이 P20 (TT5 합류) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1973 | 스텝 릴레이 P30 (TT5 합류) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1974 | 스텝 릴레이 P31 (TT5 합류) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1975 | 스텝 릴레이 P32 (TT5 합류) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1979 | 스텝 릴레이 P50 (TT5 합류) | v3 스텝 | RETEST |  |
+| 내부 비트 | M1980 | TT5 → E1 앞 구간 팩이 GOOD | v3 추가 | COMMON · INSPECT · RETEST · DRIVE |  |
+| 내부 비트 | M1981 | E1에 실린 팩이 GOOD | v3 추가 | DRIVE |  |
+| 내부 비트 | M1982 | 픽앤플레이스가 집은 상자가 GOOD | v3 추가 | DRIVE |  |
+| 내부 비트 | M1983 | 방금 놓은 상자가 GOOD(박스 벨트 → 팔레타이저) | v3 추가 | DRIVE |  |
+| 내부 비트 | M1984 | E1 앞 구간에 팩 1개(GOOD 직진 · 재검사 합류가 번갈아 들어감) | v3 추가 | INSPECT · RETEST · DRIVE |  |
+| 내부 비트 | M1985 | 스텝 릴레이 E0 (엘리베이터 E1) | v3 스텝 | COMMON · DRIVE |  |
+| 내부 비트 | M1986 | 스텝 릴레이 E10 (엘리베이터 E1) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1987 | 스텝 릴레이 E11 (엘리베이터 E1) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1988 | 스텝 릴레이 E20 (엘리베이터 E1) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1989 | 스텝 릴레이 E30 (엘리베이터 E1) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1990 | 스텝 릴레이 E40 (엘리베이터 E1) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1991 | 스텝 릴레이 E41 (엘리베이터 E1) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1992 | 스텝 릴레이 E50 (엘리베이터 E1) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1993 | 스텝 릴레이 H0 (박스 벨트) | v3 스텝 | COMMON · DRIVE |  |
+| 내부 비트 | M1994 | 스텝 릴레이 H10 (박스 벨트) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1996 | 스텝 릴레이 H30 (박스 벨트) | v3 스텝 | DRIVE |  |
+| 내부 비트 | M1997 | 스텝 릴레이 H31 (박스 벨트) | v3 스텝 | DRIVE |  |
+| 데이터 | D1505 | 입고 로딩 컨베이어 속도 0.01 V 단위(400 = 4 V, 음수 = 역회전 제동). OPC는 배율 0.01 필요 [Factory I/O: D1505] | 번지 안(신규(안) D23) | CRANE | O |
+| 데이터 | D1506 | 입고 진입 롤러 속도 0.01 V 단위(1000 = 10 V, 감속 150 = 로딩 컨베이어와 같게). 11-24 Y1504(켜짐/꺼짐)에서 바꿈. OPC는 INT [Factory I/O: D1506] | 번지 안(신규(안) D24) | CRANE | O |
+| 데이터 | D1508 | 박스 비트 1 = Small box(4S) · 4 = Large box(6S) ← D1518 셀 수로 PLC가 씀 [Factory I/O: Emitter (Part)] | 번지 안(신규(안)) | INFEED | O |
+| 데이터 | D1509 | 받침 비트 1 = Pallet · 0 = 없음 (A27 결과에 따름) [Factory I/O: Emitter (Base)] | 번지 안(신규(안)) | INFEED | O |
+| 데이터 | D1510 | 0 태그확인 1 시리얼 2 읽기 3 쓰기 4 지우기 [Factory I/O: Command] | 번지 안(기존) | INFEED | O |
+| 데이터 | D1511 | 메모리 주소 0~127 [Factory I/O: Memory Index] | 번지 안(기존) | INFEED | O |
+| 데이터 | D1512 | 쓰기 데이터 [Factory I/O: Write Data] | 번지 안(기존) | INFEED | O |
+| 데이터 | D1513 | 명령 실행 횟수 (바뀌면 완료) [Factory I/O: Command ID] | 번지 안(기존) | RFID | O |
+| 데이터 | D1515 | 읽은 데이터 [Factory I/O: Read Data] | 번지 안(기존) | INFEED | O |
+| 데이터 | D1516 | C 인계 PACK ID(입고 RFID①에 씀) | v3 추가 | INFEED | O |
+| 데이터 | D1517 | 입고 RFID① 태그 시리얼 | v3 추가 | INFEED | O |
+| 데이터 | D1518 | C 인계 셀 수(4/6) — 박스 크기 D1519와 대조 | v3 추가 | INFEED | O |
+| 데이터 | D1519 | 박스 크기. Factory I/O 비전 센서는 박스를 못 알아봄(설명서) → X1511로 PLC가 계산 (A26) [Factory I/O: –] | 번지 안(기존(뜻 변경 안)) | INFEED | O |
+| 데이터 | D1520 | 규칙은 RFID①과 같음 (D1520~D1525 · M1521) [Factory I/O: Command] | 번지 안(기존) | INSPECT | O |
+| 데이터 | D1521 | 메모리 주소 [Factory I/O: Memory Index] | 번지 안(기존) | INSPECT | O |
+| 데이터 | D1522 | 쓰기 데이터 [Factory I/O: Write Data] | 번지 안(기존) | INSPECT | O |
+| 데이터 | D1523 | 명령 실행 횟수 [Factory I/O: Command ID] | 번지 안(기존) | RFID | O |
+| 데이터 | D1525 | 읽은 데이터 [Factory I/O: Read Data] | 번지 안(기존) | INSPECT | O |
+| 데이터 | D1526 | 메인 검사 RFID②가 읽은 PACK ID | v3 추가 | INSPECT | O |
+| 데이터 | D1527 | 메인 검사 RFID②가 읽은 재검사 횟수 | v3 추가 | INSPECT | O |
+| 데이터 | D1530 | 규칙은 RFID①과 같음 (D1530~D1535 · M1531) [Factory I/O: Command] | 번지 안(기존) | RETEST | O |
+| 데이터 | D1531 | 메모리 주소 [Factory I/O: Memory Index] | 번지 안(기존) | RETEST | O |
+| 데이터 | D1532 | 쓰기 데이터 [Factory I/O: Write Data] | 번지 안(기존) | RETEST | O |
+| 데이터 | D1533 | 명령 실행 횟수 [Factory I/O: Command ID] | 번지 안(기존) | RFID | O |
+| 데이터 | D1535 | 읽은 데이터 [Factory I/O: Read Data] | 번지 안(기존) | RETEST | O |
+| 데이터 | D1536 | 재검사 RFID③가 읽은 PACK ID | v3 추가 | RETEST | O |
+| 데이터 | D1537 | 재검사 RFID③가 읽은 재검사 횟수 | v3 추가 | RETEST | O |
+| 데이터 | D1540 | 운전 시간(초) | 배정 초안 D#01 | COMMON · INFEED · CRANE | O |
+| 데이터 | D1542 | C 인계 팩 전압(mV) | 배정 초안 D#30 | INFEED | O |
+| 데이터 | D1543 | 입고 구간 팩의 PACK ID · 셀 수 | 배정 초안 D#31 | INFEED · CRANE | O |
+| 데이터 | D1544 | 입고 구간 팩의 PACK ID · 셀 수 | 배정 초안 D#31 | INFEED · CRANE | O |
+| 데이터 | D1546 | RFID① 실행기 상태 · 직전 명령 ID · 재시도 횟수 | 배정 초안 D#20 | RFID | O |
+| 데이터 | D1547 | RFID① 실행기 상태 · 직전 명령 ID · 재시도 횟수 | 배정 초안 D#20 | RFID | O |
+| 데이터 | D1556 | RFID② 실행기 상태 · 직전 명령 ID · 재시도 횟수 | 배정 초안 D#23 | RFID | O |
+| 데이터 | D1557 | RFID② 실행기 상태 · 직전 명령 ID · 재시도 횟수 | 배정 초안 D#23 | RFID | O |
+| 데이터 | D1558 | RFID② 직전에 읽은 태그 시리얼 (11-23 · test/computer-use-results 브랜치와 같은 번지) | 배정 초안 D#47 | INSPECT | O |
+| 데이터 | D1559 | RFID② 태그 확인 다시 읽기 횟수 (11-23) | 배정 초안 D#49 | INSPECT | O |
+| 데이터 | D1566 | RFID③ 실행기 상태 · 직전 명령 ID · 재시도 횟수 | 배정 초안 D#26 | RFID | O |
+| 데이터 | D1567 | RFID③ 실행기 상태 · 직전 명령 ID · 재시도 횟수 | 배정 초안 D#26 | RFID | O |
+| 데이터 | D1568 | RFID③ 직전에 읽은 태그 시리얼 | 배정 초안 D#48 | RETEST | O |
+| 데이터 | D1569 | RFID③ 태그 확인 다시 읽기 횟수 (11-23) | 배정 초안 D#57 | RETEST | O |
+| 데이터 | D1600 | 크레인이 다룰 랙 칸 번호(1~24) | v3 추가 | CRANE | O |
+| 데이터 | D1601 | 목표 칸 1~54 (0 = 정지 · 55 = 대기 위치) ← D1600 랙 번호를 변환표로 [Factory I/O: Target Position] | 번지 안(신규(안)) | CRANE | O |
+| 데이터 | D1602 | 목표 칸 1~54 (0 = 정지 · 55 = 대기 위치) [Factory I/O: Target Position] | 번지 안(신규(안)) | CRANE | O |
+| 데이터 | D1603 | 크레인 A 목표 칸 보관(운전 중에만 D1601로 내보냄, 11-26) | v3 추가 | COMMON · CRANE |  |
+| 데이터 | D1604 | 크레인 B 목표 칸 보관(운전 중에만 D1602로 내보냄, 11-26) | v3 추가 | COMMON · CRANE |  |
+| 데이터 | D1610 | 칸별 LOCK 경과 시간 블록 시작(D1610~D1633, 24칸) — 인덱스(Z)로 이어지는 블록의 시작 번지 | v3 추가 | COMMON · CRANE | O |
+| 데이터 | D1642 | 크레인 A 작업 칸 · 크레인 B 작업 칸 | 배정 초안 D#33 | CRANE | O |
+| 데이터 | D1643 | 크레인 A 작업 칸 · 크레인 B 작업 칸 | 배정 초안 D#33 | COMMON · CRANE | O |
+| 데이터 | D1644 | 크레인 B가 든 팩의 PACK ID · 가상 온도 | 배정 초안 D#35 | CRANE | O |
+| 데이터 | D1645 | 크레인 B가 든 팩의 PACK ID · 가상 온도 | 배정 초안 D#35 | COMMON · CRANE | O |
+| 데이터 | D1646 | 출고 구간 팩의 PACK ID · 가상 온도 | 배정 초안 D#37 | CRANE · SORT1 | O |
+| 데이터 | D1647 | 출고 구간 팩의 PACK ID · 가상 온도 | 배정 초안 D#37 | CRANE · SORT1 | O |
+| 데이터 | D1648 | 격리 라인 팩의 PACK ID · 가상 온도 | 배정 초안 D#39 | SORT1 | O |
+| 데이터 | D1649 | 격리 라인 팩의 PACK ID · 가상 온도 | 배정 초안 D#39 | SORT1 | O |
+| 데이터 | D1650 | 발열 격리 DB 기록 요청(PLC → Python) | v3 추가 | SORT1 | O |
+| 데이터 | D1651 | 발열 격리 PACK ID | v3 추가 | SORT1 | O |
+| 데이터 | D1652 | 발열 격리 가상 온도(0.1 °C) | v3 추가 | SORT1 | O |
+| 데이터 | D1653 | 발열 격리 기록 완료(Python → PLC) | v3 추가 | SORT1 | O |
+| 데이터 | D1655 | 크레인 B가 꺼낸 뒤 메인 검사기를 떠나지 않은 정상 팩 수 | 배정 초안 D#41 | COMMON · CRANE · INSPECT | O |
+| 데이터 | D1660 | 랙 표 ① 칸별 PACK ID (13장 E1 제안 번지와 같은 자리 · 같은 쓰임) — 인덱스(Z)로 이어지는 블록의 시작 번지 | 배정 초안 D#100 | COMMON · CRANE | O |
+| 데이터 | D1690 | 스캔 결과 · 작업용 (빈 칸 4S · 6S · 발열 칸 · EDD 칸 · 최소 입고 시각 · 열 계수 · 경과 초) | 배정 초안 D#50 | COMMON · CRANE | O |
+| 데이터 | D1691 | 스캔 결과 · 작업용 (빈 칸 4S · 6S · 발열 칸 · EDD 칸 · 최소 입고 시각 · 열 계수 · 경과 초) | 배정 초안 D#50 | COMMON · CRANE | O |
+| 데이터 | D1692 | 스캔 결과 · 작업용 (빈 칸 4S · 6S · 발열 칸 · EDD 칸 · 최소 입고 시각 · 열 계수 · 경과 초) | 배정 초안 D#50 | COMMON · CRANE | O |
+| 데이터 | D1693 | 스캔 결과 · 작업용 (빈 칸 4S · 6S · 발열 칸 · EDD 칸 · 최소 입고 시각 · 열 계수 · 경과 초) | 배정 초안 D#50 | COMMON · CRANE | O |
+| 데이터 | D1694 | 스캔 결과 · 작업용 (빈 칸 4S · 6S · 발열 칸 · EDD 칸 · 최소 입고 시각 · 열 계수 · 경과 초) | 배정 초안 D#50 | COMMON | O |
+| 데이터 | D1695 | 스캔 결과 · 작업용 (빈 칸 4S · 6S · 발열 칸 · EDD 칸 · 최소 입고 시각 · 열 계수 · 경과 초) | 배정 초안 D#50 | COMMON | O |
+| 데이터 | D1696 | 스캔 결과 · 작업용 (빈 칸 4S · 6S · 발열 칸 · EDD 칸 · 최소 입고 시각 · 열 계수 · 경과 초) | 배정 초안 D#50 | COMMON | O |
+| 데이터 | D1697 | 발열 접수: 칸 번호 · 가상 온도 | 배정 초안 D#58 | COMMON | O |
+| 데이터 | D1698 | 발열 접수: 칸 번호 · 가상 온도 | 배정 초안 D#58 | COMMON | O |
+| 데이터 | D1700 | 메인 검사 판정(1 PASS · 2 RETEST · 3 NG-ΔV · 4 NG-IR · 5 NG-TEMP) | v3 추가 | INSPECT | O |
+| 데이터 | D1701 | 메인 검사 팩 ΔV(mV) | v3 추가 | INSPECT | O |
+| 데이터 | D1702 | 메인 검사 팩 IR(0.01 mΩ) | v3 추가 | INSPECT | O |
+| 데이터 | D1703 | 메인 검사 온도(0.1 °C) | v3 추가 | INSPECT | O |
+| 데이터 | D1710 | 메인 검사 요청(PLC → Python) | v3 추가 | INSPECT | O |
+| 데이터 | D1711 | 메인 검사 PACK ID | v3 추가 | INSPECT | O |
+| 데이터 | D1712 | 메인 검사 재검사 횟수 | v3 추가 | INSPECT | O |
+| 데이터 | D1713 | 메인 검사 완료(Python → PLC) | v3 추가 | INSPECT | O |
+| 데이터 | D1714 | 메인 검사 셀 수(태그) | v3 추가 | INSPECT | O |
+| 데이터 | D1730 | 재검사 판정 | v3 추가 | RETEST | O |
+| 데이터 | D1731 | 재검사 팩 ΔV(mV) | v3 추가 | RETEST | O |
+| 데이터 | D1732 | 재검사 팩 IR(0.01 mΩ) | v3 추가 | RETEST | O |
+| 데이터 | D1733 | 재검사 온도(0.1 °C) | v3 추가 | RETEST | O |
+| 데이터 | D1740 | 재검사 요청(PLC → Python) | v3 추가 | RETEST | O |
+| 데이터 | D1741 | 재검사 PACK ID | v3 추가 | RETEST | O |
+| 데이터 | D1742 | 재검사 재검사 횟수 | v3 추가 | RETEST | O |
+| 데이터 | D1743 | 재검사 완료(Python → PLC) | v3 추가 | RETEST | O |
+| 데이터 | D1744 | 재검사 셀 수(태그) | v3 추가 | RETEST | O |
+| 데이터 | D1761 | RFID③이 읽은 태그 판정 | 배정 초안 D#42 | RETEST | O |
+| 데이터 | D1800 | 재검사 라인 위 팩 수 | v3 추가 | INSPECT · RETEST | O |
+| 데이터 | D1810 | 랙 표 ② 칸별 입고 시각(초) — 인덱스(Z)로 이어지는 블록의 시작 번지 | 배정 초안 D#130 | COMMON · CRANE | O |
+| 데이터 | D1840 | 랙 표 ③ 칸별 가상 온도 (LOCK 표시 겸용) — 인덱스(Z)로 이어지는 블록의 시작 번지 | 배정 초안 D#160 | COMMON · CRANE | O |
+| 데이터 | D1870 | 랙 표 ④ 칸 번호 → 크레인 목표 칸 변환표 | 배정 초안 D#190 | CRANE | O |
+| 데이터 | D1872 | 랙 표 ④ 칸 번호 → 크레인 목표 칸 변환표 | 배정 초안 D#190 | CRANE | O |
+| 데이터 | D1874 | 랙 표 ④ 칸 번호 → 크레인 목표 칸 변환표 | 배정 초안 D#190 | CRANE | O |
+| 데이터 | D1876 | 랙 표 ④ 칸 번호 → 크레인 목표 칸 변환표 | 배정 초안 D#190 | CRANE | O |
+| 데이터 | D1900 | 카운터 GOOD 표시 [Factory I/O: Value] | 번지 안(기존) | COUNTER | O |
+| 데이터 | D1901 | 카운터 NG 표시 [Factory I/O: Value] | 번지 안(기존) | DRIVE · COUNTER | O |
+| 데이터 | D1902 | 카운터 발열 격리 표시 [Factory I/O: Value] | 번지 안(기존) | COUNTER | O |
+| 데이터 | D1903 | 카운터 합계 표시 [Factory I/O: Value] | 번지 안(기존) | COUNTER | O |
+| 데이터 | D1904 | 수율(0.1 %) 표시 [Factory I/O: Value] | 번지 안(기존) | COUNTER | O |
+| 데이터 | D1910 | 픽앤플레이스 X 지령 [Factory I/O: D1910] | 번지 안(신규(안) V7) | DRIVE | O |
+| 데이터 | D1911 | 픽앤플레이스 Y 지령 [Factory I/O: D1911] | 번지 안(신규(안) V7) | DRIVE | O |
+| 데이터 | D1912 | 픽앤플레이스 Z 지령 [Factory I/O: D1912] | 번지 안(신규(안) V7) | DRIVE | O |
+| 데이터 | D1913 | 픽앤플레이스 X 현재 [Factory I/O: D1913] | 번지 안(신규(안) V7) | DRIVE | O |
+| 데이터 | D1914 | 픽앤플레이스 Y 현재 [Factory I/O: D1914] | 번지 안(신규(안) V7) | DRIVE | O |
+| 데이터 | D1915 | 픽앤플레이스 Z 현재 [Factory I/O: D1915] | 번지 안(신규(안) V7) | DRIVE | O |
+| 데이터 | D1916 | 팔레트 종류 [Factory I/O: D1916] | 번지 안(신규(안) V7) | DRIVE | O |
+| 데이터 | D1917 | 픽앤플레이스 집기 높이 Z(L 750 → 없으면 M 980) | v3 추가 | DRIVE |  |
+| 데이터 | D1918 | 팔레타이저에 올린 상자 수(2개면 배출) | v3 추가 | COMMON · DRIVE |  |
+| 데이터 | D1990 | 수율 계산: GOOD + NG (W2 래더와 같은 번지) | 배정 초안 D#60 | COUNTER | O |
+| 데이터 | D1992 | 수율 계산: 곱 2워드 · 나눗수 2워드 · 몫 2워드 · 나머지 2워드 (W2 래더와 같은 번지) | 배정 초안 D#62 | COUNTER | O |
+| 데이터 | D1994 | 수율 계산: 곱 2워드 · 나눗수 2워드 · 몫 2워드 · 나머지 2워드 (W2 래더와 같은 번지) | 배정 초안 D#62 | COUNTER | O |
+| 데이터 | D1995 | 수율 계산: 곱 2워드 · 나눗수 2워드 · 몫 2워드 · 나머지 2워드 (W2 래더와 같은 번지) | 배정 초안 D#62 | COUNTER | O |
+| 데이터 | D1996 | 수율 계산: 곱 2워드 · 나눗수 2워드 · 몫 2워드 · 나머지 2워드 (W2 래더와 같은 번지) | 배정 초안 D#62 | COUNTER | O |
+| 타이머 | T1501 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RFID |  |
+| 타이머 | T1502 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RFID |  |
+| 타이머 | T1503 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RFID |  |
+| 타이머 | T1504 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RFID |  |
+| 타이머 | T1505 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RFID |  |
+| 타이머 | T1506 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RFID |  |
+| 타이머 | T1507 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RFID |  |
+| 타이머 | T1508 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RFID |  |
+| 타이머 | T1509 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RFID |  |
+| 타이머 | T1510 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RFID |  |
+| 타이머 | T1511 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RFID |  |
+| 타이머 | T1512 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RFID |  |
+| 타이머 | T1513 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | INFEED |  |
+| 타이머 | T1514 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | INFEED |  |
+| 타이머 | T1515 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | CRANE |  |
+| 타이머 | T1516 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | CRANE |  |
+| 타이머 | T1517 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | CRANE |  |
+| 타이머 | T1518 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | CRANE |  |
+| 타이머 | T1519 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | CRANE |  |
+| 타이머 | T1520 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | CRANE |  |
+| 타이머 | T1521 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | CRANE |  |
+| 타이머 | T1522 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | CRANE |  |
+| 타이머 | T1523 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | SORT1 |  |
+| 타이머 | T1524 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | SORT1 |  |
+| 타이머 | T1525 | 격리 기록 응답 대기 10초(넘으면 M1957) | v3 추가 | SORT1 |  |
+| 타이머 | T1526 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | INSPECT |  |
+| 타이머 | T1527 | 메인 검사 응답 대기 10초(넘으면 M1955) | v3 추가 | INSPECT |  |
+| 타이머 | T1528 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | INSPECT |  |
+| 타이머 | T1529 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | INSPECT |  |
+| 타이머 | T1530 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RETEST |  |
+| 타이머 | T1531 | 재검사 응답 대기 10초(넘으면 M1956) | v3 추가 | RETEST |  |
+| 타이머 | T1532 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RETEST |  |
+| 타이머 | T1533 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RETEST |  |
+| 타이머 | T1534 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RETEST |  |
+| 타이머 | T1537 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | CRANE |  |
+| 타이머 | T1538 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | CRANE |  |
+| 타이머 | T1539 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | CRANE |  |
+| 타이머 | T1540 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | CRANE |  |
+| 타이머 | T1541 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | CRANE |  |
+| 타이머 | T1542 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | CRANE |  |
+| 타이머 | T1543 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | INSPECT |  |
+| 타이머 | T1544 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | INSPECT |  |
+| 타이머 | T1545 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RETEST |  |
+| 타이머 | T1546 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | SORT1 |  |
+| 타이머 | T1547 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | SORT1 |  |
+| 타이머 | T1548 | T#nn → T15nn (T1501~T1548) | 배정 초안 T#01 | RETEST |  |
+| 타이머 | T1552 | T#nn → T15nn (T1552~T1553) | 배정 초안 T#52 | INSPECT |  |
+| 타이머 | T1553 | T#nn → T15nn (T1552~T1553) | 배정 초안 T#52 | RETEST |  |
+| 타이머 | T1556 | X01 렁 타이머 1.5초 | v3 렁 | DRIVE |  |
+| 타이머 | T1557 | X02 렁 타이머 1.5초 | v3 렁 | DRIVE |  |
+| 타이머 | T1558 | X04 렁 타이머 1.5초 | v3 렁 | DRIVE |  |
+| 타이머 | T1559 | X05 렁 타이머 2초 | v3 렁 | DRIVE |  |
+| 타이머 | T1560 | U01 렁 타이머 3초 | v3 렁 | DRIVE |  |
+| 타이머 | T1561 | U03 렁 타이머 1초 | v3 렁 | DRIVE |  |
+| 타이머 | T1562 | U04 렁 타이머 3초 | v3 렁 | DRIVE |  |
+| 타이머 | T1563 | U07 렁 타이머 1초 | v3 렁 | DRIVE |  |
+| 타이머 | T1564 | U10 렁 타이머 3초 | v3 렁 | DRIVE |  |
+| 타이머 | T1565 | Y03 렁 타이머 4초 | v3 렁 | DRIVE |  |
+| 타이머 | T1567 | O01 렁 타이머 3초 | v3 렁 | DRIVE |  |
+| 타이머 | T1568 | O03 렁 타이머 5초 | v3 렁 | DRIVE |  |
+| 타이머 | T1569 | O04 렁 타이머 7초 | v3 렁 | DRIVE |  |
+| 타이머 | T1570 | O05 렁 타이머 2초 | v3 렁 | DRIVE |  |
+| 타이머 | T1571 | O06 렁 타이머 5초 | v3 렁 | DRIVE |  |
+| 타이머 | T1572 | O08 렁 타이머 1초 | v3 렁 | DRIVE |  |
+| 타이머 | T1573 | O09 렁 타이머 3초 | v3 렁 | DRIVE |  |
+| 타이머 | T1574 | O12 렁 타이머 1초 | v3 렁 | DRIVE |  |
+| 타이머 | T1575 | O14 렁 타이머 2초 | v3 렁 | DRIVE |  |
+| 타이머 | T1576 | O16 렁 타이머 2초 | v3 렁 | DRIVE |  |
+| 타이머 | T1577 | 픽앤플레이스 L 높이 도착 뒤 상자 감지 확인 1.5초 | v3 추가 | DRIVE |  |
+| 타이머 | T1578 | O10 렁 타이머 3초 | v3 렁 | DRIVE |  |
+| 타이머 | T1579 | 조작반 리셋 X1503 2초 누름(카운터 리셋) | v3 추가 | COUNTER |  |
+| 타이머 | T1580 | 픽앤플레이스 M 높이 도착 뒤 1.5초 | v3 추가 | DRIVE |  |
+| 타이머 | T1581 | 배치 끝: 상자 1개인 채 2층이 6분 쉬면 배출(O17, 11-27) | v3 추가 | DRIVE |  |
+| 타이머 | T1582 | 박스 벨트 상자 걸림 30초(Y06 → M1958, 11-27) | v3 추가 | DRIVE |  |
+| 타이머 | T1583 | 재검사 전 정치: RETEST 팩을 재검사기 스토퍼에서 20초(N10, 11-27 A22) | v3 추가 | RETEST |  |
+| 특수 릴레이 | SM400 | 항상 ON(특수 릴레이) | v3 추가 | COMMON · COUNTER |  |
+| 특수 릴레이 | SM402 | RUN 뒤 첫 스캔만 ON(특수 릴레이) | v3 추가 | COMMON |  |
+| 특수 릴레이 | SM412 | 1초 클록(특수 릴레이) | v3 추가 | COMMON |  |

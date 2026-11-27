@@ -7,7 +7,7 @@ Factory I/O의 "Modbus TCP/IP Server" 드라이버 등 Modbus 서버에 붙어�
 
 사용법 (Dtwin_pj 폴더에서)
   pip install pymodbus
-  python tools/modbus_probe.py --host 192.168.0.XXX --port 502   # 시연 PC 주소 미정 (테스트 PC는 192.168.0.213)
+  python tools/modbus_probe.py --host 192.168.0.214 --port 502   # 시연 PC = 이 PC(SmST14, A21). 예전 테스트 PC는 192.168.0.213
   python tools/modbus_probe.py --addr 0 --count 8 --write 1234
 
 Factory I/O Modbus Server 기준 방향
@@ -27,7 +27,7 @@ from plc_link import client_call as _client_call  # pymodbus 버전별 unit 인�
 
 def main():
     p = argparse.ArgumentParser(description="Modbus TCP 연결 확인")
-    p.add_argument("--host", required=True, help="Factory I/O Modbus Server 주소 (192.168.0.XXX, 시연 PC 미정)")
+    p.add_argument("--host", required=True, help="Factory I/O Modbus Server 주소 (시연 PC 192.168.0.214, 같은 PC면 127.0.0.1)")
     p.add_argument("--port", type=int, default=502)
     p.add_argument("--unit", type=int, default=1)
     p.add_argument("--addr", type=int, default=0, help="읽기 시작 주소 (0-based)")

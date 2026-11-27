@@ -15,7 +15,7 @@ NG는 한 라인으로 배출하므로 PLC에는 원인별 카운터가 없습�
   python3.12-32 hmi_counter_monitor.py                                # 1초마다 표시 (OPC, 장치 QSIM)
   python3.12-32 hmi_counter_monitor.py --once                         # 한 번만 읽기
   python3.12-32 hmi_counter_monitor.py --reset                        # M1920 펄스(리셋, DB는 유지)
-  python hmi_counter_monitor.py --link modbus --host 192.168.0.XXX    # Modbus TCP 직접 (시연 PC 주소 미정)
+  python hmi_counter_monitor.py --link modbus --host 192.168.0.214    # Modbus TCP 직접 (시연 PC = 이 PC, A21)
   python hmi_counter_monitor.py --demo                                # PLC 없이 표시 형식 확인
   python hmi_counter_monitor.py --db inspection.db                    # 공유 DB 경로 (기본: 환경변수 PROJECT_DB 또는 inspection.db)
 

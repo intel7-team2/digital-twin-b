@@ -1,6 +1,6 @@
 """실제 PLC 시험 전 초기화(11-24): 운전 비트를 끄고 MX OPC에 등록된 M · D 번지를 모두 0으로 씀.
 GX Simulator2 창을 조작하지 않고 이전 회차의 스텝 · 알람 · 래치 값을 지움(타이머 · 출력은 다음 스캔에서 다시 계산).
-사용: py -3.12 opc_reset.py [mdb 경로]"""
+사용: py -3.12 opc_reset.py [mdb 경로] — 11-27: v7d(가상 래더 태그 200개 추가)를 주면 새 태그까지 0으로 써서 2층이 멈춤 → 초기화 목록은 v7c로 줌(one5.sh · one6.sh)"""
 import sys, time, os
 sys.argv = [sys.argv[0], "1", "1"] + sys.argv[1:]
 src = open(__file__.replace("opc_reset.py", "opc_outside.py"), encoding="utf-8").read()

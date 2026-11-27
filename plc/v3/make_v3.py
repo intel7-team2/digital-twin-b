@@ -259,7 +259,8 @@ N06  LD {{N45}}  =>  MOV K0 D1740 | SET {{N50}} | RST {{N45}} | AND= D1730 K1 | 
 N07  LD M1567  =>  MPS | AND<> K1M1871 K0 | SET {{N46}} | BKRST M1871 K4 | MPP | AND<> K2M1863 K0 | SET {{N51}} | BKRST M1863 K5
 N08  LD M1566  =>  MPS | AND {{N44}} | SET {{N45}} | RST {{N44}} | MRD | AND {{N43}} | SET {{N44}} | RST {{N43}} | MRD | AND {{N42}} | SET {{N43}} | RST {{N42}} | MPP | AND {{N41}} | SET {{N42}} | RST {{N41}}
 N09  LD {{N30}} | AND M1950  =>  OUT M1730 | OUT T1531 K100 | MPS | AND T1531 | SET M1956 | MPP | AND= D1743 K1 | SET {{N41}} | RST {{N30}}
-N10  LD {{N20}} | AND= D1743 K0  =>  MOV D1536 D1741 | MOV D1537 D1742 | MOV K1 D1740 | SET {{N30}} | RST {{N20}}
+; 11-27(A22): RETEST 팩은 재검사기 정위치 스토퍼에서 20초 세운 뒤(정치 · 전압 안정) 계측 요청. 메인 NG 팩은 계측 없이 통과(N12에서 N20을 안 거침)
+N10  LD {{N20}} | AND= D1743 K0 | AND M1950  =>  OUT T1583 K200 | AND T1583 | MOV D1536 D1741 | MOV D1537 D1742 | MOV K1 D1740 | SET {{N30}} | RST {{N20}}
 N11  LD {{N16}} | AND M1950  =>  OUT T1553 K10 | AND T1553 | SET {{N10}} | RST {{N16}}
 N12  LD {{N15}}  =>  RST {{N15}} | MPS | AND< D1761 K2 | SET {{N51}} | MRD | AND= D1761 K2 | SET {{N20}} | MPP | AND> D1761 K2 | SET {{N50}}
 N13  LD {{N10}} | LD= D1535 K0 | OR= D1535 D1568 | OR= D1535 D1744 | ANB | LD {{N11}} | AND= D1535 K0 | ORB | AND M1566  =>  OUT M1766
@@ -328,8 +329,9 @@ Y05  LD {H10} | AND M1950  =>  MPS | AND M1983 | AND {L10} | SET {H30} | RST {H1
 ; 11-27: 박스 벨트에서 상자가 30초 넘게 빔(X1900)을 지나지 못하면 알람 M1958(상자 걸림). 상자를 바로 놓고 리셋 → 이어서 진행
 Y06  LD {H30} | OR {H31} | AND M1950  =>  OUT T1582 K300 | AND T1582 | SET M1958
 ; [팔레타이저] 역순. D1918 = 올린 박스 수(2개면 배출)
-; 11-27: 상자 1개만 실린 채 2층(엘리베이터 · 픽앤플레이스 · 박스 벨트)이 10분 동안 비어 있으면 그대로 배출(배치 끝 홀수 GOOD 상자가 다음 배치와 섞이지 않게)
-O17  LD {L10} | AND= D1918 K1 | AND {H0} | AND {U0} | AND {E0} | AND M1950  =>  OUT T1581 K6000 | AND T1581 | SET {L20} | RST {L10}
+; 11-27: 상자 1개만 실린 채 2층(엘리베이터 · 픽앤플레이스 · 박스 벨트)이 6분 동안 비어 있으면 그대로 배출(배치 끝 홀수 GOOD 상자가 다음 배치와 섞이지 않게).
+; 6분 = 투입 간격 최대 약 2분 × 3. 실제 PLC 5회차에서 2층 상자 사이 최대 268초(격리 · 재검사 팩이 겹칠 때) + 재검사 대기 20초 → 약 290초보다 여유
+O17  LD {L10} | AND= D1918 K1 | AND {H0} | AND {U0} | AND {E0} | AND M1950  =>  OUT T1581 K3600 | AND T1581 | SET {L20} | RST {L10}
 O01  LD {L37} | AND X1925 | AND M1950  =>  OUT T1567 K30 | AND T1567 | MOV K0 D1918 | SET {L0} | RST {L37}
 O02  LD {L36} | ANI X1925 | AND M1950  =>  SET {L37} | RST {L36}
 O03  LD {L35} | AND M1950  =>  OUT T1568 K50 | AND T1568 | SET {L36} | RST {L35}

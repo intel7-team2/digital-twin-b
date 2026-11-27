@@ -45,7 +45,7 @@
 16 AS/RS,Y1690,B,PLC→FIO,Belt Conveyor,Run,격리 라인 컨베이어,신규(안)
 16 AS/RS,X1902,B,FIO→PLC,Diffuse Sensor,Detect,발열 격리 게이트 (카운터 D1902),기존
 16 AS/RS,Y1691,B,PLC→FIO,Stack Light,Red,발열 경보 빨강 (M1690),신규(안)
-16 AS/RS,Y1692,B,PLC→FIO,Stack Light,Yellow,노랑 (재검사 라인 만차 M1800 · 래더 알람 M1951~M1957 — 11-26 v3),신규(안)
+16 AS/RS,Y1692,B,PLC→FIO,Stack Light,Yellow,노랑 (재검사 라인 만차 M1800 · 래더 알람 M1951~M1958 — 11-26 · 11-27 v3),신규(안)
 16 AS/RS,Y1693,B,PLC→FIO,Stack Light,Green,초록 (운전 중),신규(안)
 16 AS/RS,Y1694,B,PLC→FIO,Alarm Siren,Alarm Siren,발열 경보음 (M1690),신규(안)
 17 검사·분류,Y1700,B,PLC→FIO,Belt Conveyor,Run,메인 라인 1 (1차 분리 → 메인 검사기),신규(안)

@@ -160,6 +160,7 @@ if "--bridge" in sys.argv:                                  # Factory I/O(Modbus
     log("중계 스레드 시작(입력 쓰기 · 출력 읽기 따로)")
 def log(m): print(f"{time.time()-T0:6.1f}s {m}", flush=True)
 WATCH = ["M1950", "M1500", "D1640", "D1641", "D1656", "D1541", "D1750", "D1760", "D1525", "D1535", "D1558", "D1568", "D1900", "D1901", "D1902"] + [f"M{1951+i}" for i in range(8)]
+WATCH += [w for w in os.environ.get("WATCHX", "").split(",") if w]   # 11-27: WATCHX="D1740,X1730" — 변화를 더 기록할 번지(MX OPC에 등록된 것만)
 HS = ["M1510", "D1710", "D1711", "D1713", "D1740", "D1741", "D1743", "D1650", "D1651", "D1652", "D1653", "D1700", "D1730"]
 RACK = [f"D{1660+k}" for k in range(24)] + [f"D{1810+k}" for k in range(24)]
 ALL = WATCH + HS + RACK + [w for _, w, _ in ESTOP if w not in WATCH + HS + RACK]

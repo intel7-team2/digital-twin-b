@@ -480,8 +480,8 @@ def add_link_args(p, default_port=None):
                    help="auto(기본: 직접 연결, 실패 시 32비트면 래퍼) / direct / OPC.SiemensDAAuto 등 래퍼 ProgID")
     g.add_argument("--opc-source", choices=("device", "cache"), default="device",
                    help="읽기 데이터 소스 (기본 device. Simulate 장치 시험은 cache)")
-    g.add_argument("--host", default="192.168.0.XXX",
-                   help="--link modbus/mc 일 때 접속 주소. 시연 PC가 정해지면 192.168.0.XXX 를 실제 주소로 바꿉니다")
+    g.add_argument("--host", default="192.168.0.214",
+                   help="--link modbus/mc 일 때 접속 주소. 기본 = 시연 PC(이 PC SmST14, 11-27 A21). 같은 PC 안이면 127.0.0.1")
     g.add_argument("--port", type=int, default=default_port, help="기본 modbus 502 / mc 5000")
     g.add_argument("--unit", type=int, default=1)
 
@@ -490,8 +490,6 @@ def open_link(args):
     if args.link == "opc":
         source = OPC_DS_CACHE if getattr(args, "opc_source", "device") == "cache" else OPC_DS_DEVICE
         return OpcLink(args.opc_server, args.opc_device, args.opc_wrapper, source)
-    if "XXX" in args.host:
-        sys.exit(f"--link {args.link} 는 --host 에 실제 주소가 필요합니다 (시연 PC 미정: 192.168.0.XXX). 예: --host 192.168.0.213")
     if args.link == "mc":
         try:
             return McLink(args.host, args.port or 5000)
