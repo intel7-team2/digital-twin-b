@@ -93,8 +93,8 @@
 <!-- ============================================================ 01 운전 현황 -->
 <section class="screen" id="s1">
   <div class="hdr"><span class="no">01</span><span class="tt">운전 현황</span></div>
-  <div class="pill" style="left:160px;width:142px;"><span style="position:relative;width:20px;height:20px;"><i class="sock" style="left:0;top:0;"></i></span>운전 중 <span class="dev">(제안 A24)</span></div>
-  <i class="p lamp g" style="left:169px;top:21px;" data-k="BL" data-d="(제안 A24)" data-f="ON 81 · OFF 25"></i>
+  <div class="pill" style="left:160px;width:142px;"><span style="position:relative;width:20px;height:20px;"><i class="sock" style="left:0;top:0;"></i></span>운전 중 <span class="dev">M1950</span></div>
+  <i class="p lamp g" style="left:169px;top:21px;" data-k="BL" data-d="M1950" data-f="ON 81 · OFF 25"></i>
   <div class="pill" style="left:310px;width:130px;"><span style="position:relative;width:20px;height:20px;"><i class="sock" style="left:0;top:0;"></i></span>비상정지 <span class="dev">M1500</span></div>
   <i class="p lamp" style="left:319px;top:21px;" data-k="BL" data-d="M1500" data-f="ON 55 · OFF 25"></i>
   <div class="pill" style="left:448px;width:182px;"><span style="position:relative;width:20px;height:20px;"><i class="sock" style="left:0;top:0;"></i></span>재검사 라인 대기 <span class="dev">M1800</span></div>
@@ -139,7 +139,7 @@
   </div>
   <!-- 흐름 부품 (화면 좌표 = 상자 좌표 + 13, 67) -->
   <div class="p val" style="left:34px;top:173px;width:54px;height:22px;font-size:15px;" data-k="ND" data-d="D1516" data-f="10진 4자리 앞자리 0 · 글자 7 · 판 투명">0037</div>
-  <i class="p lamp g" style="left:100px;top:177px;" data-k="WL" data-d="D1514" data-f="범위: 0 → 81(정상) · 1~65535 → 55(오류)"></i>
+  <i class="p lamp g" style="left:100px;top:177px;" data-k="WL" data-d="D1514" data-f="범위: 0~1 → 81(정상 · 태그 없음) · 2~65535 → 55(오류)"></i>
   <i class="p lamp c" style="left:182px;top:174px;" data-k="BL" data-d="M1600" data-f="ON 75 · OFF 25"></i>
   <i class="p lamp" style="left:206px;top:174px;" data-k="BL" data-d="M1601" data-f="ON 75 · OFF 25"></i>
   <i class="p lamp c" style="left:292px;top:132px;" data-k="BL" data-d="Y1662" data-f="ON 75 · OFF 25"></i>
@@ -320,15 +320,15 @@
     <span class="lbl a" style="left:12px;top:142px;">비전 박스 크기</span><div class="slot" style="left:150px;top:136px;width:110px;height:28px;"></div><span class="dev a" style="left:268px;top:144px;">D1519</span>
     <span class="lbl a" style="left:12px;top:176px;">RFID 상태</span><div class="slot" style="left:150px;top:170px;width:110px;height:28px;"></div><span class="dev a" style="left:268px;top:178px;">D1514</span>
     <div class="sep" style="left:10px;right:10px;top:208px;"></div>
-    <i class="sock" style="left:12px;top:220px;"></i><span class="lbl a" style="left:38px;top:221px;font-size:12px;">셀 수 = 비전</span><span class="dev a" style="left:118px;top:224px;">(비교 비트 A24)</span>
+    <i class="sock" style="left:12px;top:220px;"></i><span class="lbl a" style="left:38px;top:221px;font-size:12px;">셀 수 = 비전</span><span class="dev a" style="left:118px;top:224px;">M1951 반전</span>
     <i class="sock" style="left:220px;top:220px;"></i><span class="lbl a" style="left:246px;top:221px;font-size:12px;">C 인계</span><span class="dev a" style="left:290px;top:224px;">M1510</span>
   </div>
   <div class="p val" style="left:164px;top:102px;width:106px;height:26px;font-size:16px;" data-k="ND" data-d="D1516" data-f="10진 4자리 앞자리 0 · 글자 7">0038</div>
   <div class="p val" style="left:164px;top:136px;width:106px;height:26px;font-size:16px;" data-k="ND" data-d="D1517" data-f="10진 5자리 · 글자 7">6212</div>
   <div class="p val" style="left:164px;top:170px;width:106px;height:26px;font-size:16px;" data-k="ND" data-d="D1518" data-f="10진 1자리 · 글자 7">6</div>
   <div class="p txt" style="left:164px;top:204px;width:106px;height:26px;font-size:15px;color:var(--c7);justify-content:flex-end;padding-right:6px;" data-k="WL" data-d="D1519" data-f="범위 상태 글자: 0 → — · 4 → 4 (Small) · 6 → 6 (Large)">6 (Large)</div>
-  <div class="p txt" style="left:164px;top:238px;width:106px;height:26px;font-size:15px;color:var(--c81);justify-content:flex-end;padding-right:6px;" data-k="WL" data-d="D1514" data-f="범위 상태 글자·색: 0 → 0 정상(81) · 1~65535 → 오류(55) (오류 코드 뜻은 A24에서 확정)">0 정상</div>
-  <i class="p lamp g" style="left:28px;top:289px;" data-k="BL" data-d="(제안 A24: D1518=D1519 비교 비트)" data-f="ON 81 · OFF 55 — HMI는 두 번지 비교를 못 하므로 래더 비트 필요"></i>
+  <div class="p txt" style="left:164px;top:238px;width:106px;height:26px;font-size:15px;color:var(--c81);justify-content:flex-end;padding-right:6px;" data-k="WL" data-d="D1514" data-f="범위 상태 글자·색: 0~1 → 정상(81, 1 = 태그 없음) · 2~65535 → 오류(55) (Factory I/O 리더 Status: 2 태그 여러 개 · 3 주소 오류 · 4 명령 오류)">0 정상</div>
+  <i class="p lamp g" style="left:28px;top:289px;" data-k="BL" data-d="M1951" data-f="OFF Green(일치) · ON Red(박스 크기 불일치 알람)"></i>
   <i class="p lamp" style="left:236px;top:289px;" data-k="BL" data-d="M1510" data-f="ON 75 · OFF 25"></i>
 
   <!-- 랙 격자 -->
@@ -392,8 +392,8 @@
 <!-- ============================================================ 04 알람 -->
 <section class="screen" id="s4">
   <div class="hdr"><span class="no">04</span><span class="tt">알람 · 통신</span></div>
-  <div class="pill" style="left:200px;width:150px;"><span style="position:relative;width:20px;height:20px;"><i class="sock" style="left:0;top:0;"></i></span>알람 발생 중</div>
-  <i class="p lamp r" style="left:209px;top:21px;" data-k="BL" data-d="(알람 발생 중 시스템 비트 · 작화 때 확인)" data-f="ON 55 · OFF 25"></i>
+  <div class="pill" style="left:200px;width:150px;"><span style="position:relative;width:20px;height:20px;"><i class="sock" style="left:0;top:0;"></i></span>알람 발생 중 <span class="dev">M1959</span></div>
+  <i class="p lamp r" style="left:209px;top:21px;" data-k="BL" data-d="M1959" data-f="ON 55 · OFF 55(어둡게) — 래더 LAMP W07: M1500 · M1800 · M1690 · M1951~M1958 중 하나"></i>
   <div class="p val" style="left:790px;top:14px;width:222px;height:28px;font-size:16px;color:var(--c46);" data-k="DT" data-d="(본체 시계)" data-f="날짜 20yy/mm/dd · 시각 hh:mm:ss · 글자 46 · ASCII">2026/11/19 14:32:05</div>
 
   <div class="box" style="left:12px;top:66px;width:1000px;height:352px;">
@@ -419,7 +419,7 @@
   <!-- 통신 상태 -->
   <div class="box" style="left:12px;top:430px;width:494px;height:264px;">
     <h3>통신 · 응답 상태</h3>
-    <i class="sock" style="left:12px;top:38px;"></i><span class="lbl a" style="left:38px;top:39px;">HMI ↔ 중계 서버 (MC 3E, 포트 5000)</span><span class="dev a" style="left:300px;top:42px;">WinGP 통신 오류 상태</span>
+    <i class="sock" style="left:12px;top:38px;"></i><span class="lbl a" style="left:38px;top:39px;">HMI ↔ 중계 서버 (MC 3E, 포트 5000)</span><span class="dev a" style="left:300px;top:42px;">LS2032.0 깜박임 = 통신 중</span>
     <span class="crit a" style="left:38px;top:60px;">중계 ↔ MX OPC ↔ GX Simulator2 끊김도 중계가 오류로 답하면 여기서 보임</span>
     <div class="sep" style="left:10px;right:10px;top:84px;"></div>
     <span class="lbl a" style="left:12px;top:96px;">Python 계측 엔진</span><span class="crit a" style="left:126px;top:98px;">요청 → 완료</span>
@@ -431,19 +431,19 @@
     <i class="sock" style="left:90px;top:198px;"></i><span class="lbl a" style="left:116px;top:200px;">①</span>
     <i class="sock" style="left:150px;top:198px;"></i><span class="lbl a" style="left:176px;top:200px;">②</span>
     <i class="sock" style="left:210px;top:198px;"></i><span class="lbl a" style="left:236px;top:200px;">③</span>
-    <span class="dev a" style="left:270px;top:202px;">D1514 · D1524 · D1534 (0 = 정상)</span>
+    <span class="dev a" style="left:270px;top:202px;">D1514 · D1524 · D1534 (0 · 1 = 정상)</span>
     <span class="crit a" style="left:12px;top:234px;">응답 경과 시간은 번지가 없어 표시하지 않음</span>
   </div>
-  <i class="p lamp g" style="left:28px;top:472px;" data-k="BL" data-d="(WinGP 시스템 데이터: 통신 오류 상태 · 작화 때 번지 확인)" data-f="정상 81 · 오류 55 (비트 반전 필요 시 범위 램프)"></i>
+  <i class="p lamp g" style="left:28px;top:472px;" data-k="BL" data-d="[#INTERNAL]LS203200" data-f="ON · OFF 모두 Green(OFF 어둡게) — WinGP 특수 릴레이 LS2032 0번 비트는 통신 주기마다 ON/OFF → 깜박이면 통신 중, 멈추면 끊김. (LS0001 11번 비트는 오류가 한 번 나면 복구 뒤에도 남아 쓰지 않음)"></i>
   <i class="p lamp" style="left:86px;top:556px;" data-k="WL" data-d="D1710" data-f="범위: 1 → 100 · 그 외 → 25"></i>
   <i class="p lamp g" style="left:112px;top:556px;" data-k="WL" data-d="D1713" data-f="범위: 1 → 81 · 그 외 → 25"></i>
   <i class="p lamp" style="left:324px;top:556px;" data-k="WL" data-d="D1740" data-f="범위: 1 → 100 · 그 외 → 25"></i>
   <i class="p lamp g" style="left:350px;top:556px;" data-k="WL" data-d="D1743" data-f="범위: 1 → 81 · 그 외 → 25"></i>
   <i class="p lamp" style="left:86px;top:586px;" data-k="WL" data-d="D1650" data-f="범위: 1 → 100 · 그 외 → 25"></i>
   <i class="p lamp g" style="left:112px;top:586px;" data-k="WL" data-d="D1653" data-f="범위: 1 → 81 · 그 외 → 25"></i>
-  <i class="p lamp g" style="left:106px;top:632px;" data-k="WL" data-d="D1514" data-f="범위: 0 → 81 · 1~65535 → 55"></i>
-  <i class="p lamp g" style="left:166px;top:632px;" data-k="WL" data-d="D1524" data-f="범위: 0 → 81 · 1~65535 → 55"></i>
-  <i class="p lamp g" style="left:226px;top:632px;" data-k="WL" data-d="D1534" data-f="범위: 0 → 81 · 1~65535 → 55"></i>
+  <i class="p lamp g" style="left:106px;top:632px;" data-k="WL" data-d="D1514" data-f="범위: 0~1 → 81 · 2~65535 → 55 (1 = 태그 없음, 평소 값)"></i>
+  <i class="p lamp g" style="left:166px;top:632px;" data-k="WL" data-d="D1524" data-f="범위: 0~1 → 81 · 2~65535 → 55 (1 = 태그 없음, 평소 값)"></i>
+  <i class="p lamp g" style="left:226px;top:632px;" data-k="WL" data-d="D1534" data-f="범위: 0~1 → 81 · 2~65535 → 55 (1 = 태그 없음, 평소 값)"></i>
 
   <!-- 조작 -->
   <div class="box" style="left:518px;top:430px;width:494px;height:264px;">
@@ -455,7 +455,7 @@
   </div>
   <div class="p sw red" style="left:534px;top:470px;width:222px;height:92px;font-size:16px;" data-k="SW" data-d="M1920" data-f="화면 전환(창 화면 '카운터 리셋 확인') → 창 안 '예' = 비트 스위치 M1920 모멘터리">카운터 리셋<small>M1920 · 확인 창</small></div>
   <div class="p sw" style="left:776px;top:470px;width:222px;height:92px;font-size:16px;" data-k="SW" data-d="M1960" data-f="비트 셋 — 래더 알람 M1951~M1958 해제(조작반 리셋 X1503 짧게와 같음), 래더 LAMP W04가 끔. 걸린 원인이 남아 있으면 다시 켜짐">알람 확인(PLC)<small>M1960 · 래더 알람 해제</small></div>
-  <div class="p sw" style="left:534px;top:582px;width:222px;height:92px;font-size:16px;" data-k="SW" data-d="(제안 A24)" data-f="비트 스위치 · 지연 ON 2.0초 · 래더 필요">LOCK 일괄 해제<small>(제안 · 래더 필요)</small></div>
+  <div class="p sw" style="left:534px;top:582px;width:222px;height:92px;font-size:16px;" data-k="SW" data-d="M1961" data-f="비트 셋 · 지연 ON 2.0초 · 래더 LAMP W06이 끔. 정지 중이면 래더 초기화도 함">LOCK 해제(2초)<small>M1961 · 정지 중이면 초기화</small></div>
 
   <div class="ftr"></div>
   <div class="nav" style="left:10px;">운전 현황<small>01</small></div><div class="nav" style="left:263px;">검사<small>02</small></div><div class="nav" style="left:516px;">AS/RS · 격리<small>03</small></div><div class="nav cur" style="left:769px;">알람<small>04</small></div>
