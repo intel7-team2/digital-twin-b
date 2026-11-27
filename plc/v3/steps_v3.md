@@ -217,6 +217,9 @@
 | RETEST | Q93 | 4 | 4 |
 | RETEST | N90 | 2 | 2 |
 | DRIVE | V01 | 12 | 12 |
+| DRIVE | V02 | 2 | 5 |
+| DRIVE | V03 | 4 | 4 |
+| DRIVE | V04 | 5 | 5 |
 | DRIVE | X01 | 7 | 10 |
 | DRIVE | X02 | 7 | 10 |
 | DRIVE | X03 | 5 | 5 |
@@ -305,7 +308,7 @@
 | SORT1 | 23 | 195 |
 | INSPECT | 34 | 396 |
 | RETEST | 44 | 455 |
-| DRIVE | 65 | 570 |
+| DRIVE | 68 | 584 |
 | COUNTER | 7 | 51 |
 | LAMP | 7 | 24 |
-| **합계** | 291 | 2935 |
+| **합계** | 294 | 2949 |

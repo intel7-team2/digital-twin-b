@@ -48,6 +48,7 @@
 16 AS/RS,Y1692,B,PLC→FIO,Stack Light,Yellow,노랑 (재검사 라인 만차 M1800 · 래더 알람 M1951~M1958 — 11-26 · 11-27 v3),신규(안)
 16 AS/RS,Y1693,B,PLC→FIO,Stack Light,Green,초록 (운전 중),신규(안)
 16 AS/RS,Y1694,B,PLC→FIO,Alarm Siren,Alarm Siren,발열 경보음 (M1690),신규(안)
+16 AS/RS,Y1695,B,PLC→FIO,Remover,Y1695,발열 격리 레일 리무버 (작업자 수거 흉내 · HMI 수거 완료 M1963 — 11-27 V7_plc_2),신규(안)
 17 검사·분류,Y1700,B,PLC→FIO,Belt Conveyor,Run,메인 라인 1 (1차 분리 → 메인 검사기),신규(안)
 17 검사·분류,X1700,B,FIO→PLC,Diffuse Sensor,Detect,메인 검사 정위치,신규(안)
 17 검사·분류,Y1701,B,PLC→FIO,Stop Blade,Stop blade,메인 검사 위치 정지,신규(안)

@@ -164,6 +164,9 @@ WATCH += [w for w in os.environ.get("WATCHX", "").split(",") if w]   # 11-27: WA
 HS = ["M1510", "D1710", "D1711", "D1713", "D1740", "D1741", "D1743", "D1650", "D1651", "D1652", "D1653", "D1700", "D1730"]
 RACK = [f"D{1660+k}" for k in range(24)] + [f"D{1810+k}" for k in range(24)]
 ALL = WATCH + HS + RACK + [w for _, w, _ in ESTOP if w not in WATCH + HS + RACK]
+PRESS = [(x.split("@")[0],) + tuple(x.split("@")[1].replace(":", "=").split("=")) for x in os.environ.get("PRESS", "").split("|") if x]   # 11-27: PRESS="M1963@D1902=1:5" — 그 워드가 값이 되고 5초 뒤 비트를 1로 한 번 씀(HMI 비트 셋 스위치 흉내, 래더가 끔)
+_pr = {"n": 0, "t": None}
+ALL += [w for _, w, _, _ in PRESS if w not in ALL]
 KU = os.environ.get("KEEPUNTIL", "")                          # 11-27: KEEPUNTIL=Y1929 — 팩이 다 나와도 그 비트가 켜질 때까지 계속(배치 끝 1개 팔레트 배출 확인)
 if KU: ALL.append(KU)
 pack_ids = list(range(101, 101 + len(plan))); fed = 0; judged = set(); prev = {}
@@ -192,6 +195,10 @@ while time.time() - T0 < LIMIT:
             if d >= 6: OVR.pop(_es["b"], None)
             if 8 <= d < 11: OVR["X1501"] = True
             if d >= 11: OVR.pop("X1501", None); _es["t"] = None; _es["n"] += 1; log(f"** 다시 시작 M1950={V.get('M1950')}")
+    if _pr["n"] < len(PRESS):                               # HMI 버튼 흉내
+        b, w, v, d = PRESS[_pr["n"]]
+        if _pr["t"] is None and V.get(w) is not None and int(V[w]) == int(v): _pr["t"] = t
+        if _pr["t"] is not None and t - _pr["t"] >= float(d): L.write(b, 1); log(f"** HMI {b} 누름 ({w}={v} 뒤 {d}s)"); _pr.update(n=_pr["n"] + 1, t=None)
     # C 인계
     if pend["C"] and V["M1510"]: pend["C"] = "seen"
     if pend["C"] == "seen" and not V["M1510"]: pend["C"] = False          # 래더가 M1510을 받아 내린 뒤에만 다음 인계

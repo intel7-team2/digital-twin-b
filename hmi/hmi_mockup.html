@@ -139,7 +139,7 @@
   </div>
   <!-- 흐름 부품 (화면 좌표 = 상자 좌표 + 13, 67) -->
   <div class="p val" style="left:34px;top:173px;width:54px;height:22px;font-size:15px;" data-k="ND" data-d="D1516" data-f="10진 4자리 앞자리 0 · 글자 7 · 판 투명">0037</div>
-  <i class="p lamp g" style="left:100px;top:177px;" data-k="WL" data-d="D1514" data-f="범위: 0~1 → 81(정상 · 태그 없음) · 2~65535 → 55(오류)"></i>
+  <i class="p lamp g" style="left:100px;top:177px;" data-k="WL" data-d="D1514" data-f="범위: 0~2 → 81(정상 · 1 태그 없음 · 2 팔레트+박스 태그 2개 = 평소) · 3~65535 → 55(오류)"></i>
   <i class="p lamp c" style="left:182px;top:174px;" data-k="BL" data-d="M1600" data-f="ON 75 · OFF 25"></i>
   <i class="p lamp" style="left:206px;top:174px;" data-k="BL" data-d="M1601" data-f="ON 75 · OFF 25"></i>
   <i class="p lamp c" style="left:292px;top:132px;" data-k="BL" data-d="Y1662" data-f="ON 75 · OFF 25"></i>
@@ -327,7 +327,7 @@
   <div class="p val" style="left:164px;top:136px;width:106px;height:26px;font-size:16px;" data-k="ND" data-d="D1517" data-f="10진 5자리 · 글자 7">6212</div>
   <div class="p val" style="left:164px;top:170px;width:106px;height:26px;font-size:16px;" data-k="ND" data-d="D1518" data-f="10진 1자리 · 글자 7">6</div>
   <div class="p txt" style="left:164px;top:204px;width:106px;height:26px;font-size:15px;color:var(--c7);justify-content:flex-end;padding-right:6px;" data-k="WL" data-d="D1519" data-f="범위 상태 글자: 0 → — · 4 → 4 (Small) · 6 → 6 (Large)">6 (Large)</div>
-  <div class="p txt" style="left:164px;top:238px;width:106px;height:26px;font-size:15px;color:var(--c81);justify-content:flex-end;padding-right:6px;" data-k="WL" data-d="D1514" data-f="범위 상태 글자·색: 0~1 → 정상(81, 1 = 태그 없음) · 2~65535 → 오류(55) (Factory I/O 리더 Status: 2 태그 여러 개 · 3 주소 오류 · 4 명령 오류)">0 정상</div>
+  <div class="p txt" style="left:164px;top:238px;width:106px;height:26px;font-size:15px;color:var(--c81);justify-content:flex-end;padding-right:6px;" data-k="WL" data-d="D1514" data-f="범위 상태 글자·색: 0~2 → 정상(81, 1 = 태그 없음 · 2 = 팔레트+박스 태그 2개, Factory I/O에선 평소 값) · 3~65535 → 오류(55) (Factory I/O 리더 Status: 2 태그 여러 개 · 3 주소 오류 · 4 명령 오류)">0 정상</div>
   <i class="p lamp g" style="left:28px;top:289px;" data-k="BL" data-d="M1951" data-f="OFF Green(일치) · ON Red(박스 크기 불일치 알람)"></i>
   <i class="p lamp" style="left:236px;top:289px;" data-k="BL" data-d="M1510" data-f="ON 75 · OFF 25"></i>
 
@@ -358,12 +358,14 @@
   <div class="box" style="left:354px;top:350px;width:658px;height:150px;border-top:4px solid var(--c56);">
     <h3>발열 격리 (1차 분리 ↓) <span class="dev">M1690 · D1650~D1653 · X1902</span></h3>
     <i class="sock" style="left:12px;top:38px;"></i><span class="lbl a" style="left:38px;top:39px;">보관 중 이상 발열</span><span class="dev a" style="left:160px;top:42px;">M1690</span>
-    <i class="sock" style="left:260px;top:38px;"></i><span class="lbl a" style="left:286px;top:39px;">격리 라인 도착</span><span class="dev a" style="left:384px;top:42px;">X1902</span>
+    <i class="sock" style="left:260px;top:38px;"></i><span class="lbl a" style="left:286px;top:39px;">격리 레일 비어 있음</span><span class="dev a" style="left:416px;top:42px;">X1902</span>
     <span class="lbl a" style="left:12px;top:78px;">마지막 격리 PACK ID</span><div class="slot" style="left:150px;top:72px;width:70px;height:28px;"></div><span class="lbl a" style="left:236px;top:78px;">가상 온도</span><div class="slot" style="left:300px;top:72px;width:70px;height:28px;"></div><span class="unit a" style="left:376px;top:78px;">°C</span><span class="dev a" style="left:410px;top:80px;">D1651 · D1652</span>
     <i class="sock" style="left:12px;top:114px;"></i><span class="lbl a" style="left:38px;top:115px;">DB 기록 요청</span><span class="dev a" style="left:126px;top:118px;">D1650</span>
     <i class="sock" style="left:200px;top:114px;"></i><span class="lbl a" style="left:226px;top:115px;">DB 기록 완료</span><span class="dev a" style="left:314px;top:118px;">D1653</span>
   </div>
   <i class="p lamp" style="left:370px;top:395px;" data-k="BL" data-d="M1690" data-f="ON 56 · OFF 25"></i>
+  <!-- 11-27: 격리 레일 비우기(사용자 ①) — 작업자가 격리 팩을 들어낸 뒤 누름. 레일 빔 X1902는 비어 있을 때 ON -->
+  <div class="p sw" style="left:812px;top:564px;width:164px;height:102px;font-size:16px;z-index:5;" data-k="SW" data-d="M1963" data-f="비트 셋 — 격리 팩 수거 완료: 레일에 팔레트가 있으면(X1902 OFF) 리무버 Y1695로 치움, 비거나 3초 뒤 래더 DRIVE V04가 끔">격리 팩<br>수거 완료</div>
   <i class="p lamp" style="left:618px;top:395px;" data-k="BL" data-d="X1902" data-f="ON 56 · OFF 25"></i>
   <div class="p val" style="left:506px;top:427px;width:66px;height:26px;font-size:16px;" data-k="ND" data-d="D1651" data-f="10진 4자리 앞자리 0 · 글자 7">0011</div>
   <div class="p val" style="left:656px;top:427px;width:66px;height:26px;font-size:16px;" data-k="ND" data-d="D1652" data-f="10진 소수 1자리(÷10) · 글자 7">41.2</div>
@@ -403,7 +405,7 @@
     <span class="crit a" style="left:12px;top:316px;">글자색: 발생 = 빨강(60) · 확인 = 노랑(63) · 복구 = 회색(46)</span>
     <span class="crit a" style="left:12px;top:332px;">≠ 비교 · 응답 없음(5초) 조건은 래더에서 알람 비트로 계산(A24)</span>
   </div>
-  <div class="p alarm" style="left:23px;top:127px;width:908px;height:242px;" data-k="AL" data-d="알람 블록 1 (비트 M1500·M1800·M1690 · 워드 D1514·D1524·D1534 ≠0 · 제안 M1950~)" data-f="이력 모드 · 항목: 발생 일시(mm/dd hh:mm:ss)·메시지·확인·복구·횟수 · 8줄 · 메시지 46자">
+  <div class="p alarm" style="left:23px;top:127px;width:908px;height:242px;" data-k="AL" data-d="알람 블록 1 (비트 M1500·M1800·M1690 · RFID는 래더 알람 M1952~M1954 — 리더 상태 워드는 조건에 넣지 않음(Factory I/O에선 평소 2) · 제안 M1950~)" data-f="이력 모드 · 항목: 발생 일시(mm/dd hh:mm:ss)·메시지·확인·복구·횟수 · 8줄 · 메시지 46자">
     <div class="row trg cur"><span>11/19 14:31:48</span><span>[M1800] 재검사 라인 분기점까지 참 — 메인 출구 대기</span><span>--:--:--</span><span>--:--:--</span><span>3</span></div>
     <div class="row ack"><span>11/19 14:30:02</span><span>[M1690] 보관 중 이상 발열 — 해당 칸 LOCK</span><span>14:30:20</span><span>--:--:--</span><span>1</span></div>
     <div class="row rec"><span>11/19 14:12:40</span><span>[A24] 박스 크기 불일치 (DB 셀 수 ≠ 비전) — 투입 정지</span><span>14:12:55</span><span>14:13:30</span><span>1</span></div>
@@ -431,7 +433,7 @@
     <i class="sock" style="left:90px;top:198px;"></i><span class="lbl a" style="left:116px;top:200px;">①</span>
     <i class="sock" style="left:150px;top:198px;"></i><span class="lbl a" style="left:176px;top:200px;">②</span>
     <i class="sock" style="left:210px;top:198px;"></i><span class="lbl a" style="left:236px;top:200px;">③</span>
-    <span class="dev a" style="left:270px;top:202px;">D1514 · D1524 · D1534 (0 · 1 = 정상)</span>
+    <span class="dev a" style="left:270px;top:202px;">D1514 · D1524 · D1534 (0~2 = 정상)</span>
     <span class="crit a" style="left:12px;top:234px;">응답 경과 시간은 번지가 없어 표시하지 않음</span>
   </div>
   <i class="p lamp g" style="left:28px;top:472px;" data-k="BL" data-d="[#INTERNAL]LS203200" data-f="ON · OFF 모두 Green(OFF 어둡게) — WinGP 특수 릴레이 LS2032 0번 비트는 통신 주기마다 ON/OFF → 깜박이면 통신 중, 멈추면 끊김. (LS0001 11번 비트는 오류가 한 번 나면 복구 뒤에도 남아 쓰지 않음)"></i>
@@ -441,9 +443,9 @@
   <i class="p lamp g" style="left:350px;top:556px;" data-k="WL" data-d="D1743" data-f="범위: 1 → 81 · 그 외 → 25"></i>
   <i class="p lamp" style="left:86px;top:586px;" data-k="WL" data-d="D1650" data-f="범위: 1 → 100 · 그 외 → 25"></i>
   <i class="p lamp g" style="left:112px;top:586px;" data-k="WL" data-d="D1653" data-f="범위: 1 → 81 · 그 외 → 25"></i>
-  <i class="p lamp g" style="left:106px;top:632px;" data-k="WL" data-d="D1514" data-f="범위: 0~1 → 81 · 2~65535 → 55 (1 = 태그 없음, 평소 값)"></i>
-  <i class="p lamp g" style="left:166px;top:632px;" data-k="WL" data-d="D1524" data-f="범위: 0~1 → 81 · 2~65535 → 55 (1 = 태그 없음, 평소 값)"></i>
-  <i class="p lamp g" style="left:226px;top:632px;" data-k="WL" data-d="D1534" data-f="범위: 0~1 → 81 · 2~65535 → 55 (1 = 태그 없음, 평소 값)"></i>
+  <i class="p lamp g" style="left:106px;top:632px;" data-k="WL" data-d="D1514" data-f="범위: 0~2 → 81 · 3~65535 → 55 (1 = 태그 없음 · 2 = 태그 2개, 평소 값)"></i>
+  <i class="p lamp g" style="left:166px;top:632px;" data-k="WL" data-d="D1524" data-f="범위: 0~2 → 81 · 3~65535 → 55 (1 = 태그 없음 · 2 = 태그 2개, 평소 값)"></i>
+  <i class="p lamp g" style="left:226px;top:632px;" data-k="WL" data-d="D1534" data-f="범위: 0~2 → 81 · 3~65535 → 55 (1 = 태그 없음 · 2 = 태그 2개, 평소 값)"></i>
 
   <!-- 조작 -->
   <div class="box" style="left:518px;top:430px;width:494px;height:264px;">

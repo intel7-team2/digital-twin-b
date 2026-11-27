@@ -22,7 +22,7 @@
 
 ## 2. 공정 요약
 
-**현재 Factory I/O 씬은 V7**(`factoryio_test/V7_plc_1.factoryio`, 생성 `test_results/a28_1123/build_v7_2f.py`) — 1층 검사 라인 위에 2층 분류 라인을 겹친 ㄷ자:
+**현재 Factory I/O 씬은 V7**(`factoryio_test/V7_plc_2.factoryio` = `V7_plc_1` + 격리 레일 리무버, 생성 `test_results/a28_1123/build_v7_2f.py` → `add_iso_remover.py`) — 1층 검사 라인 위에 2층 분류 라인을 겹친 ㄷ자:
 
 ```
 [1층] 입고 · RFID ① · 크레인 A → AS/RS 24칸 → 크레인 B
@@ -47,7 +47,7 @@ STEP 04  GOOD 직진 → GOOD OUT / RETEST · NG → M1720 → 재검사 라인(
 STEP 05  게이트 카운터(D1900~D1904) · HMI(Pro-face)     ← 프로젝트 범위는 여기까지 (NG 팩은 NG 라인 배출로 끝)
 ```
 
-- **11-26 현재 Factory I/O 씬은 V7**(`factoryio_test/V7_plc_1.factoryio`): 1층 검사 라인 위에 2층 분류 라인을 겹친 ㄷ자. 엘리베이터로 2층에 올려 픽앤플레이스가 상자만 집고, NG 상자는 NG 벨트 · GOOD 상자는 팔레타이저(2개 = 한 팔레트), 빈 팔레트는 따로 배출. 래더는 `plc/v3`(291회로, GX 2,889스텝). 실제 PLC 6팩 · 비상정지 · HMI(WinGP) · Python 계측 엔진(`serve`) · 공유 DB 연동 통과 → [확인필요_및_논의사항.md 15-15 ~ 15-18](확인필요_및_논의사항.md)
+- **11-26 현재 Factory I/O 씬은 V7**(`factoryio_test/V7_plc_2.factoryio`, 11-27 격리 레일 리무버 추가): 1층 검사 라인 위에 2층 분류 라인을 겹친 ㄷ자. 엘리베이터로 2층에 올려 픽앤플레이스가 상자만 집고, NG 상자는 NG 벨트 · GOOD 상자는 팔레타이저(2개 = 한 팔레트), 빈 팔레트는 따로 배출. 래더는 `plc/v3`(291회로, GX 2,889스텝). 실제 PLC 6팩 · 비상정지 · HMI(WinGP) · Python 계측 엔진(`serve`) · 공유 DB 연동 통과 → [확인필요_및_논의사항.md 15-15 ~ 15-18](확인필요_및_논의사항.md)
 - **알려진 한계(11-27)**: 배치 끝 1개 팔레트는 2층이 6분 쉬면 배출(투입 간격 × 3, C '배치 끝' 신호가 생기면 그것을 우선) · 현장 즉시정지(`fio_interlock.py`)는 시뮬레이터 지연 대책이라 중계 프로그램에만 둠 · Factory I/O에서 상자가 박스 벨트에 가끔 걸림(30초 뒤 알람 `M1958`, 15-18) · WinGP 체험판은 3시간마다 다시 실행
 - 판정 코드: 1 PASS · 2 RETEST · 3 NG-ΔV · 4 NG-IR · 5 NG-TEMP (재검사는 1회까지)
 - 레이아웃 그림: [layout/layout_v6.png](layout/layout_v6.png) (v6 기준, V7 그림은 없음)
@@ -104,7 +104,7 @@ python hmi_mc_relay.py --backend opc               # Pro-face HMI(WinGP) 중계 
 | `layout/` | 상면 레이아웃 그림. **`layout_v6`(현재안)만 남김** (이전 판은 Git 이력에 있음) | `.drawio`는 draw.io(app.diagrams.net)에서 수정, `.png`는 미리보기, `make_layout_v6.py`로 다시 생성 |
 | `computer_use/` | **Computer Use 작업 준비(11-20 준비, 11-23부터 사용)**: 지시서 `README.md`, 점검 `preflight.py`, Factory I/O 씬 XML 도구 `fio_scene.py`(시험 씬 · 태그 이름 · Modbus/OPC 연결), Modbus 조작 `fio_modbus.py`(크레인 · RFID), 핸드셰이크 확인 `plc_side_check.py`, MX OPC 프로젝트 DB 도구 `mxopc_db.py`, 센서 · 액추에이터 번지 안 `fio_io_map_v6.csv`, 그림 `img/` | `python computer_use/preflight.py --opc`<br>`python computer_use/fio_scene.py tests` (시험 씬 다시 만들기)<br>`python computer_use/make_guides.py` (그림) |
 | `plc/` | **PLC 래더 3가지**: v1 설계서 `ladder_design_v6.md` · 명령어 목록 `ladder_mnemonic_v6.txt`(276회로, 턴테이블 씬 `V6_plc_21`) · v2 `plc/v2/`(220회로, 규칙 `radder_v2.md`) · **v3 `plc/v3/`(291회로, 현재 V7 씬, GX `test_results/B_v7/B_v7.gxw`, I/O 할당표 `plc/v3/io_alloc_v3.md`)**. 모두 GX Works2 시뮬레이션 + 실제 PLC 경로로 시험함. 번지 안(확정 전)과 번지 없는 내부 디바이스(자리 표시, 안건 A30)를 구분해 적음. `ladder_alloc_v6.csv`는 내부 번지 배정 초안(A30, 확정 전), `ladder_mnemonic_v6.txt`는 그 초안으로 치환한 입력용 목록(자동 생성). `check_ladder_design.py`는 설계서의 번지가 0-4 표 · 번지 안에 있는지, 배정이 겹치지 않는지 대조 | `python plc/check_ladder_design.py`<br>`--apply plc/ladder_mnemonic_v6.txt` (치환 목록 다시 만들기)<br>`plc/v2/` v2 래더(규칙 `radder_v2.md`, `python plc/v2/make_v2.py`) · `plc/v3/` V7 씬용 v3 래더(`python plc/v3/make_v3.py` → 명령어 목록 · IL · 스텝 표) |
-| `test_results/` | 시험 결과 · 도구: `B_v6_d23/`(시험 도구 `softplc.py` · `opc_outside.py` · `fio_interlock.py`, v1 GX `B_v6_d23.gxw`, 사용법 `README.md`) · `B_v6_v2/`(v2 GX) · **`B_v7/B_v7.gxw`(현재 v3 GX)** · `MXOPC_B_v7d.mdb`(현재 MX OPC 프로젝트 630태그, 11-27 `M1958` · `M1959` · 허브용 래더 번지 추가) · `HMI_v2_1123.prx`(HMI) · `a28_1123/`(씬 생성 스크립트) | – |
+| `test_results/` | 시험 결과 · 도구: `B_v6_d23/`(시험 도구 `softplc.py` · `opc_outside.py` · `fio_interlock.py`, v1 GX `B_v6_d23.gxw`, 사용법 `README.md`) · `B_v6_v2/`(v2 GX) · **`B_v7/B_v7.gxw`(현재 v3 GX)** · `MXOPC_B_v7e.mdb`(현재 MX OPC 프로젝트 632태그, 11-27 `M1958` · `M1959` · 허브용 래더 번지 · 격리 레일 `Y1695` · `M1963` 추가) · `HMI_v2_1123.prx`(HMI) · `a28_1123/`(씬 생성 스크립트) | – |
 | `확인필요_및_논의사항.md` | 현재 구조 · 결정(D#) · 검증 결과 · 확인 필요 사항 · 논의 안건(A#) · 테스트 지시서 · 결과 기록 | – |
 | `README.md` · `AGENTS.md` · `CLAUDE.md` | 저장소 안내 · AI 에이전트 공통 지침 · Claude Code 지침 | – |
 
