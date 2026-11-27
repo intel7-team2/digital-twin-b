@@ -211,6 +211,7 @@ def hook_tick():
     for f in FAULT:
         if f[3]:
             if B.get(f[2]): f[3] = False; print(f"{now-T0:6.1f}s ** 고장 주입 끝 ({f[0]}, {f[2]} 켜짐)", flush=True)
+            elif f[0][0] in "MXY": B[f[0]] = bool(f[1])          # 11-27: 비트도(예: FAULT="X1900=1@M1958" = 빔이 상자를 못 봄)
             else: W[f[0]] = f[1]
     if _hk["n"] < len(PRESS):
         b, w, v, hold = PRESS[_hk["n"]]
@@ -379,7 +380,7 @@ def _shooter():
                 im = grab_fio(box)
                 if im.width > SHOT_W: im = im.resize((SHOT_W, int(im.height * SHOT_W / im.width)))
                 fn = f"{n:04d}_{t:06.1f}s.jpg"; im.save(os.path.join(SHOTS, fn), quality=70)
-                al = " ".join(a for a in ("M1951", "M1952", "M1953", "M1954", "M1955", "M1956", "M1957") if B.get(a))
+                al = " ".join(a for a in ("M1951", "M1952", "M1953", "M1954", "M1955", "M1956", "M1957", "M1958") if B.get(a))
                 wr.writerow([f"{t:.1f}", fn] + [W.get(k, 0) for k in SHOT_KEYS] + [al]); idx.flush(); n += 1
             except Exception as e:
                 print("화면 저장 오류:", e, flush=True)
@@ -405,7 +406,7 @@ try:
             if prev.get(w) != v: prev[w] = v; log(f"  {w} = {v}")
         for a in BWATCH:                                  # 11-26: BWATCH="Y1692,M1671" — 비트가 바뀔 때 기록
             if bool(B.get(a)) != prev.get("b_" + a): prev["b_" + a] = bool(B.get(a)); log(f"  {a} = {int(bool(B.get(a)))}")
-        for a in ("M1951", "M1952", "M1953", "M1954", "M1955", "M1956", "M1957"):
+        for a in ("M1951", "M1952", "M1953", "M1954", "M1955", "M1956", "M1957", "M1958"):
             if B.get(a) and not prev.get(a): log(f"  알람 {a}")
             prev[a] = B.get(a)
         done = W.get("D1900", 0) + W.get("D1901", 0) + W.get("D1902", 0)

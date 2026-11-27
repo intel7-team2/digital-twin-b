@@ -159,10 +159,12 @@ if "--bridge" in sys.argv:                                  # Factory I/O(Modbus
     for f in (_in_loop, _out_loop, _ilk_loop): threading.Thread(target=f, daemon=True).start()
     log("중계 스레드 시작(입력 쓰기 · 출력 읽기 따로)")
 def log(m): print(f"{time.time()-T0:6.1f}s {m}", flush=True)
-WATCH = ["M1950", "M1500", "D1640", "D1641", "D1656", "D1541", "D1750", "D1760", "D1525", "D1535", "D1558", "D1568", "D1900", "D1901", "D1902"] + [f"M{1951+i}" for i in range(7)]
+WATCH = ["M1950", "M1500", "D1640", "D1641", "D1656", "D1541", "D1750", "D1760", "D1525", "D1535", "D1558", "D1568", "D1900", "D1901", "D1902"] + [f"M{1951+i}" for i in range(8)]
 HS = ["M1510", "D1710", "D1711", "D1713", "D1740", "D1741", "D1743", "D1650", "D1651", "D1652", "D1653", "D1700", "D1730"]
 RACK = [f"D{1660+k}" for k in range(24)] + [f"D{1810+k}" for k in range(24)]
 ALL = WATCH + HS + RACK + [w for _, w, _ in ESTOP if w not in WATCH + HS + RACK]
+KU = os.environ.get("KEEPUNTIL", "")                          # 11-27: KEEPUNTIL=Y1929 — 팩이 다 나와도 그 비트가 켜질 때까지 계속(배치 끝 1개 팔레트 배출 확인)
+if KU: ALL.append(KU)
 pack_ids = list(range(101, 101 + len(plan))); fed = 0; judged = set(); prev = {}
 
 # 시작: X1501은 Factory I/O 씬 버튼이라 OPC로 써도 Factory I/O가 덮음 → 운전 비트 M1950을 직접 SET(래더 A02와 같은 결과)
@@ -225,7 +227,10 @@ while time.time() - T0 < LIMIT:
         if pid in pack_ids and plan[pack_ids.index(pid)].rstrip("L") == "H" and (V[f"D{1810+k}"] or 0) > 0 and pid not in judged:
             judged.add(pid); L.write_many([("D1697", k + 1), ("D1698", 410), ("M1672", 1)]); log(f"발열 접수: 칸 {k+1} PACK {pid}")
     done = sum(V[d] or 0 for d in ("D1900", "D1901", "D1902"))
-    if done >= len(plan): log("모든 팩 배출"); break
+    if done >= len(plan):
+        if KU and not V.get(KU):
+            if not prev.get("ku"): prev["ku"] = 1; log(f"모든 팩 배출 — {KU} 켜질 때까지 계속")
+        else: log((f"{KU} 켜짐 · " if KU else "") + "모든 팩 배출"); break
     prev["주기"] = max(prev.get("주기", 0), time.time() - t)
     time.sleep(0.05)
 if BR:

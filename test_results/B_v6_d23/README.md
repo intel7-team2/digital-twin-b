@@ -25,7 +25,7 @@ PYTHONIOENCODING=utf-8 python softplc.py "D:/seojung/digital-twin-b/factoryio_te
 - 둘째 인자 = 팩 계획(쉼표로): `1` GOOD · `2` 재검사 → GOOD · `3` 메인 NG → 재검사 라인 → NG OUT · `H` 랙에 들어간 뒤 발열 접수 → 격리. 뒤에 `L`을 붙이면 6S(Large 박스), 없으면 4S(Medium 박스).
 - 셋째 인자 = 제한 시간(초). 6팩이 약 5분.
 - 끝 줄 `결과: GOOD n · NG n · 격리 n`이 계획과 같으면 통과. 위 6팩 계획의 정답은 **GOOD 4 · NG 1 · 격리 1**.
-- 로그: `메인 검사 PACK n` · `재검사 PACK n`(읽은 PACK ID), `알람 M1951~M1957`, 감시 번지 변화.
+- 로그: `메인 검사 PACK n` · `재검사 PACK n`(읽은 PACK ID), `알람 M1951~M1958`, 감시 번지 변화.
 
 ### 환경 변수 (선택)
 
@@ -92,11 +92,11 @@ cd ../..; python plc/v3/make_v3.py && python plc/mnemonic_to_gxw_csv.py plc/v3/l
 
 - 소프트 PLC 6팩: `LADDER=../../plc/v3/ladder_mnemonic_v3.txt OUT_DELAY=1.0 python softplc.py "D:/seojung/digital-twin-b/factoryio_test/V7_plc_1.factoryio" 2L,1,3L,H,1L,1 1150`
 - **2층만(1 ~ 2분)**: `LADDER=… T2F=3,1,3L,1L python softplc.py "D:/seojung/digital-twin-b/factoryio_test/V7_2f_test.factoryio" - 300` — 1층 없이 E1 2층 출구에 팔레트 + 상자를 하나씩 내보내고 2층 단계부터 시작. 계획 코드는 위와 같음(H 없음). 2층만 바꿨을 때는 이것만 돌림
-- 실제 PLC: MX OPC 실행 프로젝트 `test_results/MXOPC_B_v7.mdb`(태그 428, 위 1번처럼 레지스트리 · 서비스 재시작), GX `test_results/B_v7/B_v7.gxw`, `py -3.12 opc_reset.py ../MXOPC_B_v7.mdb`, `py -3.12 opc_outside.py 1,2L,3,H,1L,2 1200 --v2 --bridge "D:/seojung/digital-twin-b/factoryio_test/V7_plc_1.factoryio"`(비상정지 시험은 `--estop "X1500@Y1914=1|X1500@Y191A=1|X1500@Y1923=1|X1502@Y1664=1"`)
+- 실제 PLC: MX OPC 실행 프로젝트 `test_results/MXOPC_B_v7.mdb`(태그 428, 11-27부터 `M1958`을 더한 `MXOPC_B_v7b.mdb` 429태그, 위 1번처럼 레지스트리 · 서비스 재시작), GX `test_results/B_v7/B_v7.gxw`, `py -3.12 opc_reset.py ../MXOPC_B_v7.mdb`, `py -3.12 opc_outside.py 1,2L,3,H,1L,2 1200 --v2 --bridge "D:/seojung/digital-twin-b/factoryio_test/V7_plc_1.factoryio"`(비상정지 시험은 `--estop "X1500@Y1914=1|X1500@Y191A=1|X1500@Y1923=1|X1502@Y1664=1"`)
 - 11-26 결과: 실제 PLC 6팩 + 비상정지 3 · 정지 1 → GOOD 4 · NG 1 · 격리 1, 알람 0(15분). 중계는 입력 변화를 최소 2초 붙잡아 PLC에 보임(`HOLD`)
 - **Python 계측 엔진으로 판정(논의 문서 15-17)**: `python measurement_engine.py handoff --start 101 --count 6 --db <DB>` → `python measurement_engine.py serve --opc-device CSIM --opc-source cache --db <DB>` → `opc_outside.py 1,1L,1,H,1,1 1200 --v2 --serve --bridge …`(`--serve` = 검사 · 격리 기록 응답을 serve에 맡김, 계획은 L · H만 씀) → 끝나면 `measurement_engine.py report --db <DB>`
 - **회차 사이 초기화(11-26, 논의 문서 15-18)**: `opc_reset.py`가 정지 상태에서 `M1961`을 펄스해 v3 래더의 단계 릴레이 · 구간 기억 비트 · 알람을 지움 → 시뮬레이터를 다시 띄우지 않고 중단한 회차 뒤에도 바로 다음 회차. (v1 · v2 래더는 여전히 PLC 재시작 필요.) `serve`는 PLC 재시작 중 통신 오류가 나도 2초마다 다시 붙음
-- **고장 · 조작 시험(`softplc.py`)**: `FAULT="D1515=9999@M1952"`(그 비트가 켜질 때까지 입력 워드를 덮음 = RFID 오류 흉내) · `PRESS="X1503@M1952=1:1.5"`(조건 3초 뒤 버튼을 1.5초 누름, `|`로 여러 건) · `BWATCH="Y1692,M1671"`(비트 변화 기록) · `WWATCH="D1601,D1602"`(워드 변화 기록) · `KEEP=1`(팩이 다 나와도 계속, `STOPAT`으로 끝냄). 격리 레일을 비우는 시험 씬은 `TESTREL=1 python build_v7_2f.py …`(코일 `Y19F1` 리무버)
+- **고장 · 조작 시험(`softplc.py`)**: `FAULT="D1515=9999@M1952"`(그 비트가 켜질 때까지 입력 워드를 덮음 = RFID 오류 흉내) · `PRESS="X1503@M1952=1:1.5"`(조건 3초 뒤 버튼을 1.5초 누름, `|`로 여러 건) · `BWATCH="Y1692,M1671"`(비트 변화 기록) · `WWATCH="D1601,D1602"`(워드 변화 기록) · `KEEP=1`(팩이 다 나와도 계속, `STOPAT`으로 끝냄) · `FAULT`는 비트도 됨(`FAULT="X1900=1@M1958"` = 빔이 상자를 못 봄). 실제 PLC `opc_outside.py`: `KEEPUNTIL=Y1929`(팩이 다 나와도 그 비트가 켜질 때까지 계속 — 배치 끝 1개 팔레트 배출 확인), `--serve`면 `measurement_engine.py serve`를 하나만 띄워 둘 것. 격리 레일을 비우는 시험 씬은 `TESTREL=1 python build_v7_2f.py …`(코일 `Y19F1` 리무버)
 
 ## 11-24 시험 도구
 

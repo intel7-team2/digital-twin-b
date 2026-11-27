@@ -32,7 +32,7 @@ for n, v in STEPS.items(): assert any(a <= v < a + c for a, c in RESET), n
 INIT = [n for n in STEPS if re.fullmatch(r"(R\d_0|[A-Z]0)", n)]
 # 11-26: 스텝 밖의 기억 비트(구간 점유 · 판정 넘김 · RFID 요청 · 알람 · 운전)와 내부 카운트도 초기화에서 지움
 # (시뮬레이터 STOP → RUN은 M · D를 지우지 않아, 스텝만 지우면 M1984 같은 점유 비트가 남아 다음 회차가 멈춤)
-FLAGS = "BKRST M1542 K6 | BKRST M1555 K3 | BKRST M1565 K3 | BKRST M1670 K3 | BKRST M1746 K19 | BKRST M1951 K7 | BKRST M1980 K5 | RST M1510 | RST M1950 | MOV K0 D1655 | MOV K0 D1918"
+FLAGS = "BKRST M1542 K6 | BKRST M1555 K3 | BKRST M1565 K3 | BKRST M1670 K3 | BKRST M1746 K19 | BKRST M1951 K8 | BKRST M1980 K5 | RST M1510 | RST M1950 | MOV K0 D1655 | MOV K0 D1918"
 
 
 def rfid(k, base, tb, req, exe, gate):
@@ -86,7 +86,7 @@ A03  LDI X1502 | OR M1500  =>  RST M1950
 A04  LD SM412  =>  PLS M1540
 A05  LD M1540 | AND M1950  =>  INC D1540
 A06  LD= D1540 K0 | OR> D1540 K32000  =>  MOV K1 D1540
-A08  LD M1960 | OR X1503  =>  BKRST M1951 K7
+A08  LD M1960 | OR X1503  =>  BKRST M1951 K8
 ; 11-26: 크레인 목표 칸은 보관용 D1603(A) · D1604(B)에 두고 운전 중에만 D1601 · D1602로 내보냄(CRANE D94 · D95, 정지 중 0 = 그 자리에 섬).
 ; 다시 시작할 때 도착 대기(A21 · A41 · B11 · B31)에 있던 크레인은 이동 시작 단계로 되돌림 — 이동 확인(또는 3초)을 다시 거쳐야 멈춰 선 것을 도착으로 보지 않음
 A24  LDP M1950  =>  MPS | AND {{A0}} | MOV K55 D1603 | MRD | AND {{B0}} | MOV K55 D1604 | MRD | AND {{A21}} | SET {{A20}} | RST {{A21}} | MRD | AND {{A41}} | SET {{A40}} | RST {{A41}} | MRD | AND {{B11}} | SET {{B10}} | RST {{B11}} | MPP | AND {{B31}} | SET {{B30}} | RST {{B31}}
@@ -325,6 +325,8 @@ U10  LD {U10} | AND X1917 | AND M1950  =>  OUT T1564 K30 | AND T1564 | SET {U20}
 Y03  LD {H31} | AND X1900 | AND M1950  =>  OUT T1565 K40 | AND T1565 | SET {H0} | RST {L10} | RST {H31} | INC D1918 | MPS | AND>= D1918 K2 | SET {L20} | MPP | AND< D1918 K2 | SET {L10}
 Y04  LD {H30} | ANI X1900 | AND M1950  =>  SET {H31} | RST {H30}
 Y05  LD {H10} | AND M1950  =>  MPS | AND M1983 | AND {L10} | SET {H30} | RST {H10} | MPP | ANI M1983 | SET {H0} | RST {H10}
+; 11-27: 박스 벨트에서 상자가 30초 넘게 빔(X1900)을 지나지 못하면 알람 M1958(상자 걸림). 상자를 바로 놓고 리셋 → 이어서 진행
+Y06  LD {H30} | OR {H31} | AND M1950  =>  OUT T1582 K300 | AND T1582 | SET M1958
 ; [팔레타이저] 역순. D1918 = 올린 박스 수(2개면 배출)
 ; 11-27: 상자 1개만 실린 채 2층(엘리베이터 · 픽앤플레이스 · 박스 벨트)이 10분 동안 비어 있으면 그대로 배출(배치 끝 홀수 GOOD 상자가 다음 배치와 섞이지 않게)
 O17  LD {L10} | AND= D1918 K1 | AND {H0} | AND {U0} | AND {E0} | AND M1950  =>  OUT T1581 K6000 | AND T1581 | SET {L20} | RST {L10}
@@ -383,6 +385,9 @@ R08  LD X1503  =>  OUT T1579 K20
 P["LAMP"] = """W01  LD M1690  =>  OUT Y1691 | OUT Y1694
 W02  LD M1800 | OR<> K2M1951 K0  =>  OUT Y1692
 W03  LD M1950  =>  OUT Y1693
+; 11-27: HMI 알람 확인 M1960 · 카운터 리셋 M1920은 '비트 셋' 스위치 — 한 스캔 쓰인 뒤 여기(마지막 프로그램)서 끔(MX OPC 경유 짧은 펄스가 빠지는 것 방지)
+W04  LD M1960  =>  RST M1960
+W05  LD M1920  =>  RST M1920
 """
 
 

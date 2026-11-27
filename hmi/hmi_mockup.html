@@ -103,26 +103,26 @@
 
   <!-- 공정 흐름 -->
   <div class="box" style="left:12px;top:66px;width:1000px;height:300px;">
-    <h3>공정 흐름 (v6) <span class="dev">램프 = 해당 비트 ON</span></h3>
+    <h3>공정 흐름 (V7: 1층 검사 → E1 → 2층 분류) <span class="dev">램프 = 해당 비트 ON</span></h3>
     <div class="belt" style="left:96px;top:96px;width:810px;height:6px;"></div>
     <div class="belt" style="left:528px;top:96px;width:6px;height:120px;"></div>
     <div class="belt" style="left:528px;top:210px;width:300px;height:6px;"></div>
     <div class="belt" style="left:822px;top:96px;width:6px;height:120px;"></div>
-    <div class="belt" style="left:822px;top:210px;width:6px;height:60px;background:#7F1D1D;"></div>
+    <div class="belt" style="left:941px;top:132px;width:6px;height:82px;"></div><span class="dev a" style="left:953px;top:150px;">E1</span><span class="dev a" style="left:953px;top:164px;">↑2층</span><span class="dev a" style="left:953px;top:178px;">P&amp;P</span>
     <div class="belt" style="left:296px;top:96px;width:6px;height:120px;background:#7F1D1D;"></div>
 
     <div class="st" style="left:8px;top:56px;width:112px;height:82px;padding-top:4px;">입고 RFID①<span class="dev">PACK D1516</span><span class="dev">상태 D1514</span></div>
     <div class="st" style="left:136px;top:62px;width:104px;height:70px;padding-top:5px;">AS/RS 24칸<span class="dev">A M1600 · B M1601</span></div>
-    <div class="st" style="left:248px;top:26px;width:100px;height:62px;padding-top:5px;">1차 분리<span class="dev">M1660 · M1661</span></div>
+    <div class="st" style="left:248px;top:26px;width:100px;height:62px;padding-top:5px;">TT1 1차 분리<span class="dev">Y1662 · Y1663</span></div>
     <div class="st" style="left:250px;top:212px;width:100px;height:64px;padding-top:5px;border-color:#7F1D1D;">발열 격리<span class="dev">M1690 · X1902</span></div>
     <div class="st" style="left:372px;top:62px;width:104px;height:70px;padding-top:5px;">메인 검사<span class="dev">M1700 · RFID②</span></div>
-    <div class="st" style="left:482px;top:26px;width:100px;height:62px;padding-top:5px;">분기<span class="dev">M1720</span></div>
+    <div class="st" style="left:482px;top:26px;width:100px;height:62px;padding-top:5px;">TT2 분기<span class="dev">Y1722 재검사</span></div>
     <div class="st" style="left:552px;top:176px;width:128px;height:70px;padding-top:5px;">재검사 라인<span class="dev">D1800 · M1800</span></div>
     <div class="st" style="left:690px;top:176px;width:104px;height:70px;padding-top:5px;">재검사기<span class="dev">M1730 · RFID③</span></div>
-    <div class="st" style="left:766px;top:112px;width:116px;height:62px;padding-top:5px;">2차 분리<span class="dev">M1731↑ · M1732↓</span></div>
-    <div class="st" style="left:756px;top:22px;width:104px;height:62px;padding-top:5px;">합류<span class="dev">X1903</span></div>
-    <div class="st" style="left:898px;top:62px;width:92px;height:70px;padding-top:5px;border-color:var(--c81);">GOOD OUT<span class="dev">X1900</span></div>
-    <div class="st" style="left:898px;top:214px;width:92px;height:64px;padding-top:5px;border-color:var(--c55);">NG OUT<span class="dev">X1901</span></div>
+    <div class="st" style="left:766px;top:112px;width:116px;height:62px;padding-top:5px;">TT3 재검사 출구<span class="dev">Y1734 · Y1733</span></div>
+    <div class="st" style="left:756px;top:22px;width:104px;height:62px;padding-top:5px;">TT5 합류 → E1<span class="dev">Y1904</span></div>
+    <div class="st" style="left:898px;top:62px;width:92px;height:70px;padding-top:5px;border-color:var(--c81);">2층 GOOD<span class="dev">팔레타이저 Y1920</span></div>
+    <div class="st" style="left:898px;top:214px;width:92px;height:64px;padding-top:5px;border-color:var(--c55);">2층 NG<span class="dev">NG 벨트 Y191D</span></div>
     <!-- 값 칸 · 램프 받침 -->
     <div class="slot" style="left:20px;top:105px;width:56px;height:24px;"></div><i class="sock" style="left:84px;top:107px;"></i>
     <i class="sock" style="left:166px;top:104px;"></i><i class="sock" style="left:190px;top:104px;"></i>
@@ -142,19 +142,19 @@
   <i class="p lamp g" style="left:100px;top:177px;" data-k="WL" data-d="D1514" data-f="범위: 0 → 81(정상) · 1~65535 → 55(오류)"></i>
   <i class="p lamp c" style="left:182px;top:174px;" data-k="BL" data-d="M1600" data-f="ON 75 · OFF 25"></i>
   <i class="p lamp" style="left:206px;top:174px;" data-k="BL" data-d="M1601" data-f="ON 75 · OFF 25"></i>
-  <i class="p lamp c" style="left:292px;top:132px;" data-k="BL" data-d="M1660" data-f="ON 75 · OFF 25"></i>
-  <i class="p lamp" style="left:316px;top:132px;" data-k="BL" data-d="M1661" data-f="ON 56 · OFF 25"></i>
+  <i class="p lamp c" style="left:292px;top:132px;" data-k="BL" data-d="Y1662" data-f="ON 75 · OFF 25"></i>
+  <i class="p lamp" style="left:316px;top:132px;" data-k="BL" data-d="Y1663" data-f="ON 56 · OFF 25"></i>
   <i class="p lamp" style="left:306px;top:320px;" data-k="BL" data-d="M1690" data-f="ON 56 · OFF 25"></i>
   <i class="p lamp g" style="left:430px;top:174px;" data-k="BL" data-d="M1700" data-f="ON 81 · OFF 25"></i>
-  <i class="p lamp" style="left:538px;top:132px;" data-k="BL" data-d="M1720" data-f="ON 100 · OFF 25"></i>
+  <i class="p lamp" style="left:538px;top:132px;" data-k="BL" data-d="Y1722" data-f="ON 100 · OFF 25"></i>
   <div class="p val" style="left:592px;top:284px;width:38px;height:22px;font-size:15px;" data-k="ND" data-d="D1800" data-f="10진 2자리 · 글자 7 · 판 투명">1</div>
   <i class="p lamp y" style="left:660px;top:288px;" data-k="BL" data-d="M1800" data-f="ON 100 · OFF 25"></i>
   <i class="p lamp" style="left:748px;top:288px;" data-k="BL" data-d="M1730" data-f="ON 81 · OFF 25"></i>
-  <i class="p lamp g" style="left:816px;top:218px;" data-k="BL" data-d="M1731" data-f="ON 81 · OFF 25"></i>
-  <i class="p lamp" style="left:844px;top:218px;" data-k="BL" data-d="M1732" data-f="ON 55 · OFF 25"></i>
-  <i class="p lamp" style="left:814px;top:128px;" data-k="BL" data-d="X1903" data-f="ON 100 · OFF 25"></i>
-  <i class="p lamp g" style="left:950px;top:174px;" data-k="BL" data-d="X1900" data-f="ON 81 · OFF 25"></i>
-  <i class="p lamp" style="left:950px;top:320px;" data-k="BL" data-d="X1901" data-f="ON 55 · OFF 25"></i>
+  <i class="p lamp g" style="left:816px;top:218px;" data-k="BL" data-d="Y1734" data-f="ON 81 · OFF 25"></i>
+  <i class="p lamp" style="left:844px;top:218px;" data-k="BL" data-d="Y1733" data-f="ON 55 · OFF 25"></i>
+  <i class="p lamp" style="left:814px;top:128px;" data-k="BL" data-d="Y1904" data-f="ON 100 · OFF 25"></i>
+  <i class="p lamp g" style="left:950px;top:174px;" data-k="BL" data-d="Y1920" data-f="ON 81 · OFF 25"></i>
+  <i class="p lamp" style="left:950px;top:320px;" data-k="BL" data-d="Y191D" data-f="ON 55 · OFF 25"></i>
 
   <!-- 게이트 카운터 -->
   <div class="box" style="left:12px;top:378px;width:190px;height:120px;border-top:4px solid var(--c81);"><h3>GOOD OUT <span class="dev">D1900</span></h3><div class="slot" style="left:10px;top:40px;width:136px;height:52px;"></div><span class="unit a" style="left:152px;top:66px;">EA</span></div>
@@ -196,7 +196,7 @@
     <span class="crit a" style="left:12px;top:146px;">2초 길게 누르기(ON 지연)</span>
     <span class="crit a" style="left:12px;top:162px;">DB 이력은 유지</span>
   </div>
-  <div class="p sw red" style="left:638px;top:544px;width:164px;height:102px;font-size:18px;" data-k="SW" data-d="M1920" data-f="비트 스위치 모멘터리 · 지연 ON 2.0초 · 지연 중 표시: 판 100 글자 0 · 평소 판 240 글자 7">카운터 리셋<small>2초 누르기</small></div>
+  <div class="p sw red" style="left:638px;top:544px;width:164px;height:102px;font-size:18px;" data-k="SW" data-d="M1920" data-f="비트 셋(래더 LAMP W05가 끔) · 지연 ON 2.0초 · 지연 중 표시: 판 100 글자 0 · 평소 판 240 글자 7">카운터 리셋<small>2초 누르기</small></div>
 
   <!-- Python 응답 -->
   <div class="box" style="left:824px;top:510px;width:188px;height:184px;">
@@ -267,12 +267,12 @@
     <span class="lbl a" style="left:12px;top:312px;">팩 AC-IR</span><div class="slot" style="left:236px;top:306px;width:120px;height:30px;"></div><span class="unit a" style="left:362px;top:312px;">mΩ</span><span class="dev a" style="left:400px;top:314px;">D1732 ÷100</span>
     <span class="crit a" style="left:12px;top:342px;">PASS ≤ 10.00 mΩ (4S) · ≤ 15.00 mΩ (6S)</span>
     <span class="lbl a" style="left:12px;top:372px;">온도</span><div class="slot" style="left:236px;top:366px;width:120px;height:30px;"></div><span class="unit a" style="left:362px;top:372px;">°C</span><span class="dev a" style="left:400px;top:374px;">D1733 ÷10</span>
-    <span class="crit a" style="left:12px;top:402px;">메인 NG 팩(3·4·5)은 계측 없이 통과 → 2차 분리 ↓</span>
+    <span class="crit a" style="left:12px;top:402px;">메인 NG 팩(3·4·5)은 계측 없이 통과 → TT3에서 NG</span>
     <div class="sep" style="left:10px;right:10px;top:428px;"></div>
     <i class="sock" style="left:12px;top:444px;"></i><span class="lbl a" style="left:38px;top:445px;">요청</span><span class="dev a" style="left:74px;top:448px;">D1740</span>
     <i class="sock" style="left:130px;top:444px;"></i><span class="lbl a" style="left:156px;top:445px;">완료</span><span class="dev a" style="left:192px;top:448px;">D1743</span>
     <i class="sock" style="left:248px;top:444px;"></i><span class="lbl a" style="left:274px;top:445px;">프로브</span><span class="dev a" style="left:322px;top:448px;">M1730</span>
-    <i class="sock" style="left:372px;top:444px;"></i><span class="lbl a" style="left:398px;top:445px;">↓NG</span><span class="dev a" style="left:436px;top:448px;">M1732</span>
+    <i class="sock" style="left:372px;top:444px;"></i><span class="lbl a" style="left:398px;top:445px;">TT3 NG</span><span class="dev a" style="left:456px;top:448px;">Y1733</span>
   </div>
   <div class="p val" style="left:790px;top:104px;width:116px;height:28px;font-size:18px;" data-k="ND" data-d="D1536" data-f="10진 4자리 앞자리 0 · 글자 7">0029</div>
   <div class="p txt" style="left:790px;top:142px;width:116px;height:28px;font-size:16px;color:var(--c7);justify-content:flex-end;padding-right:6px;" data-k="WL" data-d="D1744" data-f="범위 상태 글자: 4 → 4S (4) · 6 → 6S (6)">4S (4)</div>
@@ -284,20 +284,20 @@
   <i class="p lamp" style="left:534px;top:513px;" data-k="WL" data-d="D1740" data-f="범위: 1 → 100 · 그 외 → 25"></i>
   <i class="p lamp g" style="left:652px;top:513px;" data-k="WL" data-d="D1743" data-f="범위: 1 → 81 · 그 외 → 25"></i>
   <i class="p lamp" style="left:770px;top:513px;" data-k="BL" data-d="M1730" data-f="ON 81 · OFF 25"></i>
-  <i class="p lamp r" style="left:894px;top:513px;" data-k="BL" data-d="M1732" data-f="ON 55 · OFF 25"></i>
+  <i class="p lamp r" style="left:894px;top:513px;" data-k="BL" data-d="Y1733" data-f="ON 55 · OFF 25"></i>
 
   <!-- 재검사 라인 -->
   <div class="box" style="left:12px;top:568px;width:1000px;height:126px;">
-    <h3>재검사 라인 <span class="dev">D1800 · M1800 · M1720 · X1903</span></h3>
+    <h3>재검사 라인 <span class="dev">D1800 · M1800 · Y1722 · Y1904</span></h3>
     <span class="lbl a" style="left:12px;top:52px;">라인 위 팩</span><div class="slot" style="left:92px;top:44px;width:64px;height:34px;"></div><span class="unit a" style="left:162px;top:52px;">EA</span><span class="dev a" style="left:12px;top:86px;">D1800</span>
     <i class="sock" style="left:226px;top:50px;"></i><span class="lbl a" style="left:252px;top:51px;">분기점까지 참 → 메인 출구 대기</span><span class="dev a" style="left:252px;top:72px;">M1800</span>
-    <i class="sock" style="left:500px;top:50px;"></i><span class="lbl a" style="left:526px;top:51px;">분기 동작</span><span class="dev a" style="left:526px;top:72px;">M1720</span>
-    <i class="sock" style="left:680px;top:50px;"></i><span class="lbl a" style="left:706px;top:51px;">합류 간격 감지</span><span class="dev a" style="left:706px;top:72px;">X1903</span>
+    <i class="sock" style="left:500px;top:50px;"></i><span class="lbl a" style="left:526px;top:51px;">TT2 → 재검사</span><span class="dev a" style="left:526px;top:72px;">Y1722</span>
+    <i class="sock" style="left:680px;top:50px;"></i><span class="lbl a" style="left:706px;top:51px;">TT5 합류 → E1</span><span class="dev a" style="left:706px;top:72px;">Y1904</span>
   </div>
   <div class="p val" style="left:106px;top:615px;width:60px;height:30px;font-size:20px;" data-k="ND" data-d="D1800" data-f="10진 2자리 · 글자 7">1</div>
   <i class="p lamp" style="left:242px;top:621px;" data-k="BL" data-d="M1800" data-f="ON 100 · OFF 25"></i>
-  <i class="p lamp" style="left:516px;top:621px;" data-k="BL" data-d="M1720" data-f="ON 100 · OFF 25"></i>
-  <i class="p lamp" style="left:696px;top:621px;" data-k="BL" data-d="X1903" data-f="ON 100 · OFF 25"></i>
+  <i class="p lamp" style="left:516px;top:621px;" data-k="BL" data-d="Y1722" data-f="ON 100 · OFF 25"></i>
+  <i class="p lamp" style="left:696px;top:621px;" data-k="BL" data-d="Y1904" data-f="ON 100 · OFF 25"></i>
 
   <div class="ftr"></div>
   <div class="nav" style="left:10px;">운전 현황<small>01</small></div><div class="nav cur" style="left:263px;">검사<small>02</small></div><div class="nav" style="left:516px;">AS/RS · 격리<small>03</small></div><div class="nav" style="left:769px;">알람<small>04</small></div>
@@ -372,14 +372,14 @@
 
   <!-- 1차 분리 -->
   <div class="box" style="left:12px;top:512px;width:1000px;height:182px;">
-    <h3>1차 분리 Pop-up Wheel <span class="dev">M1660 직진 · M1661 ↓ 격리</span></h3>
-    <i class="sock" style="left:12px;top:46px;"></i><span class="lbl a" style="left:38px;top:47px;font-size:14px;">직진 → 메인 검사</span><span class="dev a" style="left:164px;top:50px;">M1660</span>
-    <i class="sock" style="left:250px;top:46px;"></i><span class="lbl a" style="left:276px;top:47px;font-size:14px;">아래 → 발열 격리</span><span class="dev a" style="left:404px;top:50px;">M1661</span>
+    <h3>TT1 1차 분리 (턴테이블) <span class="dev">Y1662 직진 · Y1663 격리</span></h3>
+    <i class="sock" style="left:12px;top:46px;"></i><span class="lbl a" style="left:38px;top:47px;font-size:14px;">직진 → 메인 검사</span><span class="dev a" style="left:164px;top:50px;">Y1662</span>
+    <i class="sock" style="left:250px;top:46px;"></i><span class="lbl a" style="left:276px;top:47px;font-size:14px;">옆 → 격리 레일</span><span class="dev a" style="left:404px;top:50px;">Y1663</span>
     <span class="lbl a" style="left:480px;top:47px;font-size:14px;">격리 누적</span><div class="slot" style="left:556px;top:40px;width:76px;height:32px;"></div><span class="unit a" style="left:638px;top:48px;">EA</span><span class="dev a" style="left:666px;top:50px;">D1902</span>
-    <span class="crit a" style="left:12px;top:92px;font-size:12px;color:var(--ink2);">태그 idx5 = 5(발열) 팩만 아래로. 격리 팩은 DB에 ISO(station 0)로 남습니다.</span>
+    <span class="crit a" style="left:12px;top:92px;font-size:12px;color:var(--ink2);">태그 idx5 = 5(발열) 팩만 격리 레일로(레일이 빌 때만 크레인 B가 꺼냄). 격리 팩은 DB에 ISO(station 0)로 남습니다.</span>
   </div>
-  <i class="p lamp c" style="left:28px;top:562px;" data-k="BL" data-d="M1660" data-f="ON 75 · OFF 25"></i>
-  <i class="p lamp" style="left:266px;top:562px;" data-k="BL" data-d="M1661" data-f="ON 56 · OFF 25"></i>
+  <i class="p lamp c" style="left:28px;top:562px;" data-k="BL" data-d="Y1662" data-f="ON 75 · OFF 25"></i>
+  <i class="p lamp" style="left:266px;top:562px;" data-k="BL" data-d="Y1663" data-f="ON 56 · OFF 25"></i>
   <div class="p val" style="left:570px;top:555px;width:72px;height:28px;font-size:18px;" data-k="ND" data-d="D1902" data-f="10진 5자리 · 글자 7">12</div>
 
   <div class="ftr"></div>
@@ -454,7 +454,7 @@
     <div class="a" style="left:252px;top:146px;width:230px;height:100px;border:2px solid var(--line);border-radius:6px;background:var(--panel2);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--ink3);">칸 상태 초기화<span class="dev">E1 확장 · 보류 (부품 없음)</span></div>
   </div>
   <div class="p sw red" style="left:534px;top:470px;width:222px;height:92px;font-size:16px;" data-k="SW" data-d="M1920" data-f="화면 전환(창 화면 '카운터 리셋 확인') → 창 안 '예' = 비트 스위치 M1920 모멘터리">카운터 리셋<small>M1920 · 확인 창</small></div>
-  <div class="p sw" style="left:776px;top:470px;width:222px;height:92px;font-size:16px;" data-k="SW" data-d="(제안 M1960)" data-f="비트 스위치 모멘터리. HMI 안의 알람 확인은 알람 부품 스위치로 가능 — PLC가 알아야 할 때만 M1960">알람 확인(PLC)<small>M1960 (제안)</small></div>
+  <div class="p sw" style="left:776px;top:470px;width:222px;height:92px;font-size:16px;" data-k="SW" data-d="M1960" data-f="비트 셋 — 래더 알람 M1951~M1958 해제(조작반 리셋 X1503 짧게와 같음), 래더 LAMP W04가 끔. 걸린 원인이 남아 있으면 다시 켜짐">알람 확인(PLC)<small>M1960 · 래더 알람 해제</small></div>
   <div class="p sw" style="left:534px;top:582px;width:222px;height:92px;font-size:16px;" data-k="SW" data-d="(제안 A24)" data-f="비트 스위치 · 지연 ON 2.0초 · 래더 필요">LOCK 일괄 해제<small>(제안 · 래더 필요)</small></div>
 
   <div class="ftr"></div>
