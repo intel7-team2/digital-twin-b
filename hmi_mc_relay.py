@@ -28,6 +28,7 @@ WinGP 쪽에서는 미쓰비시 Q 시리즈 PLC(이더넷)처럼 보이고, 실�
 """
 
 import argparse
+import os
 import socketserver
 import struct
 import threading
@@ -113,6 +114,7 @@ class OpcBackend:
         self._warned = set()
         self.factory = factory          # 11-27 검토: MX OPC 서비스 재시작(0x800706BA 등) 뒤 연결을 새로 만듦
         self._next_retry = 0.0
+        self.seen = set()               # 11-28: WinGP가 실제로 읽은 번지(다음 시작 때 미리 등록할 목록)
 
     def _reconnect(self, err):
         """연결 자체가 끊긴 오류면 새 연결(2초에 한 번까지). 성공하면 True"""
@@ -137,6 +139,7 @@ class OpcBackend:
         # 화면에 없는 번지까지 함께 옴 → MX OPC에 태그가 없는 번지는 0으로 채우고 처음 한 번만 알림(쓰기는 그대로 오류)
         out = []
         with self.lock:
+            self.seen.update(names)
             for n in names:
                 if n in self._warned:
                     out.append(0)
@@ -437,6 +440,8 @@ def main():
     p.add_argument("--opc-wrapper", default="auto", help="auto(직접 연결) / direct / 래퍼 ProgID")
     p.add_argument("--opc-source", choices=("device", "cache"), default="device", help="Simulate 장치 시험은 cache")
     p.add_argument("--verbose", action="store_true", help="모든 요청 출력")
+    p.add_argument("--preload", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "hmi_relay_names.txt"),
+                   help="켤 때 미리 등록할 번지 목록 파일(WinGP가 읽은 번지를 자동으로 모음, '' = 안 함)")
     args = p.parse_args()
 
     if args.backend == "memory":
@@ -446,6 +451,19 @@ def main():
         src = OPC_DS_CACHE if args.opc_source == "cache" else OPC_DS_DEVICE
         _mk = lambda: OpcLink(args.opc_server, args.opc_device, args.opc_wrapper, src)
         be = OpcBackend(_mk(), factory=_mk)
+    # 11-28: 켤 때 HMI가 읽는 번지를 미리 등록 — 전에는 각 화면을 처음 열 때 번지를 하나씩 등록하느라 30초~1분 동안
+    # 값이 비고 WinGP에 '응답 시간 초과'가 떴음. 목록은 WinGP가 실제로 읽은 번지를 이 파일에 모아 둠(없는 번지 포함 → '태그 없음'도 미리 판정)
+    cache = os.path.abspath(args.preload) if args.preload else None
+    if cache and isinstance(be, OpcBackend) and os.path.exists(cache):
+        names = [l.strip() for l in open(cache, encoding="utf-8") if l.strip() and not l.startswith("#")]
+        t0, bad = time.time(), 0
+        print(f"[중계] 번지 {len(names)}개 미리 등록 중({os.path.basename(cache)}) …", flush=True)
+        for i in range(0, len(names), 32):
+            try:
+                be.read(names[i:i + 32])
+            except RelayError:
+                bad += 1
+        print(f"[중계] 미리 등록 끝 {time.time() - t0:.0f}초 · 태그 없음 {len(be._warned)}개 · 일시 실패 묶음 {bad}개", flush=True)
     relay = Relay(be, args.verbose)
     servers = start(relay, args.bind, args.port, not args.no_udp)
     print(f"[중계] MC 3E 바이너리 TCP{'' if args.no_udp else '·UDP'} {args.bind}:{args.port} → {be.label}"
@@ -454,6 +472,12 @@ def main():
         while True:
             time.sleep(10)
             st = relay.stats
+            if cache and isinstance(be, OpcBackend) and be.seen:
+                old = {l.strip() for l in open(cache, encoding="utf-8") if l.strip() and not l.startswith("#")} if os.path.exists(cache) else set()
+                if not be.seen <= old:          # 새로 본 번지가 있으면 목록에 더함
+                    with open(cache, "w", encoding="utf-8", newline="\n") as f:
+                        f.write("# hmi_mc_relay.py 미리 등록 목록 — WinGP가 읽은 번지(자동 갱신, 11-28)\n")
+                        f.write("\n".join(sorted((old | be.seen) - {""}, key=lambda n: (n[0], len(n), n))) + "\n")
             if st["frames"]:
                 print(time.strftime("%H:%M:%S"), f"요청 {st['frames']}건 · 오류 {st['errors']}건 · 명령 {st['cmds']}", flush=True)
     except KeyboardInterrupt:
