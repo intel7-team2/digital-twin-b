@@ -712,6 +712,7 @@ def cmd_serve(args):
         if bstate["closed"] and bstate["m1950"] == 0 and run == 1:
             write(1900, [0, 0, 0])
             bstate["closed"] = False
+            bstate["base"] = (0, 0, 0)
             print("[회차] 운전 시작 → 카운터 D1900~D1902를 0으로(지난 회차는 batches 표에 있음)")
         bstate["m1950"] = run
         last_to = conn.execute("SELECT COALESCE(MAX(pack_to), 0) FROM batches").fetchone()[0]
@@ -722,12 +723,21 @@ def cmd_serve(args):
         if judged_n < len(open_ids):
             return
         g, n, i, tot, y = read(1900, 5)
-        if tot < len(open_ids) or read(1918)[0] != 0:
+        # 11-28: 정지 없이 다음 회차로 이어지면 카운터가 0이 되지 않음(0은 다음 운전 시작 때) → 직전 회차를 닫을 때 값과의 차이로 셈.
+        # 카운터가 기준보다 작아졌으면(HMI · 조작반 카운터 리셋) 기준을 0으로
+        base = bstate.get("base", (0, 0, 0))
+        if g < base[0] or n < base[1] or i < base[2]:
+            base = bstate["base"] = (0, 0, 0)
+        dg, dn, di = g - base[0], n - base[1], i - base[2]
+        if dg + dn + di < len(open_ids) or read(1918)[0] != 0:
             return
+        y = dg * 1000 // (dg + dn + di) if dg + dn + di else 0     # D1904와 같은 식(A5: 격리를 분모에 넣음), 이 회차분만
+        g, n, i = dg, dn, di
         conn.execute("INSERT INTO batches (ts, pack_from, pack_to, packs, good, ng, iso, yield_x10) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                      (now(), open_ids[0], open_ids[-1], len(open_ids), g, n, i, y))
         conn.commit()
         bstate["closed"] = True
+        bstate["base"] = (base[0] + dg, base[1] + dn, base[2] + di)
         print(f"[회차 끝] PACK {open_ids[0]}~{open_ids[-1]} · GOOD {g} · NG {n} · 격리 {i} · 수율 {y / 10:.1f}% → DB batches"
               " (카운터는 다음 운전 시작 때 0)")
 

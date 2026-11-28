@@ -187,6 +187,15 @@ _pr = {"n": 0, "t": None}
 ALL += [w for _, w, _, _ in PRESS if w not in ALL]
 KU = os.environ.get("KEEPUNTIL", "")                          # 11-27: KEEPUNTIL=Y1929 — 팩이 다 나와도 그 비트가 켜질 때까지 계속(배치 끝 1개 팔레트 배출 확인)
 if KU: ALL.append(KU)
+# 11-28 연속 운전 시험: BATCHES="12,6" + HANDOFF_DB=<공유 DB> — 회차(C 인계 묶음)를 나눠 투입. 앞 회차가 다 셈 · 팔레타이저 빔이 되면
+# 다음 묶음을 handoff(공유 DB) 하고 정지 없이 이어서 투입(serve가 회차를 닫는지 · 정지 없는 회차의 카운터 차이 확인)
+BATCH_AT = []
+if os.environ.get("BATCHES"):
+    _acc = 0
+    for _b in [int(x) for x in os.environ["BATCHES"].split(",") if x][:-1]:
+        _acc += _b; BATCH_AT.append(_acc)
+    if "D1918" not in ALL: ALL.append("D1918")
+_bh = {"done": set(), "t": None}
 pack_ids = list(range(101, 101 + len(plan))); fed = 0; judged = set(); prev = {}
 
 # 시작: X1501은 Factory I/O 씬 버튼이라 OPC로 써도 Factory I/O가 덮음 → 운전 비트 M1950을 직접 SET(래더 A02와 같은 결과)
@@ -226,7 +235,18 @@ while time.time() - T0 < LIMIT:
     # C 인계
     if pend["C"] and V["M1510"]: pend["C"] = "seen"
     if pend["C"] == "seen" and not V["M1510"]: pend["C"] = False          # 래더가 M1510을 받아 내린 뒤에만 다음 인계
-    if fed < len(plan) and not pend["C"] and ("--v2" in sys.argv or V["D1541"] == 0) and not V["M1510"] and time.time() - T0 > 3:
+    if fed in BATCH_AT and fed not in _bh["done"]:              # 회차 경계: 앞 회차가 끝날 때까지 다음 묶음을 넣지 않음
+        _cnt = sum(V[d] or 0 for d in ("D1900", "D1901", "D1902"))
+        if _cnt >= fed and V.get("D1918") == 0:
+            if _bh["t"] is None: _bh["t"] = time.time(); log(f"회차 경계: 앞 {fed}팩 모두 셈 · 팔레타이저 빔 → 5초 뒤 다음 묶음 C 인계")
+            elif time.time() - _bh["t"] > 5:
+                import subprocess
+                _n = [int(x) for x in os.environ["BATCHES"].split(",")][BATCH_AT.index(fed) + 1]
+                _r = subprocess.run([sys.executable, "measurement_engine.py", "handoff", "--db", os.environ["HANDOFF_DB"], "--start", str(pack_ids[fed]), "--count", str(_n)],
+                                    cwd=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."), capture_output=True, text=True, encoding="utf-8", errors="replace")
+                log(f"다음 회차 C 인계: {(_r.stdout or _r.stderr).strip().splitlines()[-1] if (_r.stdout or _r.stderr) else _r.returncode}")
+                _bh["done"].add(fed); _bh["t"] = None
+    elif fed < len(plan) and not pend["C"] and ("--v2" in sys.argv or V["D1541"] == 0) and not V["M1510"] and time.time() - T0 > 3:
         pend["C"] = True; L.write_many([("D1516", pack_ids[fed]), ("D1518", 6 if plan[fed].endswith("L") else 4), ("D1542", 1480), ("M1510", 1)])   # 11-25: 한 번에 씀(한 건씩 쓰면 건당 0.6 s라 그동안 PLC 출력 갱신이 밀려 크레인 B가 내려놓기 전에 포크를 당김)
         log(f"C 인계: PACK {pack_ids[fed]} 판정 계획 {plan[fed]}"); fed += 1
     if SERVE:                                                 # serve가 응답 → 완료가 올라온 순간만 기록
@@ -267,7 +287,7 @@ while time.time() - T0 < LIMIT:
         elif HOLDRUN:
             if not prev.get("hold"): prev["hold"] = 1; log("모든 팩 배출 — --hold: 제한 시간까지 중계 유지(HMI 수거 · 시연용)")
         else: log((f"{KU} 켜짐 · " if KU else "") + "모든 팩 배출"); break
-    if plan and done < len(plan) and time.time() - _LL[0] > STALL:   # 팩이 다 나온 뒤(배치 끝 대기 · --hold)는 경고하지 않음
+    if plan and done < len(plan) and not (fed in BATCH_AT and fed not in _bh["done"]) and time.time() - _LL[0] > STALL:   # 회차 경계 대기(배치 끝 6분 포함)도 경고 안 함   # 팩이 다 나온 뒤(배치 끝 대기 · --hold)는 경고하지 않음
         _sb = {k: V.get(k) for k in ("M1950", "M1500", "D1541", "D1640", "D1641", "D1750", "D1760", "D1900", "D1901", "D1902") if k in V}
         log(f"** 정체 의심: {STALL:.0f}초 동안 기록할 변화 없음 · {_sb} (Factory I/O 화면 · 스텝 확인)")
     prev["주기"] = max(prev.get("주기", 0), time.time() - t)

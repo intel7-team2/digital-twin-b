@@ -6,7 +6,7 @@
 #   환경 변수: MODE=random(시연: 계측 · 보관 발열 매번 다르게, 기본 id = 재현) · OUT(기록 폴더, 기본 D:/seojung/fio_shots) · LIMIT(초, 기본 1000) · SCENE(기본 V7_plc_2.factoryio)
 #             HOLD=1(팩이 다 나와도 LIMIT까지 중계 유지 — 시연용) · KEEPUNTIL=Y1929(그 비트가 켜질 때까지 계속)
 #             PRESS="M1963@D1902=1:5"(HMI 비트 셋 버튼 흉내) · WATCHX="D1740,X1730"(더 기록할 번지) · SHOTS=1(화면 · 신호 기록)
-#             SKIPCHECK=1(점검 건너뜀, 권하지 않음)
+#             BATCHES="12,6"(연속 운전: 회차를 나눠 정지 없이 투입) · SKIPCHECK=1(점검 건너뜀, 권하지 않음)
 set -u
 N=${1:?이름}; ESTOP=${2:-}; PLAN=${3:-1,2L,3,H,1L,2}
 OUT=${OUT:-D:/seojung/fio_shots}; LIMIT=${LIMIT:-1000}; SCENE=${SCENE:-V7_plc_2.factoryio}
@@ -21,18 +21,22 @@ DB="$OUT/serve_$N.db"; rm -f "$DB" "$DB-wal" "$DB-shm"
 MODE=${MODE:-id}; NP=$(echo "$PLAN" | tr ',' '\n' | grep -c .)
 HOTS=$(echo "$PLAN" | tr ',' '\n' | awk '/^H/{printf "%s%d", (n++ ? "," : ""), 100 + NR}')
 if [ "$MODE" = random ] && [ -z "$HOTS" ]; then HOTARG=(); else HOTARG=(--hot-packs "${HOTS:--}"); fi
-(cd "$ROOT" && py -3.12 measurement_engine.py handoff --db "$DB" --start 101 --count "$NP" | tail -1)
+# 11-28 연속 운전: BATCHES="12,6"이면 첫 묶음만 먼저 C 인계, 다음 묶음은 앞 회차가 끝나면 중계 프로그램이 인계(정지 없이 이어 투입)
+[ -n "${BATCHES:-}" ] && { NP1=${BATCHES%%,*}; export HANDOFF_DB="$DB"; } || NP1=$NP
+(cd "$ROOT" && py -3.12 measurement_engine.py handoff --db "$DB" --start 101 --count "$NP1" | tail -1)
 (cd "$ROOT" && nohup py -3.12 -u measurement_engine.py serve --opc-device CSIM --opc-source cache --mode "$MODE" "${HOTARG[@]}" --db "$DB" > "$OUT/serve_$N.log" 2>&1 &)
 echo "serve: 난수 $MODE · 발열 지정 ${HOTS:-$([ ${#HOTARG[@]} -eq 0 ] && echo '없음(6% 확률)' || echo '없음')}"
 sleep 4
 
 # 2. 점검
 if [ -z "${SKIPCHECK:-}" ]; then
-  py -3.12 "$HERE/real_preflight.py" --scene "$SCENE" --serve 1 | tee "$OUT/${N}_check.txt" || { echo "점검 NG — 회차를 시작하지 않음 ($OUT/${N}_check.txt)"; exit 1; }
+  # 11-28: tee로 넘기면 점검의 끝 코드가 사라져 NG여도 진행됐음(v9e, GX가 꺼진 채 시작) → PIPESTATUS로 점검의 끝 코드를 봄
+  py -3.12 "$HERE/real_preflight.py" --scene "$SCENE" --serve 1 | tee "$OUT/${N}_check.txt"
+  [ "${PIPESTATUS[0]}" -eq 0 ] || { echo "점검 NG — 회차를 시작하지 않음 ($OUT/${N}_check.txt)"; exit 1; }
 fi
 
 # 3. 초기화(기본 목록 opc_reset_names.txt, 정지 중 초기화 M1964 · LOCK 해제 M1961) → 4. 씬 새로 열기
-(cd "$HERE" && timeout 100 py -3.12 opc_reset.py)
+(cd "$HERE" && timeout 100 py -3.12 opc_reset.py) || { echo "PLC 초기화 실패 — 회차를 시작하지 않음"; exit 1; }
 (cd "$ROOT/test_results/a28_1123" && bash open_scene.sh "$SCENE")
 
 # 5. 중계 + 회차
