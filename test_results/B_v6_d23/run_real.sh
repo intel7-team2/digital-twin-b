@@ -14,24 +14,22 @@ HERE=$(cd "$(dirname "$0")" && pwd); ROOT=$(cd "$HERE/../.." && pwd)
 export PYTHONIOENCODING=utf-8
 mkdir -p "$OUT"; rm -f "$OUT/$N.log"
 
-# 1. serve: 남은 것을 모두 끄고 새 DB로 하나만(11-26 · 11-27: 두 개가 같은 요청에 둘 다 답하거나, 없어서 검사기에서 멈춘 일)
-powershell -NoProfile -Command "Get-CimInstance Win32_Process | ?{ \$_.CommandLine -match 'measurement_engine\.py\s+serve' -and \$_.ProcessId -ne \$PID } | %{ Stop-Process -Id \$_.ProcessId -Force -ErrorAction SilentlyContinue }"
+# 1. 남은 프로그램 정리: serve · 중계 · 기록을 모두 끔(11-26 · 11-27 serve 2개가 둘 다 답함, 11-28 재점검: Ctrl+C 뒤 남은 중계가 다음 회차와 겹칠 수 있음)
+powershell -NoProfile -Command "Get-CimInstance Win32_Process | ?{ \$_.Name -match '^(py|python)\.exe$' -and \$_.CommandLine -match 'measurement_engine\.py\s+serve|opc_outside\.py|opc_shots\.py' } | %{ Stop-Process -Id \$_.ProcessId -Force -ErrorAction SilentlyContinue }"
 DB="$OUT/serve_$N.db"; rm -f "$DB" "$DB-wal" "$DB-shm"
 # 11-27 A2 · A12: 계획의 H 자리 팩 = 보관 중 이상 발열(serve --hot-packs, 시험 재현). MODE=random(시연)이고 계획에 H가 없으면 serve가 팩마다 6% 확률
 MODE=${MODE:-id}; NP=$(echo "$PLAN" | tr ',' '\n' | grep -c .)
 HOTS=$(echo "$PLAN" | tr ',' '\n' | awk '/^H/{printf "%s%d", (n++ ? "," : ""), 100 + NR}')
 if [ "$MODE" = random ] && [ -z "$HOTS" ]; then HOTARG=(); else HOTARG=(--hot-packs "${HOTS:--}"); fi
 # 11-28 연속 운전: BATCHES="12,6"이면 첫 묶음만 먼저 C 인계, 다음 묶음은 앞 회차가 끝나면 중계 프로그램이 인계(정지 없이 이어 투입)
-[ -n "${BATCHES:-}" ] && { NP1=${BATCHES%%,*}; export HANDOFF_DB="$DB"; } || NP1=$NP
+export HANDOFF_DB="$DB"   # 11-28: 중계가 C 인계 셀 수를 DB에서 읽음(BATCHES면 다음 묶음 인계도)
+[ -n "${BATCHES:-}" ] && NP1=${BATCHES%%,*} || NP1=$NP
 (cd "$ROOT" && py -3.12 measurement_engine.py handoff --db "$DB" --start 101 --count "$NP1" | tail -1)
-(cd "$ROOT" && nohup py -3.12 -u measurement_engine.py serve --opc-device CSIM --opc-source cache --mode "$MODE" "${HOTARG[@]}" --db "$DB" > "$OUT/serve_$N.log" 2>&1 &)
-echo "serve: 난수 $MODE · 발열 지정 ${HOTS:-$([ ${#HOTARG[@]} -eq 0 ] && echo '없음(6% 확률)' || echo '없음')}"
-sleep 4
 
-# 2. 점검
+# 2. 점검(serve는 아직 안 띄움 — 아래 5에서)
 if [ -z "${SKIPCHECK:-}" ]; then
   # 11-28: tee로 넘기면 점검의 끝 코드가 사라져 NG여도 진행됐음(v9e, GX가 꺼진 채 시작) → PIPESTATUS로 점검의 끝 코드를 봄
-  py -3.12 "$HERE/real_preflight.py" --scene "$SCENE" --serve 1 | tee "$OUT/${N}_check.txt"
+  py -3.12 "$HERE/real_preflight.py" --scene "$SCENE" --serve 0 | tee "$OUT/${N}_check.txt"
   [ "${PIPESTATUS[0]}" -eq 0 ] || { echo "점검 NG — 회차를 시작하지 않음 ($OUT/${N}_check.txt)"; exit 1; }
 fi
 
@@ -39,13 +37,22 @@ fi
 (cd "$HERE" && timeout 100 py -3.12 opc_reset.py) || { echo "PLC 초기화 실패 — 회차를 시작하지 않음"; exit 1; }
 (cd "$ROOT/test_results/a28_1123" && bash open_scene.sh "$SCENE")
 
-# 5. 중계 + 회차
+# 5. serve — 11-28 재점검: 초기화 뒤에 띄움(전에는 초기화 전에 떠서 지난 회차 랙 값 · 남은 요청을 이번 회차로 처리할 수 있었음)
+(cd "$ROOT" && nohup py -3.12 -u measurement_engine.py serve --opc-device CSIM --opc-source cache --mode "$MODE" "${HOTARG[@]}" --db "$DB" > "$OUT/serve_$N.log" 2>&1 &)
+echo "serve: 난수 $MODE · 발열 지정 ${HOTS:-$([ ${#HOTARG[@]} -eq 0 ] && echo '없음(6% 확률)' || echo '없음')}"
+sleep 4
+NS=$(powershell -NoProfile -Command "@(Get-CimInstance Win32_Process -Filter \"Name='python.exe'\" | ?{ \$_.CommandLine -match 'measurement_engine\.py\s+serve' }).Count" | tr -d '\r')
+[ "$NS" = 1 ] || { echo "serve가 $NS 개 — 회차를 시작하지 않음($OUT/serve_$N.log 확인)"; exit 1; }
+
+# 6. 중계 + 회차
 if [ -n "${SHOTS:-}" ]; then
   (cd "$HERE" && timeout $((LIMIT + 100)) py -3.12 opc_shots.py img "$OUT/$N" "$LIMIT" 3 >/dev/null 2>&1 &)
   (cd "$HERE" && timeout $((LIMIT + 100)) py -3.12 opc_shots.py sig "$OUT/${N}s" "$LIMIT" >/dev/null 2>&1 &)
 fi
 cd "$HERE"
-timeout $((LIMIT + 150)) py -3.12 opc_outside.py "$PLAN" "$LIMIT" ${ESTOP:+--estop "$ESTOP"} ${HOLD:+--hold} --v2 --serve \
-  --bridge "$ROOT/factoryio_test/$SCENE" > "$OUT/$N.log" 2>&1
+timeout $((LIMIT + 150)) py -3.12 opc_outside.py "$PLAN" "$LIMIT" ${ESTOP:+--estop "$ESTOP"} ${HOLD:+--hold} --v2 --serve   --bridge "$ROOT/factoryio_test/$SCENE" > "$OUT/$N.log" 2>&1
 tail -1 "$OUT/$N.log"
-(cd "$ROOT" && py -3.12 measurement_engine.py report --db "$DB" 2>/dev/null | tail -8)
+REP=$(cd "$ROOT" && py -3.12 measurement_engine.py report --db "$DB" 2>/dev/null)
+echo "$REP" | tail -8
+# 11-28 재점검: HOLD · KEEPUNTIL 없이 끝나면 마지막 팔레트가 6분 대기 중이라 회차가 안 닫힐 수 있음 → 알림
+echo "$REP" | grep -q "회차 " || echo "참고: 회차 기록(batches) 없음 — 마지막 팔레트가 나가기 전에 중계가 끝났으면 정상(회차 끝까지 보려면 HOLD=1 또는 KEEPUNTIL=Y1929)"

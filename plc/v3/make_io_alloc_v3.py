@@ -5,7 +5,7 @@ v3 래더 I/O 할당표 만들기 (11-27, 안건 A30)
 뜻 · 출처 · 쓰는 프로그램 · MX OPC 등록 여부를 한 표로 만듭니다.
   - 설명 출처: Factory I/O 번지 안(computer_use/fio_io_map_v6.csv) → 내부 번지 배정(plc/ladder_alloc_v6.csv)
     → v3 스텝 릴레이(plc/v3/steps_relay_v3.md) → 이 파일의 V3_EXTRA(v3에서 더한 번지)
-  - MX OPC 등록: test_results/MXOPC_B_v7f.mdb 태그 이름(computer_use/mxopc_db.py로 읽음, 없으면 빈칸)
+  - MX OPC 등록: test_results/MXOPC_B_v7g.mdb 태그 이름(computer_use/mxopc_db.py로 읽음, 없으면 빈칸)
 사용:
   python plc/v3/make_io_alloc_v3.py          → plc/v3/io_alloc_v3.csv · plc/v3/io_alloc_v3.md
 """
@@ -21,7 +21,7 @@ MNEMONIC = os.path.join(HERE, "ladder_mnemonic_v3.txt")
 FIO_MAP = os.path.join(ROOT, "computer_use", "fio_io_map_v6.csv")
 ALLOC = os.path.join(ROOT, "plc", "ladder_alloc_v6.csv")
 STEPS_MD = os.path.join(HERE, "steps_relay_v3.md")
-MDB = os.path.join(ROOT, "test_results", "MXOPC_B_v7f.mdb")
+MDB = os.path.join(ROOT, "test_results", "MXOPC_B_v7g.mdb")
 
 # v3에서 더했거나 배정 초안 · 번지 안에 뜻이 없는 번지 (11-27 기준)
 V3_EXTRA = {
@@ -32,6 +32,7 @@ V3_EXTRA = {
     "M1960": "알람 확인(HMI 비트 셋 · 조작반 리셋 X1503 짧게). LAMP W04가 끔",
     "M1964": "초기화 요청(정지 중, 시험 · 회차 사이 — opc_reset.py 전용). 11-27 M1961(LOCK 해제)에서 분리 — 래더 Z01, LAMP W08이 끔",
     "M1961": "랙 LOCK 일괄 해제(HMI LOCK 해제 2초 · opc_reset.py). 11-27부터 초기화는 하지 않음(M1964로 분리). LAMP W06이 끔",
+    "M1965": "배치 끝 요청(Python 엔진 serve가 셋: 회차 팩 모두 판정 · 집계됐는데 팔레트에 상자가 남으면 6분을 기다리지 않고 배출, 래더 O17 · W10이 끔 — 11-28)",
     "M1963": "격리 팩 수거 완료(HMI 비트 셋, 11-27 사용자 ①): 레일 끝에 팔레트가 있으면(X1902 OFF) 리무버 Y1695로 치움. 비거나 3초 뒤 DRIVE V04가 끔",
     "M1920": "카운터 리셋(HMI 2초 · 비트 셋, 조작반 리셋 X1503 2초). LAMP W05가 끔",
     "D1603": "크레인 A 목표 칸 보관(운전 중에만 D1601로 내보냄, 11-26)",
@@ -219,7 +220,7 @@ def main():
           "래더를 바꾸면 다시 실행하세요. 같은 내용의 CSV: `io_alloc_v3.csv`.", "",
           "- 확정 방식(11-27 사용자 지시): 11-20 배정 초안(`plc/ladder_alloc_v6.csv`)과 v3에서 더한 번지를 **그대로 확정**. 번지 범위는 1500~19FF(Factory I/O · HMI · Python과 같은 블록)",
           "- C 인계 값(`M1510` · `D1516` · `D1518` · 팩 전압)을 PLC에 쓰는 주체: **`measurement_engine.py serve`**로 정함 — 구현은 공유 DB 연결(A14) 때. 그 전까지는 시험 도구(`opc_outside.py`)가 대신 씀",
-          "- MX OPC 등록 = `test_results/MXOPC_B_v7f.mdb`에 태그가 있음(HMI · Python이 읽고 쓰는 번지). 래더 안에서만 쓰는 번지는 등록하지 않음",
+          "- MX OPC 등록 = `test_results/MXOPC_B_v7g.mdb`에 태그가 있음(HMI · Python이 읽고 쓰는 번지). 래더 안에서만 쓰는 번지는 등록하지 않음",
           "", "| 구분 | 개수 |", "|---|---|"] + [f"| {k} | {v} |" for k, v in cnt.items()] + ["", "| " + " | ".join(head) + " |",
                                                                                          "|" + "---|" * len(head)]
     md += ["| " + " | ".join(c.replace("|", "/") for c in r) + " |" for r in rows]

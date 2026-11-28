@@ -196,6 +196,21 @@ if os.environ.get("BATCHES"):
         _acc += _b; BATCH_AT.append(_acc)
     if "D1918" not in ALL: ALL.append("D1918")
 _bh = {"done": set(), "t": None}
+def _cells(pid, p):
+    """11-28: C 인계 셀 수는 공유 DB(packs.cell_count)를 우선 — 계획의 L(6S) 표시와 DB가 어긋나면 serve가 '태그 셀 수 ≠ DB' 경고(11-28 v9e PACK 116).
+    DB가 없으면(--serve 없이 · 옛 방식) 계획의 L로"""
+    db = os.environ.get("HANDOFF_DB")
+    if db and os.path.exists(db):
+        try:
+            import sqlite3
+            with sqlite3.connect(db, timeout=5) as _c:
+                r = _c.execute("SELECT cell_count FROM packs WHERE pack_id = ?", (pid,)).fetchone()
+            if r and r[0] in (4, 6):
+                if (r[0] == 6) != p.endswith("L"): log(f"  (PACK {pid}: 계획 {'6S' if p.endswith('L') else '4S'} ≠ C 인계 DB {r[0]}S → DB대로 {r[0]}셀)")
+                return r[0]
+        except Exception as e:
+            log(f"  (셀 수 DB 읽기 실패 {e} → 계획대로)")
+    return 6 if p.endswith("L") else 4
 pack_ids = list(range(101, 101 + len(plan))); fed = 0; judged = set(); prev = {}
 
 # 시작: X1501은 Factory I/O 씬 버튼이라 OPC로 써도 Factory I/O가 덮음 → 운전 비트 M1950을 직접 SET(래더 A02와 같은 결과)
@@ -247,7 +262,7 @@ while time.time() - T0 < LIMIT:
                 log(f"다음 회차 C 인계: {(_r.stdout or _r.stderr).strip().splitlines()[-1] if (_r.stdout or _r.stderr) else _r.returncode}")
                 _bh["done"].add(fed); _bh["t"] = None
     elif fed < len(plan) and not pend["C"] and ("--v2" in sys.argv or V["D1541"] == 0) and not V["M1510"] and time.time() - T0 > 3:
-        pend["C"] = True; L.write_many([("D1516", pack_ids[fed]), ("D1518", 6 if plan[fed].endswith("L") else 4), ("D1542", 1480), ("M1510", 1)])   # 11-25: 한 번에 씀(한 건씩 쓰면 건당 0.6 s라 그동안 PLC 출력 갱신이 밀려 크레인 B가 내려놓기 전에 포크를 당김)
+        pend["C"] = True; L.write_many([("D1516", pack_ids[fed]), ("D1518", _cells(pack_ids[fed], plan[fed])), ("D1542", 1480), ("M1510", 1)])   # 11-25: 한 번에 씀(한 건씩 쓰면 건당 0.6 s라 그동안 PLC 출력 갱신이 밀려 크레인 B가 내려놓기 전에 포크를 당김)
         log(f"C 인계: PACK {pack_ids[fed]} 판정 계획 {plan[fed]}"); fed += 1
     if SERVE:                                                 # serve가 응답 → 완료가 올라온 순간만 기록
         for st, req, res, done in (("메인 검사", "D1710", "D1700", "D1713"), ("재검사", "D1740", "D1730", "D1743"), ("격리 기록", "D1650", "D1651", "D1653")):
@@ -282,8 +297,13 @@ while time.time() - T0 < LIMIT:
     if plan and done >= len(plan): prev["all_done"] = True          # 11-27: 회차 끝 뒤 다음 운전 시작에 serve가 카운터를 0으로 해도(A9) '다 나옴'은 유지
     if prev.get("all_done"): done = max(done, len(plan))
     if plan and done >= len(plan):
-        if KU and not V.get(KU):
+        if KU and V.get(KU): prev.setdefault("ku_on", time.time())   # 한 번 켜진 시각을 기억(팔레트가 나가면 Y1929가 다시 꺼짐)
+        if KU and not V.get(KU) and "ku_on" not in prev:
             if not prev.get("ku"): prev["ku"] = 1; log(f"모든 팩 배출 — {KU} 켜질 때까지 계속")
+        elif KU and time.time() - prev.setdefault("ku_on", time.time()) < 40:
+            # 11-28 v9i: Y1929(배출 컨베이어)가 켜지는 순간 끝내면 팔레트가 끝 센서 X1925까지 못 가 래더가 D1918을 0으로 못 만들고
+            # serve가 회차를 닫지 못함 → 켜진 뒤 40초 더 중계(팔레트 배출 3초 + serve 확인 15초 + 여유)
+            if not prev.get("ku_log"): prev["ku_log"] = 1; log(f"{KU} 켜짐 — 회차 기록이 닫히도록 40초 더 중계")
         elif HOLDRUN:
             if not prev.get("hold"): prev["hold"] = 1; log("모든 팩 배출 — --hold: 제한 시간까지 중계 유지(HMI 수거 · 시연용)")
         else: log((f"{KU} 켜짐 · " if KU else "") + "모든 팩 배출"); break

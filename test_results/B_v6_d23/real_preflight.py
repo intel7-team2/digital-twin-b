@@ -8,6 +8,8 @@
   끝 코드: 0 = 통과, 1 = 막는 문제 있음(NG). 주의(WARN)는 통과로 셈
 """
 import argparse, csv, io, os, re, socket, struct, subprocess, sys, time
+try: sys.stdout.reconfigure(encoding="utf-8")   # 11-28: run_real.sh 밖에서 단독으로 돌리면 cp949 콘솔에서 '—'로 멈췄음
+except Exception: pass
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
@@ -17,7 +19,7 @@ import mxopc_db as M
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--scene", default="V7_plc_2.factoryio")
-ap.add_argument("--mdb", default="MXOPC_B_v7f.mdb", help="MX OPC가 실행 중이어야 하는 프로젝트 파일 이름")
+ap.add_argument("--mdb", default="MXOPC_B_v7g.mdb", help="MX OPC가 실행 중이어야 하는 프로젝트 파일 이름")
 ap.add_argument("--serve", type=int, default=1, help="떠 있어야 하는 measurement_engine serve 수(0이면 검사 안 함)")
 ap.add_argument("--hmi", action="store_true", help="HMI(WinGP · 중계 서버)도 검사")
 ap.add_argument("--no-opc", action="store_true", help="MX OPC 값 읽기 검사를 건너뜀")
@@ -52,7 +54,8 @@ tb = F.modbus_address_table(txt)
 bridge = [t["name"] for t in F.tags(txt) if t["key"] in tb and re.match(r"^([XY][0-9A-F]{4}|[DM]\d{4})$", t["name"])]
 need = {"씬 중계 번지": set(bridge)}
 need["serve · 중계 핸드셰이크"] = {f"D{n}" for n in list(range(1700, 1704)) + [1710, 1711, 1713, 1714] + list(range(1730, 1734)) + [1740, 1741, 1743, 1744]
-                             + list(range(1650, 1654)) + [1516, 1517, 1518, 1524, 1534, 1558, 1568, 1900, 1901, 1902]} | {"M1510", "M1950", "M1952", "M1953", "M1954"}
+                             + list(range(1650, 1654)) + [1516, 1517, 1518, 1524, 1534, 1558, 1568, 1900, 1901, 1902, 1903, 1904, 1918, 1697, 1698]
+                             + list(range(1660, 1684)) + list(range(1810, 1834))} | {"M1510", "M1950", "M1952", "M1953", "M1954", "M1672", "M1965"}   # 11-28 재점검: serve 보관 발열 · 회차 기록이 읽는 번지까지
 need["초기화(opc_reset)"] = {l.strip() for l in open(os.path.join(HERE, "opc_reset_names.txt"), encoding="utf-8") if l.strip() and not l.startswith("#")} | {"M1961", "M1964"}
 hmi = set()
 for r in csv.DictReader(io.open(os.path.join(ROOT, "hmi", "hmi_parts_v2.csv"), encoding="utf-8-sig")):
@@ -111,7 +114,7 @@ if args.serve:
     if len(sv) == args.serve: put("OK", f"serve {len(sv)}개", sv[0][3].split("--db")[-1].strip() if sv else "")
     else: put("NG", f"serve {len(sv)}개(필요 {args.serve})", "2개 이상이면 같은 요청에 둘 다 답함, 0개면 검사기에서 멈춤")
 br = [r for r in procs(r"opc_outside\.py") if r[1].lower() == "python.exe"]
-if br: put("WARN", f"중계(opc_outside) {len(br)}개 이미 실행 중", "이전 회차가 남았으면 끄고 시작")
+if br: put("NG", f"중계(opc_outside) {len(br)}개 이미 실행 중", "이전 회차가 남음(Ctrl+C로 안 꺼졌을 수 있음) — 두 개가 겹치면 같은 출력 · C 인계를 두 번 씀. run_real.sh는 1단계에서 끔(11-28 재점검)")
 if args.hmi:
     rl = [r for r in procs(r"hmi_mc_relay\.py") if r[1].lower() == "python.exe"]
     put("OK" if len(rl) == 1 else "NG", f"HMI 중계 서버 {len(rl)}개", "" if len(rl) == 1 else "1개만 띄울 것(같은 포트를 둘 다 열면 예전 중계가 남음)")

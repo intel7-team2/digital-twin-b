@@ -562,7 +562,7 @@ def cmd_report(args):
     for b in conn.execute("SELECT id, ts, pack_from, pack_to, packs, good, ng, iso, yield_x10 FROM batches ORDER BY id DESC LIMIT 5"):
         print(f"  회차 {b[0]:>3}  {b[1]}  PACK {b[2]}~{b[3]} ({b[4]}팩) · GOOD {b[5]} · NG {b[6]} · 격리 {b[7]} · 수율 {b[8] / 10:.1f}%")
     if total:
-        print(f"  수율         {s['GOOD'] / total * 100:6.1f} %")
+        print(f"  수율         {s['GOOD'] * 1000 // total / 10:6.1f} %")   # 11-28: 래더 D1904 · 회차 기록과 같은 버림(반올림하면 66.7 vs 66.6으로 달라 보였음)
     print()
     print(f"최근 {args.limit}건 (셀 ID는 lookup --pack 으로 조회)")
     print(f"  {'PACK':>9} 종류 {'결과':<4} {'원인':<6} RC  계측값")
@@ -598,6 +598,14 @@ def cmd_serve(args):
     conn = open_db(args.db)
     print(f"[ENGINE] {link.label} 연결, {args.interval * 1000:.0f}ms 주기로 검사기 2대(D1710 · D1740) · 발열 격리(D1650) 요청 감시"
           f" · 난수 모드 {args.mode} · 공유 DB {args.db}")
+    # 11-28 재점검: 지난 serve가 완료 비트를 1로 둔 채 끝났으면 래더(J12 · N10 · G 블록)가 알람 없이 0을 기다림 → 요청이 없으면 0으로 정리
+    try:
+        for req, done in ((1710, 1713), (1740, 1743), (1650, 1653)):
+            if link.read_words(f"D{req}", 1)[0] == 0 and link.read_words(f"D{done}", 1)[0] != 0:
+                link.write_words(f"D{done}", [0])
+                print(f"[ENGINE] 시작: 남아 있던 완료 D{done} = 0으로 정리")
+    except LinkError as e:
+        print(f"[ENGINE] 시작 정리 생략(통신 오류): {e}")
 
     def read(addr, count=1):
         return link.read_words(f"D{addr}", count)
@@ -677,14 +685,23 @@ def cmd_serve(args):
     hot_forced = None if args.hot_packs is None else {int(x) for x in args.hot_packs.replace(" ", "").split(",") if x.isdigit()}
     heat_done = {r[0] for r in conn.execute("SELECT pack_id FROM storage_heat")}
     heat_wait = []                                    # 접수 비트가 아직 켜져 있어 못 보낸 발열 (칸, 온도, PACK)
+    # 11-28 재점검: serve가 켜질 때 이미 랙에 있던 칸(지난 회차 값 · 초기화 전)은 처리하지 않음 — 칸의 넣은 시각(D1810+k)이 바뀐 것만 새 보관으로 봄
+    slot_seen = {"ts": None, "last_send": 0.0}
 
     def handle_storage():
         if tick[0] % 5 != 1 or args.no_storage_heat:
             return
         ids, ts_ = read(1660, 24), read(1810, 24)
+        if slot_seen["ts"] is None:
+            slot_seen["ts"] = list(ts_)
+            if any(ts_):
+                print(f"[보관] serve 시작 때 랙에 이미 있던 칸 {sum(1 for t in ts_ if t)}개는 처리하지 않음(지난 회차 값)")
+            return
         for k in range(24):
             pid = ids[k]
-            if pid and ts_[k] and pid not in heat_done:
+            new = ts_[k] != slot_seen["ts"][k]
+            slot_seen["ts"][k] = ts_[k]
+            if pid and ts_[k] and new and pid not in heat_done:
                 t, hot = storage_temp(pid, args.mode, None if hot_forced is None else pid in hot_forced)
                 conn.execute("INSERT OR REPLACE INTO storage_heat (pack_id, ts, temp_x10, hot, forced) VALUES (?, ?, ?, ?, ?)",
                              (pid, now(), t, int(hot), int(hot_forced is not None)))
@@ -693,7 +710,9 @@ def cmd_serve(args):
                 print(f"[보관] PACK-{pid:04d} 칸 {k + 1} 보관 온도 {t / 10:.1f}°C" + (" → 이상 발열(격리 대상)" if hot else ""))
                 if hot:
                     heat_wait.append((k + 1, t, pid))
-        if heat_wait and not int(link.read("M1672") or 0):
+        # 11-28 재점검: 캐시 지연으로 앞 접수를 래더가 받기 전에 덮지 않게 두 건 사이 최소 3초
+        if heat_wait and time.time() - slot_seen["last_send"] > 3 and not int(link.read("M1672") or 0):
+            slot_seen["last_send"] = time.time()
             slot, t, pid = heat_wait.pop(0)
             write(1697, [slot, t])
             link.write("M1672", 1)
@@ -703,6 +722,7 @@ def cmd_serve(args):
     # PLC 카운터 합(D1903)이 팩 수에 닿고, 팔레타이저가 비면(D1918 = 0, 배치 끝 1개 팔레트까지 나감) 회차를 닫아 batches 에 한 줄.
     # 카운터는 HMI에 그대로 두었다가 다음 운전 시작(M1950 0 → 1) 때 엔진이 0으로(래더 R04 · R05가 합계 · 수율을 다시 셈)
     bstate = {"closed": False, "m1950": None}
+    fail_id0 = conn.execute("SELECT COALESCE(MAX(id), 0) FROM rfid_failures").fetchone()[0]   # serve 시작 전 RFID 실패는 이 회차 것이 아님
     side_err = {}
 
     def handle_batch():
@@ -710,18 +730,23 @@ def cmd_serve(args):
             return
         run = int(link.read("M1950") or 0)
         if bstate["closed"] and bstate["m1950"] == 0 and run == 1:
-            write(1900, [0, 0, 0])
             bstate["closed"] = False
-            bstate["base"] = (0, 0, 0)
-            print("[회차] 운전 시작 → 카운터 D1900~D1902를 0으로(지난 회차는 batches 표에 있음)")
+            # 11-28 재점검: 회차를 닫은 뒤 이미 다음 회차를 세기 시작했으면(정지 없이 이어진 회차 중 비상정지 → 재시작) 0으로 하지 않음
+            # — 0으로 하면 진행 중인 회차 수가 지워지고 그 회차는 영영 닫히지 않음
+            # (11-28 차이 점검: 닫을 때의 PLC 카운터와 그대로면 0 — DB 판정 수와 비교하면 RFID 실패 팩처럼 PLC만 센 팩이 있을 때 0이 안 됐음)
+            if tuple(read(1900, 3)) == tuple(bstate.get("close_cnt", bstate.get("base", (0, 0, 0)))):
+                write(1900, [0, 0, 0])
+                bstate["base"] = (0, 0, 0)
+                bstate.pop("close_cnt", None)
+                print("[회차] 운전 시작 → 카운터 D1900~D1902를 0으로(지난 회차는 batches 표에 있음)")
+            else:
+                print("[회차] 운전 시작 — 다음 회차를 이미 세는 중이라 카운터를 0으로 하지 않음")
         bstate["m1950"] = run
         last_to = conn.execute("SELECT COALESCE(MAX(pack_to), 0) FROM batches").fetchone()[0]
         open_ids = [r[0] for r in conn.execute("SELECT pack_id FROM packs WHERE pack_id > ? ORDER BY pack_id", (last_to,))]
         if not open_ids:
             return
-        judged_n = conn.execute(f"SELECT COUNT(*) FROM results WHERE pack_id IN ({','.join('?' * len(open_ids))})", open_ids).fetchone()[0]
-        if judged_n < len(open_ids):
-            return
+        judged_ids = {r[0] for r in conn.execute(f"SELECT pack_id FROM results WHERE pack_id IN ({','.join('?' * len(open_ids))})", open_ids)}
         g, n, i, tot, y = read(1900, 5)
         # 11-28: 정지 없이 다음 회차로 이어지면 카운터가 0이 되지 않음(0은 다음 운전 시작 때) → 직전 회차를 닫을 때 값과의 차이로 셈.
         # 카운터가 기준보다 작아졌으면(HMI · 조작반 카운터 리셋) 기준을 0으로
@@ -729,15 +754,62 @@ def cmd_serve(args):
         if g < base[0] or n < base[1] or i < base[2]:
             base = bstate["base"] = (0, 0, 0)
         dg, dn, di = g - base[0], n - base[1], i - base[2]
-        if dg + dn + di < len(open_ids) or read(1918)[0] != 0:
+        missing = [p for p in open_ids if p not in judged_ids]
+        if missing:
+            # 11-28 재점검: 판정이 빠진 팩(RFID 판독 실패로 PACK ID를 모름)이 있으면 회차가 영원히 안 닫힘 →
+            # 이 회차 동안 RFID 판독 실패 기록이 빠진 팩 수 이상 있고, 셀 수 있는 팩은 다 셌고(카운터 차이 ≥ 판정된 팩 수),
+            # 팔레타이저가 빈 상태가 60초 이어지면 경고를 남기고 닫음.
+            # (v9g에서 발견: RFID 실패 조건 없이 시간만 보면 회차 시작 직후 '판정 0 = 셈 0'이 참이라 팩이 라인에 있는데 닫았음)
+            n_fail = conn.execute("SELECT COUNT(*) FROM rfid_failures WHERE id > ?", (bstate.setdefault("fail_id0", fail_id0),)).fetchone()[0]
+            if n_fail >= len(missing) and dg + dn + di >= len(judged_ids) and read(1918)[0] == 0:
+                bstate.setdefault("miss_t", time.time())
+                if time.time() - bstate["miss_t"] < 60:
+                    return
+                print(f"[회차] 경고: 판정이 없는 팩 {missing} — 60초 기다려도 안 와서 이 팩을 빼고 회차를 닫음")
+            else:
+                bstate.pop("miss_t", None)
+                return
+        elif dg + dn + di < len(open_ids):
+            bstate.pop("zero_t", None)
             return
-        y = dg * 1000 // (dg + dn + di) if dg + dn + di else 0     # D1904와 같은 식(A5: 격리를 분모에 넣음), 이 회차분만
-        g, n, i = dg, dn, di
+        elif read(1918)[0] == 0 and (run == 0 or time.time() - bstate.setdefault("zero_t", time.time()) < 15):
+            if run == 0:
+                bstate.pop("zero_t", None)   # 11-28 차이 점검: 상자가 X1900을 지난 직후 비상정지 · 정지면 D1918이 안 올라감 → 멈춘 동안은 '빔' 판단을 미룸
+            # 11-28 v9h에서 발견: 래더는 상자가 X1900을 지날 때 카운터(D1900)를 먼저 올리고 팔레트 상자 수(D1918)는 그 뒤에 올림 →
+            # 그 틈에 D1918 = 0을 '팔레트 빔'으로 읽어 M1965 없이 회차를 닫았고 마지막 상자는 6분 기다렸음. 0이 15초 이어질 때만 빈 것으로
+            return
+        elif read(1918)[0] != 0:
+            bstate.pop("zero_t", None)
+            # 11-28 재점검: 이 회차 팩은 모두 판정 · 집계됐는데 팔레트에 상자가 남음(홀수) → 래더 O17이 6분을 기다리지 않고 배출하게 M1965(배치 끝 요청)
+            if not bstate.get("end_req"):
+                try:
+                    link.write("M1965", 1)
+                    print("[회차] 이 회차 팩 모두 집계 — 남은 팔레트 바로 배출 요청(M1965)")
+                except LinkError as e:
+                    print(f"[회차] 배치 끝 요청 M1965 쓰기 실패(MX OPC v7g 이상 필요, 래더는 6분 뒤 배출): {e}")
+                bstate["end_req"] = True
+            return
+        bstate.pop("miss_t", None)
+        # 11-28 재점검: 회차의 GOOD · NG · 격리는 공유 DB의 팩별 최종 판정으로 셈(PLC 카운터 차이는 '모두 실제로 셈' 확인에만).
+        # 홀수 상자로 마지막 팔레트가 6분 기다리는 사이 다음 회차 상자가 같은 팔레트에 올라가면 카운터 차이에 다음 회차분이 섞이기 때문
+        ph = ",".join("?" * len(open_ids))
+        cnt = dict(conn.execute(f"SELECT result, COUNT(*) FROM results WHERE pack_id IN ({ph}) GROUP BY result", open_ids).fetchall())
+        g, n, i = cnt.get("GOOD", 0), cnt.get("NG", 0), cnt.get("ISO", 0)
+        if (g, n, i) != (dg, dn, di):
+            print(f"[회차] 참고: PLC 카운터 차이 GOOD {dg} · NG {dn} · 격리 {di} ≠ DB 판정 {g} · {n} · {i} → DB 기준으로 기록")
+        y = g * 1000 // (g + n + i) if g + n + i else 0     # D1904와 같은 식(A5: 격리를 분모에 넣음), 이 회차분만
         conn.execute("INSERT INTO batches (ts, pack_from, pack_to, packs, good, ng, iso, yield_x10) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                      (now(), open_ids[0], open_ids[-1], len(open_ids), g, n, i, y))
         conn.commit()
         bstate["closed"] = True
-        bstate["base"] = (base[0] + dg, base[1] + dn, base[2] + di)
+        bstate.pop("end_req", None)
+        bstate.pop("zero_t", None)
+        bstate["fail_id0"] = conn.execute("SELECT COALESCE(MAX(id), 0) FROM rfid_failures").fetchone()[0]   # 다음 회차는 이 뒤의 실패만 셈
+        bstate["close_cnt"] = (base[0] + dg, base[1] + dn, base[2] + di)   # 닫을 때의 PLC 카운터(다음 운전 시작 때 0으로 할지 판단)
+        if dg + dn + di <= len(open_ids):
+            bstate["base"] = bstate["close_cnt"]   # 11-28 차이 점검: PLC가 센 것이 모두 이 회차 몫(RFID 실패 팩 포함) → 그대로 기준
+        else:
+            bstate["base"] = (base[0] + g, base[1] + n, base[2] + i)   # 다음 회차 상자가 섞여 더 셌으면 이 회차 몫(DB)만 기준에 더함
         print(f"[회차 끝] PACK {open_ids[0]}~{open_ids[-1]} · GOOD {g} · NG {n} · 격리 {i} · 수율 {y / 10:.1f}% → DB batches"
               " (카운터는 다음 운전 시작 때 0)")
 

@@ -473,11 +473,16 @@ def main():
             time.sleep(10)
             st = relay.stats
             if cache and isinstance(be, OpcBackend) and be.seen:
-                old = {l.strip() for l in open(cache, encoding="utf-8") if l.strip() and not l.startswith("#")} if os.path.exists(cache) else set()
-                if not be.seen <= old:          # 새로 본 번지가 있으면 목록에 더함
-                    with open(cache, "w", encoding="utf-8", newline="\n") as f:
-                        f.write("# hmi_mc_relay.py 미리 등록 목록 — WinGP가 읽은 번지(자동 갱신, 11-28)\n")
-                        f.write("\n".join(sorted((old | be.seen) - {""}, key=lambda n: (n[0], len(n), n))) + "\n")
+                try:                            # 11-28 재점검: 처리 스레드가 seen을 바꾸는 중에 돌면 RuntimeError로 중계가 끝나던 위험 → 잠금 아래 복사
+                    with be.lock:
+                        seen = set(be.seen)
+                    old = {l.strip() for l in open(cache, encoding="utf-8") if l.strip() and not l.startswith("#")} if os.path.exists(cache) else set()
+                    if not seen <= old:          # 새로 본 번지가 있으면 목록에 더함
+                        with open(cache, "w", encoding="utf-8", newline="\n") as f:
+                            f.write("# hmi_mc_relay.py 미리 등록 목록 — WinGP가 읽은 번지(자동 갱신, 11-28)\n")
+                            f.write("\n".join(sorted((old | seen) - {""}, key=lambda n: (n[0], len(n), n))) + "\n")
+                except Exception as e:
+                    print(time.strftime("%H:%M:%S"), f"[중계] 미리 등록 목록 저장 실패(계속 동작): {e}", flush=True)
             if st["frames"]:
                 print(time.strftime("%H:%M:%S"), f"요청 {st['frames']}건 · 오류 {st['errors']}건 · 명령 {st['cmds']}", flush=True)
     except KeyboardInterrupt:

@@ -41,3 +41,4 @@ for b in ("M1964", "M1961"):
         print(f"{b} 쓰기 실패(태그 없음? MX OPC v7f 이상 필요):", e)
 time.sleep(1)
 print(f"초기화: M · D {len(names)}개를 0으로 · 실패 {bad} · 확인 {L.read_many(['M1950', 'D1541', 'M1510', 'D1750', 'D1760'])}")
+sys.exit(1 if bad else 0)   # 11-28 재점검: 쓰기 실패가 있으면 run_real.sh가 멈추게
